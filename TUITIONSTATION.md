@@ -46,12 +46,12 @@ A location-based marketplace that makes tutor discovery efficient and builds dir
 | Layer | Technology |
 |---|---|
 | **Backend** | Python 3.8+, Flask 2.3.3 |
-| **Database** | Firebase Firestore (NoSQL) |
+| **Database** | SQL Server  |
 | **Authentication** | Firebase Auth (Email/Password + Google OAuth) |
 | **Frontend** | HTML5, CSS3, Vanilla JavaScript |
 | **Design System** | Custom "Tuition Station" (Glassmorphism + Editorial) |
 | **Icons** | Font Awesome 6+ |
-| **Storage** | Firebase Storage (profile pictures, CVs) |
+| **Storage** | Local Storage (profile pictures, CVs) |
 | **Email** | Flask-Mail / SMTP (Gmail) |
 | **Session** | Flask-Login |
 | **Environment** | python-dotenv |
