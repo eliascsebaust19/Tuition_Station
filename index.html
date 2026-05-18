@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tuition HUb | Premium Academic Hub</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- PAGE LOADER -->
+    <div id="loader" class="loader">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- TOP NAVBAR -->
+    <nav class="top-navbar">
+        <div class="container nav-inner">
+            <a href="#hero" class="brand">Tuition Hub</a>
+            <button id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul id="nav-menu" class="nav-menu">
+                <li><a href="#hero" class="nav-link active" data-i18n="nav_home">Home</a></li>
+                <li><a href="#about" class="nav-link" data-i18n="nav_about">About</a></li>
+                <li><a href="#courses" class="nav-link" data-i18n="nav_courses">Courses</a></li>
+                <li><a href="#faculty" class="nav-link" data-i18n="nav_faculty">Mentors</a></li>
+                <li><a href="#notice-board" class="nav-link" data-i18n="nav_notice">Notice</a></li>
+                <li><a href="#contact" class="nav-link" data-i18n="nav_contact">Contact</a></li>
+                <li><a href="#register" class="nav-link" data-i18n="nav_register">Register</a></li>
+                <li><a href="#login" class="nav-link" data-i18n="nav_login">Login</a></li>
+            </ul>
+        </div>
+    </nav>
+    <!-- SMOOTH SCROLL CONTAINER -->
+    <div class="smooth-scroll">
+        <!-- HERO SECTION -->
+        <section id="hero" class="hero">
+            <div class="particles" id="particles"></div>
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="hero-title" data-i18n="hero_title">Tuition Management <span class="animated-text">System</span></h1>
+                    <p class="hero-subtitle" data-i18n="hero_subtitle">Elite Academic Matchmaking for Serious Achievers</p>
+                    <div class="hero-buttons">
+                        <a href="#faculty" class="btn btn-primary" data-i18n="hero_btn1">Find Teachers</a>
+                        <a href="#contact" class="btn btn-secondary" data-i18n="hero_btn2">Contact Us</a>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-scroll-indicator">?</div>
+        </section>
+
+        <!-- ABOUT SECTION -->
+        <section id="about" class="section about">
+            <div class="container">
+                <h2 class="section-title" data-i18n="about_title">About Us</h2>
+                <div class="about-grid">
+                    <div class="about-text glass">
+                        <p data-i18n="about_desc">Premier tuition management system connecting top educators with motivated students. We ensure success through personalized matching.</p>
+                        <div class="mission-vision">
+                            <div class="mission">
+                                <h3 data-i18n="mission">Mission</h3>
+                                <p data-i18n="mission_desc">Empower every student to achieve academic excellence with the right mentor.</p>
+                            </div>
+                            <div class="vision">
+                                <h3 data-i18n="vision">Vision</h3>
+                                <p data-i18n="vision_desc">To be the most trusted tuition platform in Bangladesh, recognized for quality and results.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="about-stats">
+                        <div class="stat-card glass" data-i18n-attr="data-year" data-year="est">
+                            <span class="stat-value">2015</span>
+                            <span class="stat-label" data-i18n="est_year">Established</span>
+                        </div>
+                        <div class="stat-card glass" data-i18n-attr="data-rate" data-rate="success">
+                            <span class="stat-value">98%</span>
+                            <span class="stat-label" data-i18n="success_rate">Success Rate</span>
+                        </div>
+                        <div class="stat-card glass" data-i18n-attr="data-achievements" data-achievements="achievements">
+                            <span class="stat-value">5000+</span>
+                            <span class="stat-label" data-i18n="achievements">Achievements</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TUITION AVAILABLE -->
+        <section id="courses" class="section courses">
+            <div class="container">
+                <h2 class="section-title" data-i18n="courses_title">Tuition Available For</h2>
+                <div class="courses-grid" id="courses-grid"></div>
+            </div>
+        </section>
+
+        <!-- FACULTY / MENTORS -->
+        <section id="faculty" class="section faculty">
+            <div class="container">
+                <h2 class="section-title" data-i18n="faculty_title">Our Elite Mentors</h2>
+                <div class="faculty-grid" id="faculty-grid"></div>
+            </div>
+        </section>
+
+        <!-- SKILLS & LEARNING OUTCOMES -->
+        <section id="skills" class="section skills">
+            <div class="container">
+                <h2 class="section-title" data-i18n="skills_title">Skills You'll Master</h2>
+                <div class="skills-container">
+                    <div class="skill-item">
+                        <span class="skill-name" data-i18n="skill1">Concept Mastery</span>
+                        <div class="progress-bar"><div class="progress" style="width:95%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <span class="skill-name" data-i18n="skill2">Exam Strategy</span>
+                        <div class="progress-bar"><div class="progress" style="width:90%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <span class="skill-name" data-i18n="skill3">Problem Solving</span>
+                        <div class="progress-bar"><div class="progress" style="width:92%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SUCCESS / RESULTS (STUDENTS MATCHED) -->
+        <section id="success" class="section success">
+            <div class="container">
+                <h2 class="section-title" data-i18n="success_title">Our Successful Matches - Students Who Found Their Teachers</h2>
+                <div class="success-grid" id="success-grid"></div>
+            </div>
+        </section>
+
+        <!-- TEACHER ACHIEVEMENTS -->
+        <section id="teacher-achievements" class="section teacher-achievements">
+            <div class="container">
+                <h2 class="section-title" data-i18n="teacher_achievements_title">Teachers Who Successfully Got Students From Our Platform</h2>
+                <div class="achievements-grid" id="achievements-grid"></div>
+            </div>
+        </section>
+
+        <!-- NOTICE BOARD -->
+        <section id="notice-board" class="section notice">
+            <div class="container">
+                <h2 class="section-title" data-i18n="notice_title">Notice Board</h2>
+                <div class="notice-list" id="notice-list"></div>
+            </div>
+        </section>
+
+        <!-- CONTACT SECTION -->
+        <section id="contact" class="section contact">
+            <div class="container">
+                <h2 class="section-title" data-i18n="contact_title">Get In Touch</h2>
+                <div class="contact-grid">
+                    <div class="contact-info glass">
+                        <p><i class="fas fa-map-marker-alt"></i> <span data-i18n="address">Dhaka, Bangladesh</span></p>
+                        <p><i class="fas fa-envelope"></i> easytuitionfinder@gmail.com</p>
+                        <p><i class="fas fa-phone"></i> 01719273648</p>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                    <form id="contact-form" class="contact-form glass">
+                        <input type="text" name="name" placeholder="Your Name" required>
+                        <input type="email" name="email" placeholder="Your Email" required>
+                        <textarea name="message" rows="4" placeholder="Your Message" required></textarea>
+                        <button type="submit" class="btn btn-primary" data-i18n="send_msg">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- REGISTER & PAYMENT SECTION -->
+        <section id="register" class="section contact">
+            <div class="container">
+                <h2 class="section-title">Register & Activation</h2>
+                <div class="contact-grid">
+                    <form id="register-form" class="contact-form glass">
+                        <h3 style="margin-bottom:10px;">Register</h3>
+                        <input type="text" name="name" placeholder="Full Name" required>
+                        <input type="email" name="email" placeholder="Email" required>
+                        <input type="text" name="phone" placeholder="Phone (01XXXXXXXXX)" required>
+                        <input type="password" name="password" placeholder="Password (min 8 chars)" required>
+                        <select name="role" required>
+                            <option value="">Select Role</option>
+                            <option value="student">Student</option>
+                            <option value="teacher">Teacher</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary">Register</button>
+                        <p id="register-status"></p>
+                    </form>
+
+                    <form id="payment-form" class="contact-form glass">
+                        <h3 style="margin-bottom:10px;">Submit 100 BDT Activation Payment</h3>
+                        <input type="email" name="email" placeholder="Registered Email" required>
+                        <input type="text" name="transaction_id" placeholder="Transaction ID" required>
+                        <select name="payment_method" required>
+                            <option value="">Payment Method</option>
+                            <option value="bKash">bKash</option>
+                            <option value="Nagad">Nagad</option>
+                        </select>
+                        <input type="number" name="amount" value="100" min="100" max="100" required>
+                        <button type="submit" class="btn btn-primary">Submit Payment</button>
+                        <p id="payment-status"></p>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- LOGIN SECTION -->
+        <section id="login" class="section contact">
+            <div class="container">
+                <h2 class="section-title">Login</h2>
+                <div class="contact-grid">
+                    <div class="contact-info glass">
+                        <h3 style="margin-bottom:12px;">Already Active?</h3>
+                        <p>Use your registered email and password to access your role dashboard.</p>
+                        <p>Admin, Teacher, and Student each have dedicated pages.</p>
+                    </div>
+                    <form id="login-form" class="contact-form glass">
+                        <h3 style="margin-bottom:10px;">Login (Active Accounts Only)</h3>
+                        <input type="email" name="email" placeholder="Email" required>
+                        <input type="password" name="password" placeholder="Password" required>
+                        <button type="submit" class="btn btn-primary">Login</button>
+                        <p id="login-status"></p>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div class="container">
+                <p>&copy; 2025 Tuition HUb. <span data-i18n="rights">All rights reserved.</span></p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="/public/js/auth-client.js"></script>
+    <script src="/public/js/auth-forms.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
