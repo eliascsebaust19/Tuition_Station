@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel - Tuition Management</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { padding: 24px; }
+    .admin-wrap { max-width: 1200px; margin: 0 auto; }
+    .admin-card { background: #1e2635; border-radius: 10px; padding: 16px; margin-bottom: 18px; }
+    .admin-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+    .admin-stat { background: #121a29; border-radius: 8px; padding: 12px; }
+    .admin-stat h3 { margin: 0 0 6px; font-size: 0.9rem; color: #cfa668; }
+    .admin-stat p { margin: 0; font-size: 1.2rem; font-weight: 700; }
+    .admin-form { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    th, td { border-bottom: 1px solid #2f3a50; padding: 10px; text-align: left; vertical-align: top; }
+    th { color: #cfa668; }
+    .status-box { margin-top: 8px; font-size: 0.95rem; }
+    .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+  <div class="admin-wrap">
+    <h1>Admin Dashboard</h1>
+
+    <div class="admin-card">
+      <h2>Admin Login</h2>
+      <form id="admin-login-form" class="admin-form">
+        <input type="email" name="email" placeholder="Admin Email" required />
+        <input type="password" name="password" placeholder="Admin Password" required />
+        <button class="btn btn-primary" type="submit">Login</button>
+        <button class="btn" type="button" id="admin-logout-btn">Logout</button>
+      </form>
+      <p id="admin-login-status" class="status-box"></p>
+    </div>
+
+    <div class="admin-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+        <h2>System Stats</h2>
+        <button class="btn btn-secondary" id="refresh-all-btn" type="button">Refresh All</button>
+      </div>
+      <div id="admin-stats" class="admin-grid"></div>
+    </div>
+
+    <div class="admin-card">
+      <h2>Manage Users</h2>
+      <div class="admin-form">
+        <select id="user-role-filter">
+          <option value="">All Roles</option>
+          <option value="student">Students</option>
+          <option value="teacher">Teachers</option>
+          <option value="admin">Admins</option>
+        </select>
+        <select id="user-status-filter">
+          <option value="">All Status</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+        <button class="btn btn-secondary" type="button" id="filter-users-btn">Load Users</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Email / Phone</th>
+            <th>Created</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="users-body"></tbody>
+      </table>
+      <p id="users-status" class="status-box"></p>
+    </div>
+
+    <div class="admin-card">
+      <h2>Pending Payments</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>User</th>
+            <th>Role</th>
+            <th>Amount</th>
+            <th>Method</th>
+            <th>Transaction</th>
+            <th>Paid At</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="pending-payments-body"></tbody>
+      </table>
+      <p id="admin-payment-status" class="status-box"></p>
+    </div>
+
+    <div class="admin-card">
+      <h2>Reports</h2>
+      <div class="admin-grid">
+        <div>
+          <h3 style="color:#cfa668; margin:0 0 8px;">Monthly Revenue</h3>
+          <table>
+            <thead><tr><th>Month</th><th>Revenue</th></tr></thead>
+            <tbody id="report-revenue-body"></tbody>
+          </table>
+        </div>
+        <div>
+          <h3 style="color:#cfa668; margin:0 0 8px;">Teacher Performance</h3>
+          <table>
+            <thead><tr><th>Teacher</th><th>Classes</th><th>Students</th><th>Earnings</th></tr></thead>
+            <tbody id="report-performance-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <h2>Contact Messages</h2>
+      <table>
+        <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Message</th><th>Submitted</th></tr></thead>
+        <tbody id="contacts-body"></tbody>
+      </table>
+      <p id="contacts-status" class="status-box"></p>
+    </div>
+  </div>
+
+  <script src="/public/js/auth-client.js"></script>
+  <script src="/public/js/admin-panel.js"></script>
+</body>
+</html>
