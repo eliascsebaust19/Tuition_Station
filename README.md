@@ -1,4 +1,4 @@
-# Tuition Management System (Node.js + MySQL)
+# Tuition Management System (Pyhon Flask + SQL Server)
 
 Production-oriented full-stack backend for a Tuition Management System with payment-gated activation, role-based access, and dashboard workflows.
 
