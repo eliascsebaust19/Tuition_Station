@@ -1,7 +1,6 @@
-# 🎓 TuitionStation — Complete Project Documentation
+🎓 TuitionStation Project Documentation
 
-> **Location-Based Offline Tuition Marketplace**
-> Built with Python Flask + Firebase + Vanilla JS | Premium "Tuition Station" Design System
+Location-Based Offline Tuition Marketplace
 
 ---
 
