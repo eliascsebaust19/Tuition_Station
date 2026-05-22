@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Tuition Station{% endblock %}
+
+{% block extra_css %}
+<style>
+.header-text .kicker { color: var(--secondary); }
+</style>
+{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include "teacher/inc_sidebar.html" %}
+
+    <main class="main-content">
+        <header class="header-section">
+            <div class="header-text">
+                <p class="kicker">Instructor Portal</p>
+                <h2>Dashboard</h2>
+                <p>Manage your requests and reviews.</p>
+            </div>
+            <div class="user-profile" onclick="openProfilePopup()">
+                <div class="user-avatar">
+                    <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="Profile" />
+                </div>
+                <div class="user-info">
+                    <p class="role">Teacher</p>
+                    <p class="name">{{ current_user.name }}</p>
+                </div>
+            </div>
+        </header>
+
+        <section class="tutors-section">
+            <div class="tutors-header">
+                <h3>Tuition Requests</h3>
+            </div>
+            {% if requests %}
+            <div class="requests-grid">
+                {% for req in requests[:6] %}
+                <div class="request-card request-{{ req.status }}">
+                    <div class="request-header">
+                        <div class="request-tutor">
+                            <div class="tutor-avatar">
+                                <img src="{% if req.student.profile_picture %}{{ req.student.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="{{ req.student.name }}" />
+                            </div>
+                            <div>
+                                <p class="tutor-name">{{ req.student.name }}</p>
+                            </div>
+                        </div>
+                        <span class="status-badge status-{{ req.status }}">{{ req.status }}</span>
+                    </div>
+                    {% if req.message %}<p class="request-message">"{{ req.message }}"</p>{% endif %}
+                    <p class="request-date">{{ req.created_at.strftime('%b %d, %Y') }}</p>
+                    {% if req.status == 'pending' %}
+                    <div style="display:flex;gap:0.5rem;margin-top:1rem;">
+                        <a href="{{ url_for('teacher.handle_request', request_id=req.id, action='accept') }}" class="btn-find-tutor" style="flex:1;text-decoration:none;font-size:0.8rem;height:40px;">Accept</a>
+                        <a href="{{ url_for('teacher.handle_request', request_id=req.id, action='reject') }}" class="btn-find-tutor" style="flex:1;text-decoration:none;font-size:0.8rem;height:40px;background:var(--surface-container-high);color:var(--error);box-shadow:none;">Reject</a>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-requests">
+                <span class="material-symbols-outlined">inbox</span>
+                <p>No requests yet.</p>
+            </div>
+            {% endif %}
+        </section>
+
+        <section class="tutors-section">
+            <div class="tutors-header">
+                <h3>My Reviews</h3>
+            </div>
+            {% if reviews %}
+            <div class="requests-grid">
+                {% for review in reviews[:6] %}
+                <div class="request-card" style="border-left-color: var(--secondary);">
+                    <div class="request-header">
+                        <p class="tutor-name">{{ review.reviewer.name }}</p>
+                        <span class="stars">{% for i in range(review.rating) %}<span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;font-size:1rem;">star</span>{% endfor %}</span>
+                    </div>
+                    {% if review.comment %}<p class="request-message">{{ review.comment }}</p>{% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-requests">
+                <span class="material-symbols-outlined">rate_review</span>
+                <p>No reviews yet.</p>
+            </div>
+            {% endif %}
+        </section>
+
+        <section class="tutors-section">
+            <div class="tutors-header">
+                <h3>Available Students</h3>
+            </div>
+            {% if students %}
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.75rem;">
+                {% for student in students[:8] %}
+                <div onclick="openStudentPopup('{{ student.name }}', '{{ student.email }}', '{% if student.profile_picture %}{{ student.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}')" style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--surface-container-low);border-radius:0.75rem;cursor:pointer;transition:all 0.2s;text-decoration:none;color:inherit;" onmouseover="this.style.background='var(--surface-container-high)'" onmouseout="this.style.background='var(--surface-container-low)'">
+                    <img src="{% if student.profile_picture %}{{ student.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="{{ student.name }}" style="width:2.5rem;height:2.5rem;border-radius:50%;object-fit:cover;" />
+                    <div>
+                        <p style="font-size:0.85rem;font-weight:700;margin:0;">{{ student.name }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-requests">
+                <span class="material-symbols-outlined">people</span>
+                <p>No students yet.</p>
+            </div>
+            {% endif %}
+        </section>
+    </main>
+</div>
+
+<div class="profile-popup-overlay" id="studentPopup" onclick="closeStudentPopup(event)">
+    <div class="profile-popup" onclick="event.stopPropagation()">
+        <div class="popup-cover">
+            <button class="popup-close" onclick="closeStudentPopup()">
+                <span class="material-symbols-outlined" style="font-size: 1.2rem;">close</span>
+            </button>
+        </div>
+        <div class="popup-avatar">
+            <img id="studentPopupAvatar" src="" alt="Student" />
+        </div>
+        <div class="popup-body">
+            <h3 class="popup-name" id="studentPopupName"></h3>
+            <p class="popup-role">Student</p>
+            <div class="popup-email" id="studentPopupEmail">
+                <span class="material-symbols-outlined" style="font-size: 1.1rem;">mail</span>
+                <span id="studentPopupEmailText"></span>
+            </div>
+            <div class="popup-actions">
+                <a href="{{ url_for('teacher.messages') }}" class="popup-btn-edit">Send Message</a>
+                <button class="popup-btn-logout" onclick="closeStudentPopup()" style="border:none;cursor:pointer;">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="profile-popup-overlay" id="profilePopup" onclick="closeProfilePopup(event)">
+    <div class="profile-popup" onclick="event.stopPropagation()">
+        <div class="popup-cover">
+            <button class="popup-close" onclick="closeProfilePopup()">
+                <span class="material-symbols-outlined" style="font-size: 1.2rem;">close</span>
+            </button>
+        </div>
+        <div class="popup-avatar">
+            <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="{{ current_user.name }}" />
+        </div>
+        <div class="popup-body">
+            <h3 class="popup-name">{{ current_user.name }}</h3>
+            <p class="popup-role">Teacher</p>
+            <div class="popup-email">
+                <span class="material-symbols-outlined" style="font-size: 1.1rem;">mail</span>
+                {{ current_user.email }}
+            </div>
+            <div class="popup-stats">
+                <div class="popup-stat">
+                    <div class="popup-stat-value">{{ requests|length }}</div>
+                    <div class="popup-stat-label">Requests</div>
+                </div>
+                <div class="popup-stat">
+                    <div class="popup-stat-value">{{ reviews|length }}</div>
+                    <div class="popup-stat-label">Reviews</div>
+                </div>
+            </div>
+            <div class="popup-actions">
+                <a href="{{ url_for('teacher.profile') }}" class="popup-btn-edit">Edit Profile</a>
+                <a href="{{ url_for('auth.logout') }}" class="popup-btn-logout">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openProfilePopup() {
+    document.getElementById('profilePopup').classList.add('active');
+}
+function closeProfilePopup(event) {
+    if (!event || event.target === document.getElementById('profilePopup')) {
+        document.getElementById('profilePopup').classList.remove('active');
+    }
+}
+function openStudentPopup(name, email, avatar) {
+    document.getElementById('studentPopupName').textContent = name;
+    document.getElementById('studentPopupEmailText').textContent = email;
+    document.getElementById('studentPopupAvatar').src = avatar;
+    document.getElementById('studentPopup').classList.add('active');
+}
+function closeStudentPopup(event) {
+    if (!event || event.target === document.getElementById('studentPopup')) {
+        document.getElementById('studentPopup').classList.remove('active');
+    }
+}
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        document.getElementById('profilePopup').classList.remove('active');
+        document.getElementById('studentPopup').classList.remove('active');
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications - Tuition Station{% endblock %}
+
+{% block extra_css %}
+<style>
+.notif-list { display: flex; flex-direction: column; gap: 0.75rem; }
+.notif-card { display: flex; gap: 1rem; background: var(--surface-container-lowest); border-radius: 1.25rem; padding: 1.25rem 1.5rem; border: 1px solid var(--outline-variant); box-shadow: 0 1px 3px rgba(0,0,0,0.04); transition: all 0.2s; cursor: pointer; }
+.notif-card:hover { border-color: var(--outline); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+.notif-card.unread { border-left: 4px solid var(--primary); background: var(--primary-fixed-dim); }
+.notif-icon { width: 2.75rem; height: 2.75rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.notif-icon .material-symbols-outlined { font-size: 1.3rem; }
+.notif-icon.info { background: #eff6ff; color: #1e40af; }
+.notif-icon.success { background: #f0fdf4; color: #166534; }
+.notif-icon.warning { background: #fffbeb; color: #92400e; }
+.notif-icon.error { background: #fef2f2; color: #991b1b; }
+.notif-icon.application { background: #f0fdf4; color: #166534; }
+.notif-icon.message { background: #eff6ff; color: #1e40af; }
+.notif-icon.system { background: #f5f3ff; color: #6d28d9; }
+.notif-body { flex: 1; min-width: 0; }
+.notif-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.25rem; color: var(--on-surface); }
+.notif-message { font-size: 0.85rem; color: var(--on-surface-variant); margin-bottom: 0.35rem; line-height: 1.4; }
+.notif-meta { display: flex; align-items: center; gap: 0.75rem; font-size: 0.75rem; color: var(--outline); flex-wrap: wrap; }
+.notif-meta .notif-type { text-transform: capitalize; font-weight: 600; }
+.notif-link { color: var(--primary); text-decoration: none; font-weight: 600; font-size: 0.85rem; }
+.notif-link:hover { text-decoration: underline; }
+.notif-time { white-space: nowrap; display: flex; align-items: center; gap: 0.25rem; }
+.page-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+.empty-state { text-align: center; padding: 4rem 2rem; background: var(--surface-container-lowest); border-radius: 1.25rem; border: 1px solid var(--outline-variant); }
+.empty-state .material-symbols-outlined { font-size: 3.5rem; color: var(--outline-variant); margin-bottom: 1rem; }
+.empty-state h4 { font-size: 1.25rem; font-weight: 800; margin-bottom: 0.5rem; }
+.empty-state p { color: var(--on-surface-variant); margin-bottom: 1.5rem; }
+.header-text .kicker { color: var(--secondary); }
+@media (max-width: 768px) { .notif-card { flex-direction: column; gap: 0.75rem; } }
+</style>
+{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include "teacher/inc_sidebar.html" %}
+
+    <main class="main-content">
+        <header class="header-section">
+            <div class="header-text">
+                <p class="kicker">Updates</p>
+                <h2>Notifications</h2>
+                <p>Stay updated with your tuition activities and responses.</p>
+            </div>
+            <div class="user-profile" onclick="openProfilePopup()">
+                <div class="user-avatar">
+                    <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="Profile" />
+                </div>
+                <div class="user-info">
+                    <p class="role">Teacher</p>
+                    <p class="name">{{ current_user.name }}</p>
+                </div>
+            </div>
+        </header>
+
+        {% if notifications %}
+        <div class="page-toolbar">
+            <span style="color:var(--on-surface-variant);font-size:0.9rem;font-weight:600;">{{ notifications|length }} notification{{ 's' if notifications|length != 1 else '' }}</span>
+        </div>
+        <div class="notif-list">
+            {% for notif in notifications %}
+            <div class="notif-card {{ 'unread' if not notif.is_read else '' }}" onclick="if(!event.target.closest('a'))window.location.href='{{ url_for('teacher.mark_notification_read', notification_id=notif.id) if not notif.is_read else notif.link or '#' }}'">
+                {% set type = notif.type | lower if notif.type else 'info' %}
+                <div class="notif-icon
+                    {% if type in ('info', 'general') %}info
+                    {% elif type in ('success', 'application', 'accepted') %}success
+                    {% elif type in ('warning', 'reminder') %}warning
+                    {% elif type in ('error', 'rejected') %}error
+                    {% elif type == 'message' %}message
+                    {% elif type == 'system' %}system
+                    {% else %}info{% endif %}">
+                    {% if type in ('application', 'accepted', 'success') %}
+                    <span class="material-symbols-outlined">check_circle</span>
+                    {% elif type in ('rejected', 'error') %}
+                    <span class="material-symbols-outlined">cancel</span>
+                    {% elif type == 'message' %}
+                    <span class="material-symbols-outlined">mail</span>
+                    {% elif type == 'warning' %}
+                    <span class="material-symbols-outlined">warning</span>
+                    {% elif type == 'system' %}
+                    <span class="material-symbols-outlined">settings</span>
+                    {% else %}
+                    <span class="material-symbols-outlined">info</span>
+                    {% endif %}
+                </div>
+                <div class="notif-body">
+                    <div class="notif-title">{{ notif.title }}</div>
+                    {% if notif.message %}
+                    <div class="notif-message">{{ notif.message }}</div>
+                    {% endif %}
+                    <div class="notif-meta">
+                        <span class="notif-type">{{ type }}</span>
+                        {% if notif.link %}
+                        <a href="{{ url_for('teacher.mark_notification_read', notification_id=notif.id) if not notif.is_read else notif.link }}" class="notif-link"><span class="material-symbols-outlined" style="font-size:0.7rem;vertical-align:middle;">open_in_new</span> View Details</a>
+                        {% endif %}
+                        <span class="notif-time"><span class="material-symbols-outlined" style="font-size:0.8rem;">schedule</span>{{ notif.created_at.strftime('%b %d, %I:%M %p') if notif.created_at else '' }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <span class="material-symbols-outlined">notifications_off</span>
+            <h4>No Notifications</h4>
+            <p>You're all caught up! Notifications will appear here when there are updates.</p>
+        </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

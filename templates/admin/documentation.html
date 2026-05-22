@@ -1,0 +1,1670 @@
+{% extends "base.html" %}
+
+{% block title %}Documentation - Tuition Station{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+  --doc-sidebar: 320px;
+}
+body { margin: 0; background: #f8fafc; }
+.doc-layout { display: flex; min-height: 100vh; }
+.doc-sidebar { width: var(--doc-sidebar); background: #fff; border-right: 1px solid #e2e8f0; position: fixed; left: 0; top: 0; height: 100vh; overflow-y: auto; z-index: 100; padding: 1.5rem 0; }
+.doc-sidebar::-webkit-scrollbar { width: 4px; }
+.doc-sidebar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
+.doc-sidebar-brand { padding: 0 1.5rem; margin-bottom: 1.5rem; }
+.doc-sidebar-brand h2 { font-size: 1rem; font-weight: 800; letter-spacing: -0.02em; }
+.doc-sidebar-brand p { font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.15rem; }
+.doc-sidebar-search { padding: 0 1rem; margin-bottom: 1rem; }
+.doc-sidebar-search input { width: 100%; padding: 0.5rem 0.75rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; font-size: 0.8rem; outline: none; box-sizing: border-box; }
+.doc-sidebar-search input:focus { border-color: #6366f1; }
+.doc-section-group { margin-bottom: 1.25rem; }
+.doc-section-label { padding: 0 1.5rem; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #94a3b8; margin-bottom: 0.4rem; }
+.doc-sidebar-link { display: flex; align-items: center; gap: 0.75rem; padding: 0.55rem 1.5rem; font-size: 0.82rem; color: #475569; font-weight: 500; text-decoration: none; transition: all 0.15s; border-left: 3px solid transparent; }
+.doc-sidebar-link:hover { background: #f1f5f9; color: #1e293b; }
+.doc-sidebar-link.active { background: #eef2ff; color: #4f46e5; border-left-color: #4f46e5; font-weight: 600; }
+.doc-sidebar-link .icon { width: 1.25rem; text-align: center; font-size: 0.9rem; color: #94a3b8; flex-shrink: 0; }
+.doc-sidebar-link.active .icon { color: #4f46e5; }
+.doc-main { flex: 1; margin-left: var(--doc-sidebar); padding: 2rem 4rem; max-width: 1000px; }
+.doc-section { display: none; }
+.doc-section.active { display: block; }
+.doc-section h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; color: #0f172a; margin: 0 0 0.5rem; }
+.doc-section .lead { font-size: 1.05rem; color: #64748b; margin-bottom: 2.5rem; line-height: 1.6; border-left: 4px solid #6366f1; padding-left: 1.25rem; }
+.doc-section h2 { font-size: 1.35rem; font-weight: 700; color: #1e293b; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #f1f5f9; }
+.doc-section h3 { font-size: 1.1rem; font-weight: 700; color: #334155; margin: 2rem 0 0.75rem; }
+.doc-section h4 { font-size: 0.95rem; font-weight: 700; color: #475569; margin: 1.5rem 0 0.5rem; }
+.doc-section p, .doc-section li { font-size: 0.9rem; line-height: 1.7; color: #475569; }
+.doc-section ul, .doc-section ol { padding-left: 1.5rem; }
+.doc-section li { margin-bottom: 0.35rem; }
+.doc-code { background: #1e293b; color: #e2e8f0; border-radius: 0.5rem; padding: 1rem 1.25rem; font-size: 0.8rem; font-family: 'JetBrains Mono', 'Fira Code', monospace; overflow-x: auto; margin: 0.75rem 0; white-space: pre; tab-size: 2; }
+.doc-code-inline { background: #f1f5f9; color: #6366f1; padding: 0.15rem 0.4rem; border-radius: 0.25rem; font-size: 0.85rem; font-family: monospace; }
+.doc-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.85rem; }
+.doc-table th { background: #f8fafc; text-align: left; padding: 0.65rem 0.75rem; font-weight: 700; color: #475569; border-bottom: 2px solid #e2e8f0; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.doc-table td { padding: 0.65rem 0.75rem; border-bottom: 1px solid #f1f5f9; color: #475569; }
+.doc-table tr:hover td { background: #fafafa; }
+.doc-badge { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 0.25rem; font-size: 0.7rem; font-weight: 700; }
+.doc-badge-blue { background: #eef2ff; color: #4f46e5; }
+.doc-badge-green { background: #f0fdf4; color: #16a34a; }
+.doc-badge-red { background: #fef2f2; color: #dc2626; }
+.doc-badge-purple { background: #faf5ff; color: #9333ea; }
+.doc-badge-yellow { background: #fefce8; color: #ca8a04; }
+.doc-card { background: #fff; border-radius: 0.75rem; border: 1px solid #e2e8f0; padding: 1.25rem; margin: 1rem 0; }
+.doc-card-title { font-size: 0.9rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem; }
+.doc-info-box { background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 0.5rem; padding: 1rem 1.25rem; margin: 1rem 0; font-size: 0.85rem; color: #4338ca; }
+.doc-info-box strong { color: #3730a3; }
+.doc-warn-box { background: #fefce8; border: 1px solid #fde68a; border-radius: 0.5rem; padding: 1rem 1.25rem; margin: 1rem 0; font-size: 0.85rem; color: #92400e; }
+.doc-tree { font-family: monospace; font-size: 0.8rem; line-height: 1.8; color: #334155; padding: 1rem; background: #f8fafc; border-radius: 0.5rem; border: 1px solid #e2e8f0; }
+.doc-tree .folder { color: #4f46e5; }
+.doc-tree .file { color: #64748b; }
+.doc-tree .indent { padding-left: 1.5rem; }
+.doc-tree .indent2 { padding-left: 3rem; }
+.doc-tree .indent3 { padding-left: 4.5rem; }
+.doc-flow { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
+.doc-flow-item { background: #fff; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 0.4rem 0.75rem; font-size: 0.75rem; font-weight: 600; color: #475569; }
+.doc-flow-arrow { color: #94a3b8; font-weight: 700; }
+.copy-btn { position: relative; float: right; padding: 0.2rem 0.5rem; font-size: 0.65rem; font-weight: 600; background: #334155; color: #94a3b8; border: none; border-radius: 0.25rem; cursor: pointer; transition: all 0.15s; }
+.copy-btn:hover { background: #475569; color: #e2e8f0; }
+.copy-btn.copied { background: #16a34a; color: #fff; }
+@media (max-width: 1024px) {
+  .doc-sidebar { width: 260px; }
+  .doc-main { margin-left: 260px; padding: 1.5rem; }
+}
+@media (max-width: 768px) {
+  .doc-sidebar { display: none; }
+  .doc-main { margin-left: 0; padding: 1rem; }
+  .doc-mobile-toggle { display: flex; }
+}
+</style>
+{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block content %}
+<div class="doc-layout">
+  <aside class="doc-sidebar" id="docSidebar">
+    <div class="doc-sidebar-brand">
+      <a href="{{ url_for('admin.dashboard') }}" style="text-decoration:none;display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
+        <i class="fas fa-graduation-cap" style="color:#6366f1;font-size:1.2rem;"></i>
+        <span style="font-size:1.1rem;font-weight:800;color:#1f2937;">Tuition<strong style="color:#10B981;">Station</strong></span>
+      </a>
+      <p>Complete Documentation</p>
+    </div>
+    <div class="doc-sidebar-search">
+      <input type="text" id="docSearch" placeholder="Search docs..." oninput="filterDocs(this.value)">
+    </div>
+    <nav class="doc-sidebar-nav" id="docNav">
+
+      <div class="doc-section-group" data-group="overview">
+        <div class="doc-section-label">Overview</div>
+        <a href="#" class="doc-sidebar-link active" data-section="intro" onclick="showSection('intro');return false">
+          <span class="icon"><i class="fas fa-info-circle"></i></span> Introduction
+        </a>
+        <a href="#" class="doc-sidebar-link" data-section="techstack" onclick="showSection('techstack');return false">
+          <span class="icon"><i class="fas fa-cubes"></i></span> Tech Stack
+        </a>
+        <a href="#" class="doc-sidebar-link" data-section="features" onclick="showSection('features');return false">
+          <span class="icon"><i class="fas fa-star"></i></span> Features
+        </a>
+      </div>
+
+      <div class="doc-section-group" data-group="setup">
+        <div class="doc-section-label">Setup & Installation</div>
+        <a href="#" class="doc-sidebar-link" data-section="setup" onclick="showSection('setup');return false">
+          <span class="icon"><i class="fas fa-wrench"></i></span> Installation
+        </a>
+        <a href="#" class="doc-sidebar-link" data-section="database" onclick="showSection('database');return false">
+          <span class="icon"><i class="fas fa-database"></i></span> Database Setup
+        </a>
+        <a href="#" class="doc-sidebar-link" data-section="credentials" onclick="showSection('credentials');return false">
+          <span class="icon"><i class="fas fa-key"></i></span> Credentials
+        </a>
+      </div>
+
+      <div class="doc-section-group" data-group="architecture">
+        <div class="doc-section-label">Architecture</div>
+        <a href="#" class="doc-sidebar-link" data-section="structure" onclick="showSection('structure');return false">
+          <span class="icon"><i class="fas fa-folder-tree"></i></span> Project Structure
+        </a>
+        <a href="#" class="doc-sidebar-link" data-section="app-factory" onclick="showSection('app-factory');return false">
+          <span class="icon"><i class="fas fa-flask"></i></span> App Factory
+        </a>
+        <a href="#" class="doc-sidebar-link" data-section="models" onclick="showSection('models');return false">
+          <span class="icon"><i class="fas fa-diagram-project"></i></span> Models & DB Schema
+        </a>
+        <a href="#" class="doc-sidebar-link" data-section="routes" onclick="showSection('routes');return false">
+          <span class="icon"><i class="fas fa-route"></i></span> Routes & Blueprints
+        </a>
+      </div>
+
+      <div class="doc-section-group" data-group="auth">
+        <div class="doc-section-label">Authentication</div>
+        <a href="#" class="doc-sidebar-link" data-section="auth" onclick="showSection('auth');return false">
+          <span class="icon"><i class="fas fa-lock"></i></span> Auth System
+        </a>
+        <a href="#" class="doc-sidebar-link" data-section="firebase" onclick="showSection('firebase');return false">
+          <span class="icon"><i class="fas fa-fire"></i></span> Firebase Integration
+        </a>
+        <a href="#" class="doc-sidebar-link" data-section="social" onclick="showSection('social');return false">
+          <span class="icon"><i class="fas fa-share-alt"></i></span> Social Login
+        </a>
+      </div>
+
+      <div class="doc-section-group" data-group="panels">
+        <div class="doc-section-label">Dashboards</div>
+        <a href="#" class="doc-sidebar-link" data-section="admin-panel" onclick="showSection('admin-panel');return false">
+          <span class="icon"><i class="fas fa-shield-halved"></i></span> Admin Panel
+        </a>
+        <a href="#" class="doc-sidebar-link" data-section="teacher-panel" onclick="showSection('teacher-panel');return false">
+          <span class="icon"><i class="fas fa-chalkboard-user"></i></span> Teacher Panel
+        </a>
+        <a href="#" class="doc-sidebar-link" data-section="student-panel" onclick="showSection('student-panel');return false">
+          <span class="icon"><i class="fas fa-user-graduate"></i></span> Student Panel
+        </a>
+      </div>
+
+      <div class="doc-section-group" data-group="features-detail">
+        <div class="doc-section-label">Features</div>
+        <a href="#" class="doc-sidebar-link" data-section="subscriptions" onclick="showSection('subscriptions');return false">
+          <span class="icon"><i class="fas fa-crown"></i></span> Subscription Plans
+        </a>
+        <a href="#" class="doc-sidebar-link" data-section="payments" onclick="showSection('payments');return false">
+          <span class="icon"><i class="fas fa-credit-card"></i></span> Payment System
+        </a>
+        <a href="#" class="doc-sidebar-link" data-section="chat" onclick="showSection('chat');return false">
+          <span class="icon"><i class="fas fa-comments"></i></span> Chat System
+        </a>
+        <a href="#" class="doc-sidebar-link" data-section="email" onclick="showSection('email');return false">
+          <span class="icon"><i class="fas fa-envelope"></i></span> Email System
+        </a>
+      </div>
+
+      <div class="doc-section-group" data-group="database-detail">
+        <div class="doc-section-label">Database</div>
+        <a href="#" class="doc-sidebar-link" data-section="sp" onclick="showSection('sp');return false">
+          <span class="icon"><i class="fas fa-gears"></i></span> Stored Procedures
+        </a>
+        <a href="#" class="doc-sidebar-link" data-section="views" onclick="showSection('views');return false">
+          <span class="icon"><i class="fas fa-eye"></i></span> Views
+        </a>
+        <a href="#" class="doc-sidebar-link" data-section="triggers" onclick="showSection('triggers');return false">
+          <span class="icon"><i class="fas fa-bolt"></i></span> Triggers
+        </a>
+        <a href="#" class="doc-sidebar-link" data-section="indexes" onclick="showSection('indexes');return false">
+          <span class="icon"><i class="fas fa-list"></i></span> Indexes
+        </a>
+      </div>
+
+      <div class="doc-section-group" data-group="design">
+        <div class="doc-section-label">Design & Deployment</div>
+        <a href="#" class="doc-sidebar-link" data-section="design-system" onclick="showSection('design-system');return false">
+          <span class="icon"><i class="fas fa-palette"></i></span> Design System
+        </a>
+        <a href="#" class="doc-sidebar-link" data-section="deployment" onclick="showSection('deployment');return false">
+          <span class="icon"><i class="fas fa-cloud-upload-alt"></i></span> Deployment
+        </a>
+        <a href="#" class="doc-sidebar-link" data-section="troubleshooting" onclick="showSection('troubleshooting');return false">
+          <span class="icon"><i class="fas fa-bug"></i></span> Troubleshooting
+        </a>
+        <a href="#" class="doc-sidebar-link" data-section="team" onclick="showSection('team');return false">
+          <span class="icon"><i class="fas fa-users"></i></span> Dev Team
+        </a>
+      </div>
+
+    </nav>
+  </aside>
+
+  <main class="doc-main">
+
+    <!-- ========== INTRODUCTION ========== -->
+    <div class="doc-section active" id="sec-intro">
+      <h1>📖 TuitionStation Documentation</h1>
+      <div class="lead">Complete project documentation — from setup to deployment. Everything you need to understand, run, and extend this platform.</div>
+
+      <div class="doc-info-box">
+        <strong>Quick Links:</strong>
+        <a href="{{ url_for('admin.dashboard') }}" style="margin-left:0.5rem;">← Admin Dashboard</a>
+        <span style="margin:0 0.5rem;color:#c7d2fe;">|</span>
+        <a href="{{ url_for('auth.index') }}">Landing Page</a>
+      </div>
+
+      <h2>What is TuitionStation?</h2>
+      <p>TuitionStation is a <strong>location-based tuition marketplace</strong> built with Flask (Python) and Microsoft SQL Server. It connects students with qualified home tutors in their area. The platform supports three roles: <strong>Admin</strong>, <strong>Teacher</strong>, and <strong>Student</strong>.</p>
+
+      <h3>Core Problem It Solves</h3>
+      <p>Students struggle to find qualified home tutors — they rely on word-of-mouth or scattered ads. Teachers have no centralized way to connect with students. TuitionStation bridges this gap with a searchable, location-based marketplace.</p>
+
+      <h3>How It Was Built (Step by Step)</h3>
+      <ol>
+        <li><strong>Planning:</strong> Identified core entities (User, Teacher, Student, Post, Application, Payment) and designed the database schema.</li>
+        <li><strong>Database Design:</strong> Created <span class="doc-code-inline">schema.sql</span> with 12 tables, 7 stored procedures, 4 views, 5 triggers, and 11 indexes for SQL Server.</li>
+        <li><strong>Flask Project Setup:</strong> Used Flask app factory pattern (<span class="doc-code-inline">app.py</span>) with blueprints for modular routing.</li>
+        <li><strong>Models Layer:</strong> Defined SQLAlchemy ORM models in <span class="doc-code-inline">models/__init__.py</span> (12 model classes).</li>
+        <li><strong>Authentication:</strong> Built email/password auth with Flask-Login, plus Google and Facebook OAuth via Firebase.</li>
+        <li><strong>Admin Panel:</strong> Created admin blueprint with dashboard, user management, payment verification, and reports.</li>
+        <li><strong>Student Panel:</strong> Built tutor search, tuition posts, applications, reviews, saved tutors, and messaging.</li>
+        <li><strong>Teacher Panel:</strong> Built profile management, tuition browsing, applications tracking, analytics, and subscriptions.</li>
+        <li><strong>Subscription System:</strong> Implemented Free/Standard/Premium plan tiers with application limits.</li>
+        <li><strong>Payment System:</strong> Integrated bKash payment gateway (sandbox) and manual admin verification flow.</li>
+        <li><strong>Chat System:</strong> Built real-time messaging with read receipts and notification integration.</li>
+        <li><strong>Email System:</strong> SMTP-based welcome emails sent on registration.</li>
+        <li><strong>Firebase Integration:</strong> Added Firebase Auth for social login and Firebase Admin SDK for server-side operations.</li>
+        <li><strong>Frontend Design:</strong> Built a custom design system ("Tuition Station" style) with CSS variables, glassmorphism, and responsive layouts.</li>
+        <li><strong>Seeding:</strong> Auto-seeds admin, 12 sample teachers, 2 sample students, and subscription plans on first run.</li>
+      </ol>
+
+      <div class="doc-card">
+        <div class="doc-card-title">Version Info</div>
+        <table class="doc-table">
+          <tr><td><strong>Version</strong></td><td>1.0.0</td></tr>
+          <tr><td><strong>Framework</strong></td><td>Flask 2.3+</td></tr>
+          <tr><td><strong>Database</strong></td><td>Microsoft SQL Server (SSMS)</td></tr>
+          <tr><td><strong>Frontend</strong></td><td>HTML5, CSS3 (Custom Design System), Vanilla JS</td></tr>
+          <tr><td><strong>Course</strong></td><td>CSE 2205 — Level 2 Term II, DBMS</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========== TECH STACK ========== -->
+    <div class="doc-section" id="sec-techstack">
+      <h1>⚙️ Technology Stack</h1>
+      <div class="lead">Every technology and tool used to build TuitionStation, organized by layer.</div>
+
+      <h2>Backend</h2>
+      <table class="doc-table">
+        <tr><th>Technology</th><th>Version</th><th>Purpose</th></tr>
+        <tr><td>Python</td><td>3.9+</td><td>Core programming language</td></tr>
+        <tr><td>Flask</td><td>2.3+</td><td>Web framework (WSGI)</td></tr>
+        <tr><td>Flask-SQLAlchemy</td><td>3.0+</td><td>ORM — database access layer</td></tr>
+        <tr><td>Flask-Login</td><td>0.6+</td><td>Session-based user authentication</td></tr>
+        <tr><td>Flask-WTF</td><td>1.2+</td><td>CSRF protection</td></tr>
+        <tr><td>Werkzeug</td><td>2.3+</td><td>Password hashing, secure filenames</td></tr>
+        <tr><td>pyodbc</td><td>5.0+</td><td>SQL Server connection driver</td></tr>
+        <tr><td>python-dotenv</td><td>1.0+</td><td>Environment variable management</td></tr>
+        <tr><td>Requests</td><td>2.28+</td><td>HTTP client (social login, bKash API)</td></tr>
+        <tr><td>Firebase Admin SDK</td><td>-</td><td>Server-side Firebase operations</td></tr>
+      </table>
+
+      <h2>Database</h2>
+      <table class="doc-table">
+        <tr><th>Technology</th><th>Purpose</th></tr>
+        <tr><td>Microsoft SQL Server</td><td>Primary database (relational)</td></tr>
+        <tr><td>SQL Server Management Studio (SSMS)</td><td>Database management, query development</td></tr>
+        <tr><td>ODBC Driver 17/18 for SQL Server</td><td>Connection driver for pyodbc</td></tr>
+      </table>
+
+      <h2>Frontend</h2>
+      <table class="doc-table">
+        <tr><th>Technology</th><th>Purpose</th></tr>
+        <tr><td>HTML5</td><td>Template structure (Jinja2)</td></tr>
+        <tr><td>CSS3 (Custom Framework)</td><td>Design system — "Tuition Station" visual language</td></tr>
+        <tr><td>JavaScript (Vanilla ES6)</td><td>Client-side interactivity, Firebase Auth, AJAX</td></tr>
+        <tr><td>Font Awesome 6</td><td>Icons throughout the UI</td></tr>
+        <tr><td>Material Symbols</td><td>Google Material icons for admin panel</td></tr>
+        <tr><td>Google Fonts (Inter)</td><td>Primary typeface</td></tr>
+        <tr><td>Firebase Auth Client SDK</td><td>Client-side social authentication</td></tr>
+      </table>
+
+      <h2>External Services</h2>
+      <table class="doc-table">
+        <tr><th>Service</th><th>Purpose</th></tr>
+        <tr><td>Firebase Authentication</td><td>Google & Facebook OAuth login</td></tr>
+        <tr><td>Firebase Storage</td><td>Profile picture & file storage</td></tr>
+        <tr><td>bKash Developer API (Sandbox)</td><td>Payment gateway integration</td></tr>
+        <tr><td>SMTP (Gmail)</td><td>Email sending (welcome emails)</td></tr>
+        <tr><td>Google OAuth 2.0</td><td>Google Sign-In</td></tr>
+        <tr><td>Facebook Graph API</td><td>Facebook Login</td></tr>
+      </table>
+    </div>
+
+    <!-- ========== FEATURES OVERVIEW ========== -->
+    <div class="doc-section" id="sec-features">
+      <h1>🌟 Features Overview</h1>
+      <div class="lead">Complete feature matrix across all user roles.</div>
+
+      <h2>Public / Landing Page</h2>
+      <ul>
+        <li>Hero section with compelling headline and CTA</li>
+        <li>Search tutors by location and subject (no login required)</li>
+        <li>Featured tutors grid with ratings, rates, and badges</li>
+        <li>"How It Works" section</li>
+        <li>Subscription plans display</li>
+        <li>Testimonials and statistics</li>
+        <li>Bengali content section for local appeal</li>
+      </ul>
+
+      <h2>Student Features</h2>
+      <ul>
+        <li>Advanced tutor search by subject, location, budget, experience</li>
+        <li>View detailed teacher profiles with ratings, reviews, CV</li>
+        <li>Send applications to tuition posts</li>
+        <li>Create tuition requirement posts</li>
+        <li>Direct messaging to teachers</li>
+        <li>Rate and review teachers</li>
+        <li>Save/bookmark favorite tutors</li>
+        <li>Notifications dashboard</li>
+        <li>Profile picture upload & management</li>
+      </ul>
+
+      <h2>Teacher Features</h2>
+      <ul>
+        <li>Create & manage professional profile (education, subjects, bio, CV)</li>
+        <li>Browse Open tuition posts and apply</li>
+        <li>Subscription plan management (Free/Standard/Premium)</li>
+        <li>Application tracking dashboard</li>
+        <li>Analytics with charts (monthly applications, status breakdown)</li>
+        <li>Payment history</li>
+        <li>Direct messaging with students</li>
+        <li>Profile picture & CV upload</li>
+        <li>Notifications</li>
+      </ul>
+
+      <h2>Admin Features</h2>
+      <ul>
+        <li>Dashboard with system-wide statistics</li>
+        <li>User management (activate/block/delete users)</li>
+        <li>Teacher approval workflow</li>
+        <li>Payment verification (approve/reject)</li>
+        <li>Post management (open/close tuition posts)</li>
+        <li>Message monitoring</li>
+        <li>Subscription management</li>
+        <li>Revenue reports (monthly by plan)</li>
+        <li>Activity logs (AdminLog)</li>
+        <li>Profile picture management</li>
+      </ul>
+
+      <h2>Cross-Cutting Features</h2>
+      <ul>
+        <li><strong>Role-Based Access Control:</strong> Decorator-based protection for admin/teacher/student routes</li>
+        <li><strong>Todo List:</strong> Personal task management for all users</li>
+        <li><strong>Notification System:</strong> Real-time notifications for payments, messages, applications</li>
+        <li><strong>Landing Page:</strong> Public-facing site with marketing content</li>
+        <li><strong>Firebase Auth:</strong> Google and Facebook OAuth integration</li>
+        <li><strong>Developer Page:</strong> Dedicated page showing team information</li>
+      </ul>
+    </div>
+
+    <!-- ========== SETUP ========== -->
+    <div class="doc-section" id="sec-setup">
+      <h1>🔧 Installation Guide</h1>
+      <div class="lead">Step-by-step setup from scratch — get the app running on your local machine.</div>
+
+      <h2>Prerequisites</h2>
+      <ul>
+        <li>Python 3.9+</li>
+        <li>Microsoft SQL Server (with SSMS)</li>
+        <li>ODBC Driver 17 or 18 for SQL Server</li>
+        <li>Git (optional)</li>
+      </ul>
+
+      <h2>Step 1: Clone & Navigate</h2>
+      <div class="doc-code">cd E:\Level 2 term II\DBMS\tuition_system</div>
+
+      <h2>Step 2: Create Virtual Environment</h2>
+      <div class="doc-code">python -m venv .venv
+.venv\Scripts\activate</div>
+
+      <h2>Step 3: Install Dependencies</h2>
+      <div class="doc-code">pip install -r requirements.txt</div>
+
+      <p>This installs: Flask, Flask-SQLAlchemy, Flask-Login, Flask-WTF, pyodbc, Werkzeug, python-dotenv, requests, firebase-admin.</p>
+
+      <h2>Step 4: Setup SQL Server Database</h2>
+      <p><strong>Option A:</strong> Using SSMS — Open <span class="doc-code-inline">schema.sql</span> and execute it.</p>
+      <p><strong>Option B:</strong> Command line:</p>
+      <div class="doc-code">sqlcmd -S localhost -E -i schema.sql</div>
+
+      <p>This creates <span class="doc-code-inline">tuition_station</span> database with all 12 tables, stored procedures, views, triggers, indexes, and seed data.</p>
+
+      <h2>Step 5: Configure Environment</h2>
+      <p>The <span class="doc-code-inline">.env</span> file should contain:</p>
+      <div class="doc-code">DATABASE_URL=mssql+pyodbc://localhost/tuition_station?trusted_connection=yes&driver=ODBC+Driver+17+for+SQL+Server
+SECRET_KEY=tuition-station-secret-key-2024
+FIREBASE_API_KEY=your_key
+FIREBASE_PROJECT_ID=tuition-station
+FIREBASE_STORAGE_BUCKET=tuition-station.appspot.com
+FIREBASE_APP_ID=your_app_id</div>
+
+      <h2>Step 6: Run the Application</h2>
+      <div class="doc-code">python run.py</div>
+
+      <p>App runs at <strong>http://localhost:5000</strong>. On first run it auto-seeds:</p>
+      <ul>
+        <li>Admin account (admin@tuition.com / admin123)</li>
+        <li>3 Subscription Plans (Free, Standard, Premium)</li>
+        <li>12 Sample Teachers with complete profiles</li>
+        <li>2 Sample Students</li>
+      </ul>
+
+      <div class="doc-info-box">
+        <strong>Note:</strong> The app uses Windows Authentication (Trusted Connection) by default. If using SQL Server authentication, update <span class="doc-code-inline">DATABASE_URL</span> in <span class="doc-code-inline">.env</span> accordingly.
+      </div>
+    </div>
+
+    <!-- ========== DATABASE SETUP ========== -->
+    <div class="doc-section" id="sec-database">
+      <h1>🗄️ Database Setup</h1>
+      <div class="lead">Detailed database configuration and connection setup.</div>
+
+      <h2>Connection String Formats</h2>
+      <table class="doc-table">
+        <tr><th>Auth Type</th><th>Connection String</th></tr>
+        <tr><td>Windows Auth (Trusted)</td><td><span class="doc-code-inline">mssql+pyodbc://localhost/tuition_station?trusted_connection=yes&driver=ODBC+Driver+17+for+SQL+Server</span></td></tr>
+        <tr><td>SQL Server Auth</td><td><span class="doc-code-inline">mssql+pyodbc://sa:YourPassword@localhost:1433/tuition_station?driver=ODBC+Driver+17+for+SQL+Server</span></td></tr>
+        <tr><td>Named Instance</td><td><span class="doc-code-inline">mssql+pyodbc://localhost\SQLEXPRESS/tuition_station?trusted_connection=yes&driver=ODBC+Driver+17+for+SQL+Server</span></td></tr>
+      </table>
+
+      <h2>Config Files</h2>
+      <div class="doc-card">
+        <p>The project has two config files:</p>
+        <ul>
+          <li><strong><span class="doc-code-inline">config.py</span></strong> (root) — Main config used by app.py, loaded from environment variables.</li>
+          <li><strong><span class="doc-code-inline">config/__init__.py</span></strong> — Extended config with CSRF protection, upload folder settings, max content length.</li>
+        </ul>
+      </div>
+
+      <h2>Verify Database</h2>
+      <div class="doc-code">USE tuition_station;
+SELECT * FROM subscription_plans;
+-- Should show: Free, Standard, Premium</div>
+
+      <h2>Database Migration Strategy</h2>
+      <p>This project does not use Alembic or Flask-Migrate. Schema changes should be made directly to <span class="doc-code-inline">models/__init__.py</span> and <span class="doc-code-inline">schema.sql</span> in parallel. On startup, <span class="doc-code-inline">db.create_all()</span> is called but does NOT alter existing tables — it only creates new ones.</p>
+    </div>
+
+    <!-- ========== CREDENTIALS ========== -->
+    <div class="doc-section" id="sec-credentials">
+      <h1>🔑 Test Credentials</h1>
+      <div class="lead">All pre-seeded accounts for testing the platform.</div>
+
+      <h2>Admin</h2>
+      <table class="doc-table">
+        <tr><th>Email</th><td>admin@tuition.com</td></tr>
+        <tr><th>Password</th><td>admin123</td></tr>
+      </table>
+
+      <h2>Sample Teachers (All use password123)</h2>
+      <table class="doc-table">
+        <tr><th>Name</th><th>Email</th><th>Subject</th><th>Fee (BDT)</th></tr>
+        <tr><td>Dr. Ahmed Hassan</td><td>ahmed@tutor.com</td><td>Mathematics</td><td>5000</td></tr>
+        <tr><td>Sarah Rahman</td><td>sarah@tutor.com</td><td>English</td><td>4000</td></tr>
+        <tr><td>Mohammad Khan</td><td>khan@tutor.com</td><td>Physics</td><td>5500</td></tr>
+        <tr><td>Fatima Begum</td><td>fatima@tutor.com</td><td>Chemistry</td><td>4500</td></tr>
+        <tr><td>Abu Bakar</td><td>abubakar@tutor.com</td><td>Biology</td><td>4800</td></tr>
+        <tr><td>Lisa Ahmed</td><td>lisa@tutor.com</td><td>Class 1-5</td><td>3000</td></tr>
+        <tr><td>Tanvir Hasan</td><td>tanvir@tutor.com</td><td>Bangla</td><td>3500</td></tr>
+        <tr><td>Nusrat Jahan</td><td>nusrat@tutor.com</td><td>English</td><td>4500</td></tr>
+        <tr><td>Rafiq Uddin</td><td>rafiq@tutor.com</td><td>Mathematics</td><td>6000</td></tr>
+        <tr><td>Shamima Akter</td><td>shamima@tutor.com</td><td>Science</td><td>3200</td></tr>
+        <tr><td>Kabir Hossain</td><td>kabir@tutor.com</td><td>Physics</td><td>5000</td></tr>
+        <tr><td>Maliha Tabassum</td><td>maliha@tutor.com</td><td>Chemistry</td><td>5200</td></tr>
+      </table>
+
+      <h2>Sample Students (Use password123)</h2>
+      <table class="doc-table">
+        <tr><th>Name</th><th>Email</th></tr>
+        <tr><td>Rahim Miya</td><td>rahim@student.com</td></tr>
+        <tr><td>Karim Ahmed</td><td>karim@student.com</td></tr>
+      </table>
+    </div>
+
+    <!-- ========== PROJECT STRUCTURE ========== -->
+    <div class="doc-section" id="sec-structure">
+      <h1>📁 Project Structure</h1>
+      <div class="lead">Complete file tree showing where every component lives.</div>
+
+      <div class="doc-tree">
+<span class="folder">E:\Level 2 term II\DBMS\tuition_system\</span>
+├── <span class="file">run.py</span>                    # Entry point — starts Flask
+├── <span class="file">app.py</span>                    # App factory — creates Flask app, registers blueprints, seeds data
+├── <span class="file">config.py</span>                 # Main config (env vars)
+├── <span class="file">requirements.txt</span>           # Python dependencies
+├── <span class="file">schema.sql</span>                 # Complete DB schema (12 tables, SPs, Views, Triggers)
+├── <span class="file">.env</span>                      # Environment variables (DB URL, Firebase, bKash)
+├── <span class="file">README.md</span>                  # Project overview
+├── <span class="file">SETUP.md</span>                   # Setup instructions
+├── <span class="file">bkash_config.py</span>            # bKash payment gateway API client
+├── <span class="file">firebase_config.py</span>         # Firebase Admin SDK initialization
+├── <span class="file">mail_utils.py</span>              # SMTP email sending utilities
+│
+├── <span class="folder">routes/</span>                    # Flask blueprints (controllers)
+│   ├── <span class="file">__init__.py</span>
+│   ├── <span class="file">auth.py</span>                  # Login, register, logout, social login
+│   ├── <span class="file">admin.py</span>                 # Admin dashboard, users, payments, posts, reports
+│   ├── <span class="file">student.py</span>               # Student search, posts, reviews, messages
+│   ├── <span class="file">teacher.py</span>               # Teacher profile, applications, analytics
+│   ├── <span class="file">subscriptions.py</span>         # Subscription plan listing & upgrade
+│   ├── <span class="file">payments.py</span>              # Payment request & history
+│   ├── <span class="file">chat.py</span>                  # Real-time messaging
+│   ├── <span class="file">bkash.py</span>                 # bKash payment callback processing
+│   └── <span class="file">todo.py</span>                  # Personal todo list
+│
+├── <span class="folder">models/</span>                    # SQLAlchemy ORM models
+│   └── <span class="file">__init__.py</span>              # All 12 model classes
+│
+├── <span class="folder">templates/</span>                 # Jinja2 HTML templates
+│   ├── <span class="file">base.html</span>               # Base layout (nav, footer, Firebase config)
+│   ├── <span class="file">index.html</span>              # Landing page (public)
+│   ├── <span class="file">auth_new.html</span>           # Login/Register page
+│   ├── <span class="file">developer.html</span>          # Dev team info page
+│   ├── <span class="file">firebase_config.js</span>      # Firebase client config
+│   ├── <span class="folder">admin/</span>                 # Admin templates
+│   │   ├── <span class="file">dashboard.html</span>
+│   │   ├── <span class="file">users.html</span>
+│   │   ├── <span class="file">payments.html</span>
+│   │   ├── <span class="file">posts.html</span>
+│   │   ├── <span class="file">messages.html</span>
+│   │   ├── <span class="file">subscriptions.html</span>
+│   │   ├── <span class="file">reports.html</span>
+│   │   └── <span class="file">documentation.html</span>    # ← This file
+│   ├── <span class="folder">student/</span>
+│   ├── <span class="folder">teacher/</span>
+│   ├── <span class="folder">chat/</span>
+│   ├── <span class="folder">subscriptions/</span>
+│   ├── <span class="folder">payments/</span>
+│   └── <span class="folder">todo/</span>
+│
+├── <span class="folder">static/</span>                    # Static assets
+│   ├── <span class="folder">css/</span>
+│   │   └── <span class="file">atelier.css</span>           # Custom design system (primary)
+│   ├── <span class="folder">js/</span>
+│   │   └── <span class="file">main.js</span>
+│   ├── <span class="folder">Assets/</span>
+│   │   └── <span class="folder">Image/</span>              # Demo images
+│   └── <span class="folder">uploads/</span>                # User-uploaded files
+│
+├── <span class="folder">config/</span>                    # Extended config
+│   └── <span class="file">__init__.py</span>
+│
+├── <span class="folder">app/</span>                       # App sub-modules
+│   ├── <span class="folder">admin/</span>
+│   ├── <span class="folder">auth/</span>
+│   ├── <span class="folder">chat/</span>
+│   ├── <span class="folder">payments/</span>
+│   ├── <span class="folder">student/</span>
+│   ├── <span class="folder">subscriptions/</span>
+│   ├── <span class="folder">teacher/</span>
+│   └── <span class="folder">utils/</span>
+│
+├── <span class="folder">scripts/</span>                   # SQL migration scripts
+├── <span class="folder">Designdocument/</span>            # Design documents
+└── <span class="folder">instance/</span>                  # Instance data
+      </div>
+    </div>
+
+    <!-- ========== APP FACTORY ========== -->
+    <div class="doc-section" id="sec-app-factory">
+      <h1>🏭 App Factory Pattern</h1>
+      <div class="lead">How the Flask application is created, configured, and seeded.</div>
+
+      <h2>Entry Point (<span class="doc-code-inline">run.py</span>)</h2>
+      <div class="doc-code">from app import create_app
+app = create_app()
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)</div>
+
+      <h2>App Factory (<span class="doc-code-inline">app.py</span>)</h2>
+      <p>The <span class="doc-code-inline">create_app()</span> function does everything in this sequence:</p>
+
+      <h3>1. Initialize Extensions</h3>
+      <div class="doc-code">app = Flask(__name__)
+app.config.from_object(Config)
+initialize_firebase()
+db.init_app(app)
+login_manager.init_app(app)</div>
+
+      <h3>2. Register Blueprints</h3>
+      <table class="doc-table">
+        <tr><th>Blueprint</th><th>Prefix</th><th>File</th></tr>
+        <tr><td>auth_bp</td><td>/</td><td>routes/auth.py</td></tr>
+        <tr><td>student_bp</td><td>/student</td><td>routes/student.py</td></tr>
+        <tr><td>teacher_bp</td><td>/teacher</td><td>routes/teacher.py</td></tr>
+        <tr><td>admin_bp</td><td>/admin</td><td>routes/admin.py</td></tr>
+        <tr><td>todo_bp</td><td>/todo</td><td>routes/todo.py</td></tr>
+        <tr><td>subscriptions_bp</td><td>/subscriptions</td><td>routes/subscriptions.py</td></tr>
+        <tr><td>payments_bp</td><td>/payments</td><td>routes/payments.py</td></tr>
+        <tr><td>chat_bp</td><td>/chat</td><td>routes/chat.py</td></tr>
+        <tr><td>bkash_bp</td><td>/bkash</td><td>routes/bkash.py</td></tr>
+      </table>
+
+      <h3>3. Seed Data (on first run)</h3>
+      <p>Inside <span class="doc-code-inline">with app.app_context()</span>, it checks if data exists and seeds:</p>
+      <ul>
+        <li><strong>Subscription Plans:</strong> Free (0 BDT, 9999 days, 3 apps/month), Standard (499 BDT, 30 days, unlimited), Premium (999 BDT, 30 days, unlimited)</li>
+        <li><strong>Admin Account:</strong> admin@tuition.com / admin123</li>
+        <li><strong>12 Sample Teachers:</strong> Each with profile, Free subscription, and demo profile picture</li>
+        <li><strong>2 Sample Students:</strong> rahim@student.com, karim@student.com</li>
+      </ul>
+
+      <h3>4. User Loader</h3>
+      <div class="doc-code">@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))</div>
+    </div>
+
+    <!-- ========== MODELS ========== -->
+    <div class="doc-section" id="sec-models">
+      <h1>📊 Models & Database Schema</h1>
+      <div class="lead">All 12 SQLAlchemy model classes with relationships and constraints.</div>
+
+      <h2>Entity Relationship Overview</h2>
+      <div class="doc-flow">
+        <span class="doc-flow-item">users</span>
+        <span class="doc-flow-arrow">⟶ 1:1</span>
+        <span class="doc-flow-item">teacher_profiles</span>
+      </div>
+      <div class="doc-flow">
+        <span class="doc-flow-item">users</span>
+        <span class="doc-flow-arrow">⟶ 1:N</span>
+        <span class="doc-flow-item">tuition_posts</span>
+      </div>
+      <div class="doc-flow">
+        <span class="doc-flow-item">users (teacher)</span>
+        <span class="doc-flow-arrow">⟶ 1:N</span>
+        <span class="doc-flow-item">applications</span>
+        <span class="doc-flow-arrow">⟵ N:1</span>
+        <span class="doc-flow-item">tuition_posts</span>
+      </div>
+      <div class="doc-flow">
+        <span class="doc-flow-item">users</span>
+        <span class="doc-flow-arrow">⟶ 1:N</span>
+        <span class="doc-flow-item">payments</span>
+        <span class="doc-flow-arrow">⟵ N:1</span>
+        <span class="doc-flow-item">subscription_plans</span>
+      </div>
+      <div class="doc-flow">
+        <span class="doc-flow-item">users</span>
+        <span class="doc-flow-arrow">⟶ 1:N</span>
+        <span class="doc-flow-item">messages</span>
+      </div>
+      <div class="doc-flow">
+        <span class="doc-flow-item">users</span>
+        <span class="doc-flow-arrow">⟶ 1:N</span>
+        <span class="doc-flow-item">user_subscriptions</span>
+        <span class="doc-flow-arrow">⟵ N:1</span>
+        <span class="doc-flow-item">subscription_plans</span>
+      </div>
+
+      <h2>Complete Model List</h2>
+      <table class="doc-table">
+        <tr><th>#</th><th>Model</th><th>Table</th><th>Key Fields</th><th>Relationships</th></tr>
+        <tr><td>1</td><td><strong>User</strong></td><td>users</td><td>name, email, password_hash, role, is_active, is_approved, is_online, profile_picture</td><td>→ teacher_profile, subscription, tuition_posts, applications, payments, notifications, messages, todos, saved_tutors</td></tr>
+        <tr><td>2</td><td><strong>TeacherProfile</strong></td><td>teacher_profiles</td><td>user_id, university, department, degree, subject, experience, fee, hourly_fee, location, bio, availability, teaching_mode, cv + 15 profile fields</td><td>→ users</td></tr>
+        <tr><td>3</td><td><strong>SubscriptionPlan</strong></td><td>subscription_plans</td><td>name, price, duration_days, max_applications, is_featured, has_verified_badge, priority_ranking</td><td>→ user_subscriptions, payments</td></tr>
+        <tr><td>4</td><td><strong>UserSubscription</strong></td><td>user_subscriptions</td><td>user_id, plan_id, start_date, end_date, is_active, auto_renew</td><td>→ users, subscription_plans</td></tr>
+        <tr><td>5</td><td><strong>Payment</strong></td><td>payments</td><td>user_id, plan_id, amount, method (bKash/Nagad), transaction_id, status (Pending/Approved/Rejected), verified_by</td><td>→ users, subscription_plans</td></tr>
+        <tr><td>6</td><td><strong>TuitionPost</strong></td><td>tuition_posts</td><td>student_id, title, subject, class_level, location, salary, status (Open/Closed/Filled)</td><td>→ users (student), applications</td></tr>
+        <tr><td>7</td><td><strong>Application</strong></td><td>applications</td><td>post_id, teacher_id, message, status (Pending/Shortlisted/Selected/Rejected)</td><td>→ tuition_posts, users (teacher)</td></tr>
+        <tr><td>8</td><td><strong>Message</strong></td><td>messages</td><td>sender_id, receiver_id, message, is_read, read_at</td><td>→ users (sender/receiver)</td></tr>
+        <tr><td>9</td><td><strong>Notification</strong></td><td>notifications</td><td>user_id, type, title, message, link, is_read</td><td>→ users</td></tr>
+        <tr><td>10</td><td><strong>SavedTutor</strong></td><td>saved_tutors</td><td>student_id, teacher_id</td><td>→ users (student/teacher)</td></tr>
+        <tr><td>11</td><td><strong>Review</strong></td><td>reviews</td><td>student_id, teacher_id, rating (1-5), comment</td><td>→ users (student/teacher)</td></tr>
+        <tr><td>12</td><td><strong>ToDo</strong></td><td>todos</td><td>user_id, title, description, is_completed</td><td>→ users</td></tr>
+        <tr><td>13</td><td><strong>AdminLog</strong></td><td>admin_logs</td><td>admin_id, action, entity_type, entity_id, details</td><td>→ users (admin)</td></tr>
+      </table>
+
+      <h2>Key Constraints</h2>
+      <ul>
+        <li><span class="doc-code-inline">users.email</span> — UNIQUE</li>
+        <li><span class="doc-code-inline">teacher_profiles.user_id</span> — UNIQUE (one profile per teacher)</li>
+        <li><span class="doc-code-inline">applications(post_id, teacher_id)</span> — UNIQUE (one application per post per teacher)</li>
+        <li><span class="doc-code-inline">saved_tutors(student_id, teacher_id)</span> — UNIQUE</li>
+        <li><span class="doc-code-inline">payments.transaction_id</span> — UNIQUE</li>
+        <li><span class="doc-code-inline">users.role</span> — CHECK (student, teacher, admin)</li>
+        <li><span class="doc-code-inline">payments.method</span> — CHECK (bKash, Nagad)</li>
+        <li><span class="doc-code-inline">reviews.rating</span> — CHECK (1-5)</li>
+      </ul>
+    </div>
+
+    <!-- ========== ROUTES ========== -->
+    <div class="doc-section" id="sec-routes">
+      <h1>🛣️ Routes & Blueprints</h1>
+      <div class="lead">Complete API endpoint reference organized by blueprint.</div>
+
+      <h2>Auth Routes (<span class="doc-code-inline">/routes/auth.py</span>)</h2>
+      <table class="doc-table">
+        <tr><th>Method</th><th>Route</th><th>Function</th><th>Access</th></tr>
+        <tr><td>GET</td><td>/</td><td>Landing page with featured tutors & plans</td><td>Public</td></tr>
+        <tr><td>GET/POST</td><td>/login</td><td>Login with email & password</td><td>Public</td></tr>
+        <tr><td>GET/POST</td><td>/register</td><td>Register (student/teacher)</td><td>Public</td></tr>
+        <tr><td>GET</td><td>/logout</td><td>Logout</td><td>Auth</td></tr>
+        <tr><td>POST</td><td>/google-login</td><td>Google OAuth login</td><td>Public</td></tr>
+        <tr><td>POST</td><td>/facebook-login</td><td>Facebook OAuth login</td><td>Public</td></tr>
+        <tr><td>GET</td><td>/developer</td><td>Developer info page</td><td>Public</td></tr>
+      </table>
+
+      <h2>Admin Routes (<span class="doc-code-inline">/routes/admin.py</span>)</h2>
+      <table class="doc-table">
+        <tr><th>Method</th><th>Route</th><th>Function</th><th>Access</th></tr>
+        <tr><td>GET</td><td>/admin/dashboard</td><td>Admin dashboard with stats & recent activity</td><td>Admin</td></tr>
+        <tr><td>GET</td><td>/admin/users</td><td>List users (filterable by role)</td><td>Admin</td></tr>
+        <tr><td>GET</td><td>/admin/user/&lt;id&gt;/toggle</td><td>Activate or block user</td><td>Admin</td></tr>
+        <tr><td>GET</td><td>/admin/user/&lt;id&gt;/delete</td><td>Delete user</td><td>Admin</td></tr>
+        <tr><td>GET</td><td>/admin/teacher/&lt;id&gt;/approve</td><td>Approve teacher account</td><td>Admin</td></tr>
+        <tr><td>GET</td><td>/admin/payments</td><td>List payments (filterable by status)</td><td>Admin</td></tr>
+        <tr><td>POST</td><td>/admin/payment/&lt;id&gt;/verify</td><td>Approve/reject payment</td><td>Admin</td></tr>
+        <tr><td>GET</td><td>/admin/posts</td><td>List all tuition posts</td><td>Admin</td></tr>
+        <tr><td>GET</td><td>/admin/post/&lt;id&gt;/toggle</td><td>Open/close a post</td><td>Admin</td></tr>
+        <tr><td>GET</td><td>/admin/messages</td><td>View all messages</td><td>Admin</td></tr>
+        <tr><td>GET</td><td>/admin/subscriptions</td><td>View all subscriptions</td><td>Admin</td></tr>
+        <tr><td>GET</td><td>/admin/reports</td><td>Revenue reports & plan stats</td><td>Admin</td></tr>
+        <tr><td>GET</td><td>/admin/documentation</td><td>This documentation page</td><td>Admin</td></tr>
+      </table>
+
+      <h2>Student Routes (<span class="doc-code-inline">/routes/student.py</span>)</h2>
+      <table class="doc-table">
+        <tr><th>Method</th><th>Route</th><th>Function</th></tr>
+        <tr><td>GET</td><td>/student/dashboard</td><td>Dashboard with posts, tutors, todos</td></tr>
+        <tr><td>GET</td><td>/student/search</td><td>Search tutors (subject, location, fee, experience)</td></tr>
+        <tr><td>GET</td><td>/student/teacher/&lt;id&gt;</td><td>View detailed teacher profile</td></tr>
+        <tr><td>POST</td><td>/student/teacher/&lt;id&gt;/save</td><td>Save/unsave tutor (AJAX)</td></tr>
+        <tr><td>POST</td><td>/student/review/&lt;id&gt;</td><td>Add a review</td></tr>
+        <tr><td>GET</td><td>/student/posts</td><td>My tuition posts</td></tr>
+        <tr><td>GET/POST</td><td>/student/posts/create</td><td>Create tuition post</td></tr>
+        <tr><td>GET</td><td>/student/post/&lt;id&gt;/close</td><td>Close a post</td></tr>
+        <tr><td>GET</td><td>/student/post/&lt;id&gt;/applications</td><td>View applications for a post</td></tr>
+        <tr><td>GET</td><td>/student/application/&lt;id&gt;/&lt;action&gt;</td><td>Shortlist/select/reject application</td></tr>
+        <tr><td>GET</td><td>/student/saved-tutors</td><td>View saved tutors</td></tr>
+        <tr><td>GET</td><td>/student/messages</td><td>View sent/received messages</td></tr>
+        <tr><td>POST</td><td>/student/send_message/&lt;id&gt;</td><td>Send message to teacher</td></tr>
+        <tr><td>GET</td><td>/student/notifications</td><td>Mark all as read & view</td></tr>
+        <tr><td>POST</td><td>/student/upload-picture</td><td>Upload profile picture</td></tr>
+        <tr><td>POST</td><td>/student/delete-picture</td><td>Remove profile picture</td></tr>
+        <tr><td>GET/POST</td><td>/student/profile/edit</td><td>Edit profile name</td></tr>
+      </table>
+
+      <h2>Teacher Routes (<span class="doc-code-inline">/routes/teacher.py</span>)</h2>
+      <table class="doc-table">
+        <tr><th>Method</th><th>Route</th><th>Function</th></tr>
+        <tr><td>GET</td><td>/teacher/dashboard</td><td>Dashboard with apps, reviews, todos</td></tr>
+        <tr><td>GET/POST</td><td>/teacher/profile</td><td>Create/edit professional profile (25+ fields)</td></tr>
+        <tr><td>POST</td><td>/teacher/upload-picture</td><td>Upload profile picture</td></tr>
+        <tr><td>POST</td><td>/teacher/upload-cv</td><td>Upload CV (PDF/DOC)</td></tr>
+        <tr><td>GET</td><td>/teacher/browse-posts</td><td>Browse open tuition posts</td></tr>
+        <tr><td>POST</td><td>/teacher/apply/&lt;id&gt;</td><td>Apply to a tuition post</td></tr>
+        <tr><td>GET</td><td>/teacher/analytics</td><td>Monthly apps chart & status breakdown</td></tr>
+        <tr><td>GET</td><td>/teacher/messages</td><td>View messages & mark as read</td></tr>
+        <tr><td>POST</td><td>/teacher/reply_message/&lt;id&gt;</td><td>Reply to student</td></tr>
+        <tr><td>GET</td><td>/teacher/notifications</td><td>View notifications</td></tr>
+        <tr><td>GET</td><td>/teacher/payment-history</td><td>View payment history</td></tr>
+        <tr><td>GET</td><td>/teacher/api/stats</td><td>JSON: application & rating stats</td></tr>
+      </table>
+
+      <h2>Other Routes</h2>
+      <table class="doc-table">
+        <tr><th>File</th><th>Prefix</th><th>Key Routes</th></tr>
+        <tr><td>chat.py</td><td>/chat</td><td>/, /&lt;user_id&gt;, /send, /api/unread</td></tr>
+        <tr><td>payments.py</td><td>/payments</td><td>/request/&lt;plan_id&gt;, /history</td></tr>
+        <tr><td>subscriptions.py</td><td>/subscriptions</td><td>/plans, /upgrade/&lt;plan_id&gt;</td></tr>
+        <tr><td>bkash.py</td><td>/bkash</td><td>/create-payment, /callback, /payment-success/&lt;id&gt;</td></tr>
+        <tr><td>todo.py</td><td>/todo</td><td>/, /add, /&lt;id&gt;/toggle, /&lt;id&gt;/delete</td></tr>
+      </table>
+    </div>
+
+    <!-- ========== AUTH ========== -->
+    <div class="doc-section" id="sec-auth">
+      <h1>🔐 Authentication System</h1>
+      <div class="lead">How user authentication, role management, and access control work.</div>
+
+      <h2>Authentication Flow</h2>
+      <ol>
+        <li><strong>Registration:</strong> User fills form at <span class="doc-code-inline">/register</span>. For teachers, profile is created but <span class="doc-code-inline">is_approved=False</span> — admin must approve.</li>
+        <li><strong>Login:</strong> Email + password verified via <span class="doc-code-inline">User.check_password()</span> (Werkzeug hashing).</li>
+        <li><strong>Session:</strong> Flask-Login manages session with <span class="doc-code-inline">login_user()</span> and <span class="doc-code-inline">@login_required</span> decorator.</li>
+        <li><strong>Redirect:</strong> After login, users are redirected to their role-specific dashboard.</li>
+        <li><strong>Logout:</strong> <span class="doc-code-inline">logout_user()</span> clears the session.</li>
+      </ol>
+
+      <h2>Role-Based Access Control</h2>
+      <p>Each blueprint uses a role-checking decorator:</p>
+      <div class="doc-code">def admin_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not current_user.is_authenticated or current_user.role != 'admin':
+            flash('Access denied.', 'error')
+            return redirect(url_for('auth.index'))
+        return f(*args, **kwargs)
+    return decorated</div>
+
+      <p>Similar decorators exist in each blueprint:
+        <span class="doc-code-inline">admin_required</span> (admin.py),
+        <span class="doc-code-inline">student_required</span> (student.py),
+        <span class="doc-code-inline">teacher_required</span> (teacher.py).
+      </p>
+
+      <h2>Password Security</h2>
+      <div class="doc-code">def set_password(self, password):
+    self.password_hash = generate_password_hash(password)
+
+def check_password(self, password):
+    return check_password_hash(self.password_hash, password)</div>
+      <p>Uses <span class="doc-code-inline">Werkzeug</span>'s <span class="doc-code-inline">generate_password_hash</span> with scrypt (default).</p>
+
+      <h2>Approval Flow</h2>
+      <ul>
+        <li>Students are auto-approved on registration.</li>
+        <li>Teachers require admin approval before they can log in.</li>
+        <li>Admins approve from the Users management page.</li>
+        <li>Approval sends a notification to the teacher.</li>
+        <li>Blocked users (<span class="doc-code-inline">is_active=False</span>) cannot log in.</li>
+      </ul>
+
+      <h2>Login Restrictions</h2>
+      <div class="doc-code">if user and user.check_password(password):
+    if not user.is_active:
+        flash('Account blocked. Contact admin.', 'error')
+    elif user.role == 'teacher' and not user.is_approved:
+        flash('Your account is pending admin approval.', 'warning')
+    else:
+        login_user(user)</div>
+    </div>
+
+    <!-- ========== FIREBASE ========== -->
+    <div class="doc-section" id="sec-firebase">
+      <h1>🔥 Firebase Integration</h1>
+      <div class="lead">How Firebase is used for authentication, storage, and social login.</div>
+
+      <h2>Architecture</h2>
+      <p>Firebase is used in two ways:</p>
+      <ul>
+        <li><strong>Client-side:</strong> Firebase Auth SDK (in <span class="doc-code-inline">base.html</span>) for Google/Facebook login</li>
+        <li><strong>Server-side:</strong> Firebase Admin SDK (<span class="doc-code-inline">firebase_config.py</span>) for initialization</li>
+      </ul>
+
+      <h2>Client Setup (base.html)</h2>
+      <div class="doc-code">&lt;script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"&gt;&lt;/script&gt;
+&lt;script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  const firebaseConfig = {
+    apiKey: "{{ config.FIREBASE_API_KEY }}",
+    authDomain: "{{ config.FIREBASE_PROJECT_ID }}.firebaseapp.com",
+    projectId: "{{ config.FIREBASE_PROJECT_ID }}",
+    storageBucket: "{{ config.FIREBASE_STORAGE_BUCKET }}",
+    appId: "{{ config.FIREBASE_APP_ID }}"
+  };
+  firebase.initializeApp(firebaseConfig);
+  window.firebaseAuth = firebase.auth();
+&lt;/script&gt;</div>
+
+      <h2>Server Setup (firebase_config.py)</h2>
+      <div class="doc-code">def initialize_firebase():
+    if not firebase_admin._apps:
+        cred_path = 'tuition-station-firebase-adminsdk-....json'
+        if os.path.exists(cred_path):
+            cred = credentials.Certificate(cred_path)
+            firebase_admin.initialize_app(cred, {'storageBucket': bucket_name})</div>
+
+      <h2>Social Login Flow</h2>
+      <ol>
+        <li>User clicks Google/Facebook button on login page</li>
+        <li>Firebase client SDK handles OAuth popup</li>
+        <li>Access token is sent to server via POST</li>
+        <li>Server verifies token via Google/Facebook API</li>
+        <li>If user exists, log them in; if not, create account</li>
+        <li>Return JSON response with redirect URL</li>
+      </ol>
+
+      <h2>Google Login Route</h2>
+      <div class="doc-code">@auth_bp.route('/google-login', methods=['POST'])
+def google_login():
+    data = request.get_json()
+    access_token = data.get('access_token')
+    resp = requests.get('https://www.googleapis.com/oauth2/v3/userinfo',
+        headers={'Authorization': f'Bearer {access_token}'})
+    google_data = resp.json()
+    email = google_data.get('email')
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        user = User(name=name, email=email, role=role, ...)
+        db.session.add(user)
+    login_user(user)
+    return jsonify({'success': True, 'redirect': redirect_url})</div>
+
+      <p><strong>Facebook login</strong> works similarly using the Facebook Graph API.</p>
+    </div>
+
+    <!-- ========== SOCIAL LOGIN ========== -->
+    <div class="doc-section" id="sec-social">
+      <h1>🔗 Social Login</h1>
+      <div class="lead">Google and Facebook OAuth integration details.</div>
+
+      <h2>Google Sign-In</h2>
+      <div class="doc-card">
+        <p><strong>Endpoint:</strong> <span class="doc-code-inline">POST /google-login</span></p>
+        <p><strong>Request:</strong> JSON with <span class="doc-code-inline">access_token</span> and <span class="doc-code-inline">role</span></p>
+        <p><strong>Verification:</strong> Calls Google's <span class="doc-code-inline">/oauth2/v3/userinfo</span> API</p>
+        <p><strong>Auto-creation:</strong> Creates new user if email doesn't exist, assigns Free subscription for teachers</p>
+      </div>
+
+      <h2>Facebook Login</h2>
+      <div class="doc-card">
+        <p><strong>Endpoint:</strong> <span class="doc-code-inline">POST /facebook-login</span></p>
+        <p><strong>Request:</strong> JSON with <span class="doc-code-inline">id_token</span> and <span class="doc-code-inline">role</span></p>
+        <p><strong>Verification:</strong> Calls Facebook's <span class="doc-code-inline">/me?fields=id,name,email,picture</span> API</p>
+        <p><strong>Fallback email:</strong> If Facebook doesn't provide email, uses <span class="doc-code-inline">{fb_id}@facebook.com</span></p>
+      </div>
+    </div>
+
+    <!-- ========== ADMIN PANEL ========== -->
+    <div class="doc-section" id="sec-admin-panel">
+      <h1>🛡️ Admin Panel</h1>
+      <div class="lead">Complete admin panel features — user management, payments, reports, and more.</div>
+
+      <h2>Dashboard (<span class="doc-code-inline">/admin/dashboard</span>)</h2>
+      <p>Shows key metrics:</p>
+      <ul>
+        <li>Total Students, Total Teachers, Pending Approvals</li>
+        <li>Pending Payments, Open Posts, Total Revenue</li>
+        <li>Recent users table (last 8)</li>
+        <li>Recent requests with approve/reject action buttons</li>
+      </ul>
+
+      <h2>User Management (<span class="doc-code-inline">/admin/users</span>)</h2>
+      <ul>
+        <li>Filter users by role (All / Students / Teachers)</li>
+        <li>See user status (Active / Blocked) and approval status</li>
+        <li>Actions: Toggle (activate/block), Delete, Approve (teachers)</li>
+        <li>Admin accounts cannot be deleted</li>
+      </ul>
+
+      <h2>Payment Verification (<span class="doc-code-inline">/admin/payments</span>)</h2>
+      <ul>
+        <li>Filter by status (Pending / Approved / Rejected)</li>
+        <li>View transaction details: amount, method, sender number, transaction ID</li>
+        <li>Approve with optional admin note → auto-activates subscription</li>
+        <li>Reject with reason → sends notification to user</li>
+      </ul>
+
+      <h2>Payment Verification Flow</h2>
+      <ol>
+        <li>Teacher submits payment with transaction ID</li>
+        <li>Payment appears as "Pending" in admin panel</li>
+        <li>Admin clicks Approve → system:
+          <ul>
+            <li>Sets <span class="doc-code-inline">payment.status = 'Approved'</span></li>
+            <li>Deactivates any existing active subscription</li>
+            <li>Creates new subscription with plan's duration</li>
+            <li>Sends notification to teacher</li>
+            <li>Logs the action in <span class="doc-code-inline">admin_logs</span></li>
+          </ul>
+        </li>
+      </ol>
+
+      <h2>Reports (<span class="doc-code-inline">/admin/reports</span>)</h2>
+      <ul>
+        <li>Monthly revenue breakdown (year, month, transaction count, total revenue)</li>
+        <li>Plan distribution stats (how many active subscribers per plan)</li>
+      </ul>
+
+      <h2>Activity Logging</h2>
+      <p>All admin actions are logged via:</p>
+      <div class="doc-code">def log(action, entity_type=None, entity_id=None, details=None):
+    log = AdminLog(admin_id=current_user.id, action=action, ...)
+    db.session.add(log)
+    db.session.commit()</div>
+      <p>Logged actions include: User activated/blocked, User deleted, Teacher approved, Payment approved/rejected.</p>
+
+      <h2>Admin Sidebar Navigation</h2>
+      <div class="doc-code">class="sidebar-nav"&gt;
+  Dashboard
+  Users
+  Payments
+  Posts
+  Messages
+  Subscriptions
+  Reports
+  Documentation   &lt;!-- ← This page --&gt;
+  Logout
+&lt;/div&gt;</div>
+    </div>
+
+    <!-- ========== TEACHER PANEL ========== -->
+    <div class="doc-section" id="sec-teacher-panel">
+      <h1>👨‍🏫 Teacher Panel</h1>
+      <div class="lead">All teacher-facing features — profile, applications, analytics, and subscriptions.</div>
+
+      <h2>Dashboard (<span class="doc-code-inline">/teacher/dashboard</span>)</h2>
+      <p>Key metrics shown:</p>
+      <ul>
+        <li>Current subscription plan & days remaining</li>
+        <li>Application stats (pending, selected, total)</li>
+        <li>Average rating & review count</li>
+        <li>Unread messages count</li>
+        <li>5 most recent applications with status</li>
+        <li>Open vs total tuition posts count</li>
+        <li>Todo list</li>
+      </ul>
+
+      <h2>Profile Management (<span class="doc-code-inline">/teacher/profile</span>)</h2>
+      <p>The most feature-rich form in the app with <strong>25+ profile fields</strong>:</p>
+      <table class="doc-table">
+        <tr><th>Category</th><th>Fields</th></tr>
+        <tr><td>Education</td><td>university, department, degree, graduation_year, masters_university, masters_department, masters_year</td></tr>
+        <tr><td>Professional</td><td>subject, experience, fee, hourly_fee, location, bio, qualification, subjects_expert_in</td></tr>
+        <tr><td>Teaching</td><td>class_level, teaching_areas, teaching_mode (online/offline/both), demo_class_available, availability, teaching_style, availability_schedule, notes_resources</td></tr>
+        <tr><td>Media</td><td>profile_picture, cv, intro_video_url, social_links</td></tr>
+        <tr><td>Extra</td><td>key_strengths, why_students_notice, tuition_experience, reasons_to_hire, preface, total_students_taught, success_percentage, languages</td></tr>
+      </table>
+      <p>Profile is marked <span class="doc-code-inline">is_complete=True</span> when all required fields (university, department, graduation_year, subject, fee, location, cv) are filled.</p>
+
+      <h2>Applying to Posts (<span class="doc-code-inline">/teacher/browse-posts</span>)</h2>
+      <ol>
+        <li>Browse open tuition posts with filters (subject, location)</li>
+        <li>See if already applied</li>
+        <li>Click "Apply" → checks subscription limits</li>
+        <li>Free plan: max 3 applications/month</li>
+        <li>Standard/Premium: unlimited</li>
+        <li>If limit reached, prompts to upgrade</li>
+        <li>Student receives notification on new application</li>
+      </ol>
+
+      <h2>Analytics (<span class="doc-code-inline">/teacher/analytics</span>)</h2>
+      <ul>
+        <li>Monthly application trends (last 6 months)</li>
+        <li>Application status breakdown chart</li>
+      </ul>
+
+      <h2>Time-Based Access</h2>
+      <p>Teachers who are not approved by admin cannot log in:</p>
+      <div class="doc-code">elif user.role == 'teacher' and not user.is_approved:
+    flash('Your account is pending admin approval.', 'warning')</div>
+    </div>
+
+    <!-- ========== STUDENT PANEL ========== -->
+    <div class="doc-section" id="sec-student-panel">
+      <h1>🎓 Student Panel</h1>
+      <div class="lead">All student-facing features — search, posts, reviews, saved tutors, messaging.</div>
+
+      <h2>Dashboard (<span class="doc-code-inline">/student/dashboard</span>)</h2>
+      <ul>
+        <li>My tuition requests (with application status)</li>
+        <li>Stats: open posts, total posts, unread messages, notifications</li>
+        <li>Featured tutors (up to 12, ranked by subscription)</li>
+        <li>Todo list</li>
+      </ul>
+
+      <h2>Tutor Search (<span class="doc-code-inline">/student/search</span>)</h2>
+      <p>Advanced search with multiple filters (AND logic):</p>
+      <ul>
+        <li><strong>Subject:</strong> ILIKE search on subject field</li>
+        <li><strong>Location:</strong> ILIKE search on location field</li>
+        <li><strong>Max Fee:</strong> Fee ≤ max_fee</li>
+        <li><strong>Experience Level:</strong> beginner (&lt;4yr), intermediate (4-7yr), expert (≥8yr)</li>
+      </ul>
+      <p>Results are ranked by: featured → priority_ranking → experience → rating</p>
+
+      <h2>Teacher Profile View (<span class="doc-code-inline">/student/teacher/&lt;id&gt;</span>)</h2>
+      <ul>
+        <li>Full teacher information (education, subjects, experience, fee)</li>
+        <li>Average rating & review count</li>
+        <li>All reviews with comments</li>
+        <li>Save/unsave tutor (AJAX toggle)</li>
+        <li>Send message (inline form)</li>
+        <li>Verified badge (Standard/Premium plans)</li>
+      </ul>
+
+      <h2>Tuition Posts</h2>
+      <ul>
+        <li><strong>Create Post:</strong> Title, subject, class level, location, salary, description</li>
+        <li><strong>View Posts:</strong> List of all posts by the student</li>
+        <li><strong>Close Post:</strong> Mark a post as Closed</li>
+        <li><strong>View Applications:</strong> See who applied, shortlist/select/reject</li>
+        <li>When a student selects an application, the post is auto-marked as "Filled"</li>
+      </ul>
+
+      <h2>Reviews</h2>
+      <p>Students can add a rating (1-5 stars) and comment for any teacher they've interacted with.</p>
+
+      <h2>Saved Tutors</h2>
+      <p>Students can bookmark teachers and view them on a dedicated saved tutors page.</p>
+    </div>
+
+    <!-- ========== SUBSCRIPTIONS ========== -->
+    <div class="doc-section" id="sec-subscriptions">
+      <h1>👑 Subscription Plans</h1>
+      <div class="lead">Tiered subscription system with feature gating.</div>
+
+      <h2>Plan Tiers</h2>
+      <table class="doc-table">
+        <tr><th>Feature</th><th>Free</th><th>Standard (499 BDT)</th><th>Premium (999 BDT)</th></tr>
+        <tr><td>Price</td><td>BDT 0</td><td>BDT 499/month</td><td>BDT 999/month</td></tr>
+        <tr><td>Duration</td><td>Lifetime (9999 days)</td><td>30 days</td><td>30 days</td></tr>
+        <tr><td>Applications</td><td>3/month</td><td>Unlimited</td><td>Unlimited</td></tr>
+        <tr><td>Verified Badge</td><td>✗</td><td>✓</td><td>✓</td></tr>
+        <tr><td>Priority Ranking</td><td>0</td><td>1</td><td>2</td></tr>
+        <tr><td>Featured Listing</td><td>✗</td><td>✗</td><td>✓</td></tr>
+        <tr><td>Analytics Dashboard</td><td>✗</td><td>✗</td><td>✓</td></tr>
+      </table>
+
+      <h2>How Ranking Works</h2>
+      <p>In tutor search results, teachers are ordered by:</p>
+      <ol>
+        <li>Teachers with active subscription first (non-null plan_id)</li>
+        <li>Then by plan priority_ranking descending (Premium → Standard → Free)</li>
+        <li>Then by experience descending</li>
+        <li>Then by average rating descending</li>
+      </ol>
+
+      <h2>Application Limit Logic</h2>
+      <div class="doc-code">def applications_remaining(self, user_id):
+    if self.max_applications is None:
+        return None  # Unlimited
+    count = Application.query.join(TuitionPost).filter(
+        Application.teacher_id == user_id,
+        TuitionPost.status == 'Open',
+        Application.created_at >= datetime.utcnow().replace(day=1)
+    ).count()
+    return max(0, self.max_applications - count)</div>
+      <p>Monthly limit counter resets on the 1st of every month.</p>
+
+      <h2>Subscription Activation</h2>
+      <ul>
+        <li><strong>Free:</strong> Auto-assigned on teacher registration</li>
+        <li><strong>Standard/Premium:</strong> Activated after admin approves payment (manual verification)</li>
+        <li><strong>bKash auto-approve:</strong> If bKash sandbox is configured, approved automatically on callback</li>
+        <li>Expired subscriptions are deactivated (is_active=False)</li>
+      </ul>
+    </div>
+
+    <!-- ========== PAYMENTS ========== -->
+    <div class="doc-section" id="sec-payments">
+      <h1>💳 Payment System</h1>
+      <div class="lead">bKash payment gateway integration and manual payment flow.</div>
+
+      <h2>Payment Flow</h2>
+      <div class="doc-flow">
+        <span class="doc-flow-item">Teacher selects plan</span>
+        <span class="doc-flow-arrow">→</span>
+        <span class="doc-flow-item">Chooses bKash/Nagad</span>
+        <span class="doc-flow-arrow">→</span>
+        <span class="doc-flow-item">Enters TXN ID</span>
+        <span class="doc-flow-arrow">→</span>
+        <span class="doc-flow-item">Admin verifies</span>
+        <span class="doc-flow-arrow">→</span>
+        <span class="doc-flow-item">Subscription activated</span>
+      </div>
+
+      <h2>Manual Payment (Default)</h2>
+      <ol>
+        <li>Teacher clicks "Subscribe" → redirected to <span class="doc-code-inline">/payments/request/&lt;plan_id&gt;</span></li>
+        <li>Fills in: method (bKash/Nagad), sender number, transaction ID</li>
+        <li>Payment saved with status "Pending"</li>
+        <li>Admin verifies on <span class="doc-code-inline">/admin/payments</span></li>
+        <li>On approval → subscription activated, user notified</li>
+      </ol>
+
+      <h2>bKash API Integration</h2>
+      <p><span class="doc-code-inline">bkash_config.py</span> implements the bKash Tokenized Checkout API:</p>
+      <ul>
+        <li><strong>Sandbox URL:</strong> <span class="doc-code-inline">https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized</span></li>
+        <li><strong>grant_token()</strong> → Gets ID token for API auth</li>
+        <li><strong>create_payment()</strong> → Creates payment and returns bKash URL</li>
+        <li><strong>execute_payment()</strong> → Executes payment after user completes in bKash app</li>
+        <li><strong>query_payment()</strong> → Checks payment status</li>
+      </ul>
+
+      <p>When bKash is not configured (no API keys), the system runs in <strong>demo mode</strong> — payments are auto-approved:</p>
+      <div class="doc-code">if not BkashConfig.is_configured():
+    # Create payment as Pending
+    # Return demo: true and redirect to payment_success
+    return jsonify({'success': True, 'demo': True, ...})</div>
+
+      <h2>Payment Schema</h2>
+      <div class="doc-code">class Payment(db.Model):
+    id, user_id, plan_id, amount, method, sender_number,
+    transaction_id (UNIQUE), status (Pending/Approved/Rejected),
+    admin_note, verified_by, verified_at, created_at</div>
+    </div>
+
+    <!-- ========== CHAT ========== -->
+    <div class="doc-section" id="sec-chat">
+      <h1>💬 Chat System</h1>
+      <div class="lead">Direct messaging between students and teachers.</div>
+
+      <h2>Architecture</h2>
+      <p>The chat system uses a simple database-driven messaging model:</p>
+      <ul>
+        <li>Messages stored in <span class="doc-code-inline">messages</span> table</li>
+        <li>Each message has sender_id, receiver_id, message text, is_read flag, read_at timestamp</li>
+        <li>Conversations are grouped by the other participant</li>
+        <li>No WebSocket — uses traditional request-response</li>
+        <li>Unread count available via API: <span class="doc-code-inline">/chat/api/unread</span></li>
+      </ul>
+
+      <h2>Routes</h2>
+      <table class="doc-table">
+        <tr><th>Route</th><th>Description</th></tr>
+        <tr><td><span class="doc-code-inline">GET /chat/</span></td><td>List all conversations (grouped by other user, sorted by last message time)</td></tr>
+        <tr><td><span class="doc-code-inline">GET /chat/&lt;user_id&gt;</span></td><td>View full conversation with a specific user</td></tr>
+        <tr><td><span class="doc-code-inline">POST /chat/send</span></td><td>Send a new message</td></tr>
+        <tr><td><span class="doc-code-inline">GET /chat/api/unread</span></td><td>JSON response with unread message and notification counts</td></tr>
+      </table>
+
+      <h2>Conversation Grouping Logic</h2>
+      <div class="doc-code">for m in sent:
+    other_id = m.receiver_id
+    if other_id not in conversations:
+        other = User.query.get(other_id)
+        conversations[other_id] = {'user': other, 'last_msg': m.created_at, ...}
+for m in received:
+    other_id = m.sender_id
+    # Same logic — merge with existing if found</div>
+
+      <h2>Read Receipts</h2>
+      <p>When a user opens a conversation, all unread messages from that sender are marked as read:</p>
+      <div class="doc-code">unread = Message.query.filter_by(sender_id=user_id, receiver_id=current_user.id, is_read=False)
+unread.update({'is_read': True, 'read_at': datetime.utcnow()})</div>
+    </div>
+
+    <!-- ========== EMAIL ========== -->
+    <div class="doc-section" id="sec-email">
+      <h1>📧 Email System</h1>
+      <div class="lead">SMTP-based email sending for welcome notifications.</div>
+
+      <h2>Architecture</h2>
+      <div class="doc-code">class MailConfig:
+    SMTP_SERVER = 'smtp.gmail.com'
+    SMTP_PORT = 587
+    SMTP_USERNAME = os.environ.get('SMTP_USERNAME', '')
+    SMTP_PASSWORD = os.environ.get('SMTP_PASSWORD', '')
+    FROM_EMAIL = ...
+    FROM_NAME = 'TuitionStation'</div>
+
+      <h2>Email Types</h2>
+      <ul>
+        <li><strong>Student Welcome:</strong> Confirms account creation, lists student features (find tutors, post requests, messaging)</li>
+        <li><strong>Teacher Welcome:</strong> Confirms account creation, lists teacher features (profile setup, browse posts, subscriptions)</li>
+      </ul>
+
+      <h2>Email Template</h2>
+      <p>Uses a custom HTML template with:</p>
+      <ul>
+        <li>Gradient header with TuitionStation branding</li>
+        <li>User info table (name, email, role)</li>
+        <li>Login CTA button</li>
+        <li>Professional footer with team credits</li>
+      </ul>
+
+      <div class="doc-info-box">
+        <strong>Note:</strong> SMTP must be configured in <span class="doc-code-inline">.env</span> for emails to work. If not configured, emails are skipped and logged to console.
+      </div>
+    </div>
+
+    <!-- ========== STORED PROCEDURES ========== -->
+    <div class="doc-section" id="sec-sp">
+      <h1>⚙️ Database Stored Procedures</h1>
+      <div class="lead">7 stored procedures for business logic, analytics, and automation.</div>
+
+      <table class="doc-table">
+        <tr><th>Procedure</th><th>Description</th><th>Parameters</th></tr>
+        <tr>
+          <td><span class="doc-code-inline">sp_GetTeacherDashboardStats</span></td>
+          <td>Returns pending/selected/total applications, unread messages, avg rating, reviews, and current plan for a teacher</td>
+          <td>@TeacherId INT</td>
+        </tr>
+        <tr>
+          <td><span class="doc-code-inline">sp_GetAdminDashboardStats</span></td>
+          <td>Returns total students, teachers, pending teachers, pending payments, total revenue, open posts, pending applications, unread messages</td>
+          <td>None</td>
+        </tr>
+        <tr>
+          <td><span class="doc-code-inline">sp_GetMonthlyRevenue</span></td>
+          <td>Returns revenue grouped by year/month with transaction count</td>
+          <td>@Year INT = NULL, @Month INT = NULL</td>
+        </tr>
+        <tr>
+          <td><span class="doc-code-inline">sp_VerifyPayment</span></td>
+          <td>Transactional: updates payment status, deactivates old subscription, creates new one, logs action</td>
+          <td>@PaymentId, @AdminId, @Status, @AdminNote</td>
+        </tr>
+        <tr>
+          <td><span class="doc-code-inline">sp_AutoDowngradeExpiredSubscriptions</span></td>
+          <td>Deactivates all expired subscriptions and logs count</td>
+          <td>None</td>
+        </tr>
+        <tr>
+          <td><span class="doc-code-inline">sp_CreateNotification</span></td>
+          <td>Inserts a notification for a user</td>
+          <td>@UserId, @Type, @Title, @Message, @Link</td>
+        </tr>
+        <tr>
+          <td><span class="doc-code-inline">sp_SearchTutors</span></td>
+          <td>Advanced tutor search with ranking by subscription, experience, and rating. Supports subject, location, max fee, and experience level filters</td>
+          <td>@Subject, @Location, @MaxFee, @ExperienceLevel</td>
+        </tr>
+      </table>
+
+      <h2>Key Implementation: sp_VerifyPayment</h2>
+      <div class="doc-code">CREATE PROCEDURE sp_VerifyPayment
+    @PaymentId INT, @AdminId INT, @Status NVARCHAR(20), @AdminNote NVARCHAR(MAX) = NULL
+AS
+BEGIN
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        UPDATE payments SET status = @Status, verified_by = @AdminId, ...
+        WHERE id = @PaymentId;
+
+        IF @Status = 'Approved'
+        BEGIN
+            -- Deactivate old subscription
+            UPDATE user_subscriptions SET is_active = 0
+            WHERE user_id = @UserId AND is_active = 1;
+            -- Create new subscription
+            INSERT INTO user_subscriptions (...) VALUES (...);
+        END
+
+        INSERT INTO admin_logs (...) VALUES (...);
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END</div>
+    </div>
+
+    <!-- ========== VIEWS ========== -->
+    <div class="doc-section" id="sec-views">
+      <h1>👁️ Database Views</h1>
+      <div class="lead">4 views for common data access patterns.</div>
+
+      <table class="doc-table">
+        <tr><th>View</th><th>Description</th></tr>
+        <tr>
+          <td><span class="doc-code-inline">vw_TutorPublicProfiles</span></td>
+          <td>Public-facing tutor profiles with subscription info, verified badge, featured status, avg rating, and review count. Used for landing page and search results.</td>
+        </tr>
+        <tr>
+          <td><span class="doc-code-inline">vw_AdminRevenueReport</span></td>
+          <td>Revenue aggregated by year, month, and plan name. Shows subscriptions sold and total revenue per plan per month.</td>
+        </tr>
+        <tr>
+          <td><span class="doc-code-inline">vw_SubscriptionStatus</span></td>
+          <td>All teachers' subscription status with plan name, dates, days remaining, and status label (Active/Expiring Soon/Expired).</td>
+        </tr>
+        <tr>
+          <td><span class="doc-code-inline">vw_TutorAnalytics</span></td>
+          <td>Tutor performance analytics: total/pending/selected applications, reviews, avg rating, messages received, unread messages.</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- ========== TRIGGERS ========== -->
+    <div class="doc-section" id="sec-triggers">
+      <h1>⚡ Database Triggers</h1>
+      <div class="lead">5 triggers for automation — timestamps, notifications, and expiry warnings.</div>
+
+      <table class="doc-table">
+        <tr><th>Trigger</th><th>Table</th><th>Timing</th><th>Action</th></tr>
+        <tr>
+          <td><span class="doc-code-inline">trg_UpdateUserTimestamp</span></td>
+          <td>users</td>
+          <td>AFTER UPDATE</td>
+          <td>Automatically sets <span class="doc-code-inline">updated_at = GETUTCDATE()</span> when a user record is updated.</td>
+        </tr>
+        <tr>
+          <td><span class="doc-code-inline">trg_UpdateTeacherProfileTimestamp</span></td>
+          <td>teacher_profiles</td>
+          <td>AFTER UPDATE</td>
+          <td>Automatically sets <span class="doc-code-inline">updated_at</span> when a teacher profile is updated.</td>
+        </tr>
+        <tr>
+          <td><span class="doc-code-inline">trg_NewPaymentNotification</span></td>
+          <td>payments</td>
+          <td>AFTER INSERT</td>
+          <td>Creates notifications: (1) to the user acknowledging receipt, (2) to all admins for verification.</td>
+        </tr>
+        <tr>
+          <td><span class="doc-code-inline">trg_SubscriptionExpiryNotification</span></td>
+          <td>user_subscriptions</td>
+          <td>AFTER UPDATE</td>
+          <td>When 7 days remain on a subscription, sends a renewal reminder notification.</td>
+        </tr>
+        <tr>
+          <td><span class="doc-code-inline">trg_NewMessageNotification</span></td>
+          <td>messages</td>
+          <td>AFTER INSERT</td>
+          <td>Creates a notification for the receiver with the sender's name and link to messages page.</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- ========== INDEXES ========== -->
+    <div class="doc-section" id="sec-indexes">
+      <h1>📇 Database Indexes</h1>
+      <div class="lead">11 indexes for query performance optimization.</div>
+
+      <table class="doc-table">
+        <tr><th>Index</th><th>Table</th><th>Columns</th><th>Purpose</th></tr>
+        <tr><td>idx_users_role</td><td>users</td><td>role</td><td>Quick role-based filtering</td></tr>
+        <tr><td>idx_users_email</td><td>users</td><td>email</td><td>Login email lookup</td></tr>
+        <tr><td>idx_teacher_profiles_subject</td><td>teacher_profiles</td><td>subject</td><td>Tutor search by subject</td></tr>
+        <tr><td>idx_teacher_profiles_location</td><td>teacher_profiles</td><td>location</td><td>Tutor search by location</td></tr>
+        <tr><td>idx_teacher_profiles_fee</td><td>teacher_profiles</td><td>fee</td><td>Tutor search by budget</td></tr>
+        <tr><td>idx_user_subscriptions_active</td><td>user_subscriptions</td><td>user_id, is_active</td><td>Find active subscription for a user</td></tr>
+        <tr><td>idx_payments_status</td><td>payments</td><td>status</td><td>Filter payments by status (Pending/Approved/Rejected)</td></tr>
+        <tr><td>idx_tuition_posts_status</td><td>tuition_posts</td><td>status</td><td>Filter open posts for browsing</td></tr>
+        <tr><td>idx_messages_receiver_unread</td><td>messages</td><td>receiver_id, is_read</td><td>Count unread messages for a user</td></tr>
+        <tr><td>idx_notifications_user_unread</td><td>notifications</td><td>user_id, is_read</td><td>Count unread notifications</td></tr>
+        <tr><td>idx_reviews_teacher</td><td>reviews</td><td>teacher_id</td><td>Get all reviews for a teacher</td></tr>
+      </table>
+    </div>
+
+    <!-- ========== DESIGN SYSTEM ========== -->
+    <div class="doc-section" id="sec-design-system">
+      <h1>🎨 Design System</h1>
+      <div class="lead">Custom "Tuition Station" visual design language and CSS framework.</div>
+
+      <h2>Design Philosophy</h2>
+      <p>The Tuition Station design system is built on three pillars:</p>
+      <ul>
+        <li><strong>Editorial Sophistication:</strong> High-contrast typography, intentional asymmetry, generous whitespace</li>
+        <li><strong>No-Line Design:</strong> Boundaries defined through tonal surface layers rather than borders</li>
+        <li><strong>Premium Aesthetics:</strong> Glassmorphism, ambient shadows, and curated imagery</li>
+      </ul>
+
+      <h2>Color Palette (atelier.css)</h2>
+      <table class="doc-table">
+        <tr><th>Token</th><th>Role</th><th>Color</th></tr>
+        <tr><td><span class="doc-code-inline">--primary</span></td><td>Primary accent</td><td style="color:#004ac6;">#004ac6 (Deep Blue)</td></tr>
+        <tr><td><span class="doc-code-inline">--secondary</span></td><td>Secondary accent</td><td style="color:#006c49;">#006c49 (Growth Green)</td></tr>
+        <tr><td><span class="doc-code-inline">--surface</span></td><td>Surface background</td><td style="color:#faf8ff;">#faf8ff (Soft White)</td></tr>
+        <tr><td><span class="doc-code-inline">--background</span></td><td>Page background</td><td style="color:#faf8ff;">#faf8ff</td></tr>
+        <tr><td><span class="doc-code-inline">--error</span></td><td>Error/danger</td><td style="color:#dc2626;">#dc2626 (Red)</td></tr>
+        <tr><td><span class="doc-code-inline">--tertiary</span></td><td>Tertiary accent</td><td style="color:#f59e0b;">#f59e0b (Amber)</td></tr>
+      </table>
+
+      <h2>CSS Framework Structure</h2>
+      <p>The primary stylesheet is <span class="doc-code-inline">static/css/atelier.css</span> which contains:</p>
+      <ul>
+        <li>CSS custom properties (design tokens)</li>
+        <li>Base typography (Inter font family, 100-900 weight scale)</li>
+        <li>Component styles (cards, badges, buttons, nav, footer)</li>
+        <li>Glassmorphism utilities (.glass-nav)</li>
+        <li>Toast notification system</li>
+        <li>Lightbox image preview</li>
+        <li>Responsive breakpoints</li>
+      </ul>
+
+      <h2>External Assets</h2>
+      <ul>
+        <li><strong>Font:</strong> Google Fonts — Inter (100..900)</li>
+        <li><strong>Icons:</strong> Font Awesome 6.5.1, Google Material Symbols</li>
+        <li><strong>Images:</strong> Demo teacher photos, landing page backgrounds, developer photo</li>
+      </ul>
+    </div>
+
+    <!-- ========== DEPLOYMENT ========== -->
+    <div class="doc-section" id="sec-deployment">
+      <h1>🚀 Deployment</h1>
+      <div class="lead">Options for deploying TuitionStation to production.</div>
+
+      <h2>Option 1: IIS (Windows Server)</h2>
+      <ol>
+        <li>Install IIS with CGI feature</li>
+        <li>Install <span class="doc-code-inline">wfastcgi</span> Python package</li>
+        <li>Configure IIS handler for Flask</li>
+        <li>Deploy the project to <span class="doc-code-inline">inetpub/wwwroot</span></li>
+      </ol>
+
+      <h2>Option 2: Azure App Service</h2>
+      <ol>
+        <li>Create Azure Web App (Python stack)</li>
+        <li>Configure SQL Server Database in Azure</li>
+        <li>Update <span class="doc-code-inline">DATABASE_URL</span> with Azure SQL connection string</li>
+        <li>Deploy via Git or FTP</li>
+      </ol>
+
+      <h2>Option 3: Docker</h2>
+      <div class="doc-code">FROM python:3.9-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+CMD ["python", "run.py"]</div>
+
+      <h2>Production Considerations</h2>
+      <ul>
+        <li>Set <span class="doc-code-inline">debug=False</span> in <span class="doc-code-inline">run.py</span></li>
+        <li>Use a production WSGI server (Gunicorn, Waitress, or uWSGI)</li>
+        <li>Set strong <span class="doc-code-inline">SECRET_KEY</span> in environment</li>
+        <li>Enable HTTPS via reverse proxy (Nginx, Azure Front Door)</li>
+        <li>Configure proper SQL Server firewall rules</li>
+        <li>Set up scheduled task for <span class="doc-code-inline">sp_AutoDowngradeExpiredSubscriptions</span></li>
+      </ul>
+    </div>
+
+    <!-- ========== TROUBLESHOOTING ========== -->
+    <div class="doc-section" id="sec-troubleshooting">
+      <h1>🐛 Troubleshooting</h1>
+      <div class="lead">Common issues and their solutions.</div>
+
+      <div class="doc-card">
+        <div class="doc-card-title">Database Connection Error</div>
+        <div class="doc-code">Error: ('08001', '[08001] SQL Server Network Interfaces...')</div>
+        <p><strong>Fix:</strong> Ensure SQL Server is running and TCP/IP is enabled:</p>
+        <ol>
+          <li>Open SQL Server Configuration Manager</li>
+          <li>SQL Server Network Configuration → Protocols for MSSQLSERVER</li>
+          <li>Enable TCP/IP</li>
+          <li>Restart SQL Server</li>
+        </ol>
+      </div>
+
+      <div class="doc-card">
+        <div class="doc-card-title">ODBC Driver Error</div>
+        <div class="doc-code">Error: ('01000', "[01000] [Microsoft][ODBC Driver Manager]...")</div>
+        <p><strong>Fix:</strong> Download and install "ODBC Driver 17 for SQL Server" from Microsoft.</p>
+      </div>
+
+      <div class="doc-card">
+        <div class="doc-card-title">Port 5000 Already in Use</div>
+        <div class="doc-code">netstat -ano | findstr :5000
+taskkill /PID <PID> /F</div>
+        <p>Alternatively, change the port in <span class="doc-code-inline">run.py</span>.</p>
+      </div>
+
+      <div class="doc-card">
+        <div class="doc-card-title">Firebase Not Working</div>
+        <ul>
+          <li>Verify <span class="doc-code-inline">.env</span> has correct Firebase credentials</li>
+          <li>Ensure <span class="doc-code-inline">serviceAccountKey.json</span> is in the project root</li>
+          <li>Check Firestore database is created in Firebase Console</li>
+        </ul>
+      </div>
+
+      <div class="doc-card">
+        <div class="doc-card-title">Sample Data Not Created</div>
+        <p>Manually run:</p>
+        <div class="doc-code">python seed.py</div>
+        <p>Or restart the app — data is seeded on first run only if tables are empty.</p>
+      </div>
+
+      <div class="doc-card">
+        <div class="doc-card-title">Module Not Found</div>
+        <p>Ensure virtual environment is activated:</p>
+        <div class="doc-code">.venv\Scripts\activate
+pip install -r requirements.txt</div>
+      </div>
+    </div>
+
+    <!-- ========== DEV TEAM ========== -->
+    <div class="doc-section" id="sec-team">
+      <h1>👥 Development Team</h1>
+      <div class="lead">The team behind TuitionStation.</div>
+
+      <table class="doc-table">
+        <tr><th>#</th><th>Name</th><th>Department</th><th>University</th></tr>
+        <tr><td>1</td><td><strong>MD ELIAS AHMAD</strong></td><td>CSE</td><td>BAUST</td></tr>
+        <tr><td>2</td><td><strong>Md SAYADUL ISLAM</strong></td><td>CSE</td><td>BAUST</td></tr>
+        <tr><td>3</td><td><strong>MEHEJABIN TABASSUM</strong></td><td>CSE</td><td>BAUST</td></tr>
+      </table>
+
+      <h2>Course Info</h2>
+      <div class="doc-card">
+        <p><strong>Course:</strong> CSE 2205 — Database Management System</p>
+        <p><strong>Level:</strong> Level 2, Term II</p>
+        <p><strong>Email:</strong> TuitionStationdev@gmail.com</p>
+      </div>
+    </div>
+
+    <div style="margin-top:3rem;padding-top:1.5rem;border-top:1px solid #e2e8f0;text-align:center;color:#94a3b8;font-size:0.8rem;">
+      <p>TuitionStation — Complete Project Documentation</p>
+      <p>Built with Flask & SQL Server | Level 2 Term II, CSE 2205 | BAUST</p>
+      <p style="margin-top:0.25rem;">
+        <a href="{{ url_for('admin.dashboard') }}" style="color:#6366f1;">Admin Dashboard</a>
+        <span style="margin:0 0.5rem;">·</span>
+        <a href="{{ url_for('auth.index') }}" style="color:#6366f1;">Landing Page</a>
+        <span style="margin:0 0.5rem;">·</span>
+        <a href="{{ url_for('auth.developer') }}" style="color:#6366f1;">Developer Info</a>
+      </p>
+    </div>
+  </main>
+</div>
+
+<script>
+let currentSection = 'intro';
+
+function showSection(id) {
+  document.querySelectorAll('.doc-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.doc-sidebar-link').forEach(l => l.classList.remove('active'));
+  const sec = document.getElementById('sec-' + id);
+  if (sec) sec.classList.add('active');
+  const link = document.querySelector('.doc-sidebar-link[data-section="' + id + '"]');
+  if (link) link.classList.add('active');
+  currentSection = id;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function filterDocs(query) {
+  const q = query.toLowerCase().trim();
+  document.querySelectorAll('.doc-sidebar-link').forEach(link => {
+    const text = link.textContent.toLowerCase();
+    const group = link.closest('.doc-section-group');
+    if (!q || text.includes(q)) {
+      link.style.display = 'flex';
+      if (group) group.style.display = '';
+    } else {
+      link.style.display = 'none';
+    }
+  });
+  document.querySelectorAll('.doc-section-group').forEach(g => {
+    const visibleLinks = g.querySelectorAll('.doc-sidebar-link[style*="display: flex"]').length;
+    if (!q || visibleLinks > 0) {
+      g.style.display = '';
+    } else {
+      g.style.display = 'none';
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Handle initial hash
+  if (window.location.hash) {
+    const section = window.location.hash.replace('#', '');
+    if (document.getElementById('sec-' + section)) {
+      showSection(section);
+    }
+  }
+});
+</script>
+{% endblock %}

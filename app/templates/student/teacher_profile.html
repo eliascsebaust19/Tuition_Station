@@ -1,0 +1,595 @@
+{% extends "base.html" %}
+
+{% block title %}{{ teacher.name }} | Distinguished Educator | Tuition Station{% endblock %}
+
+{% block extra_css %}
+<style>
+.dashboard-layout { display: flex; min-height: 100vh; }
+
+.main-content {
+    flex: 1;
+    margin-left: 280px;
+    padding-bottom: 4rem;
+}
+
+.profile-hero {
+    height: 160px;
+    background: linear-gradient(135deg, var(--primary) 0%, #0037a3 100%);
+    position: relative;
+    margin-bottom: 0;
+    border-radius: 0 0 1.5rem 1.5rem;
+}
+
+.hero-overlay {
+    position: absolute;
+    bottom: -20px;
+    left: 2rem;
+    display: flex;
+    align-items: flex-end;
+    gap: 1.25rem;
+    width: calc(100% - 4rem);
+}
+
+.profile-avatar-container {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    flex-shrink: 0;
+}
+
+.profile-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 1rem;
+    object-fit: cover;
+    border: 4px solid #ffffff;
+    box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.15);
+}
+
+.verified-badge {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    background: #22c55e;
+    color: white;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.hero-info {
+    flex: 1;
+    padding-bottom: 0.25rem;
+}
+
+.hero-name {
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: #ffffff;
+    margin: 0 0 0.15rem;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+
+.hero-tagline {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 1.5rem;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 2rem 2rem 0;
+}
+
+.profile-section {
+    background: #ffffff;
+    border-radius: 1rem;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid var(--outline-variant);
+    box-shadow: 0 2px 8px -4px rgba(0, 0, 0, 0.04);
+}
+
+.section-title {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin: 0 0 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 0.5rem;
+}
+
+.section-title .material-symbols-outlined {
+    color: var(--secondary);
+    font-size: 1.15rem;
+}
+
+.bio-content {
+    line-height: 1.6;
+    font-size: 0.85rem;
+    color: #334155;
+}
+
+.academic-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+}
+
+.academic-item {
+    display: flex;
+    gap: 0.75rem;
+    background: var(--surface-container-low);
+    padding: 0.85rem;
+    border-radius: 0.75rem;
+}
+
+.academic-icon {
+    width: 36px;
+    height: 36px;
+    background: #ffffff;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    flex-shrink: 0;
+}
+
+.academic-details h5 {
+    margin: 0 0 0.15rem;
+    font-size: 0.55rem;
+    color: var(--on-surface-variant);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 800;
+}
+
+.academic-details p {
+    margin: 0;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.strength-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.strength-item {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.5rem 0.75rem;
+    background: #f0fdf4;
+    border-radius: 0.5rem;
+    color: #166534;
+    font-weight: 700;
+    font-size: 0.75rem;
+}
+
+.notice-box {
+    background: linear-gradient(135deg, #fff9f0, #fff4e5);
+    border-left: 3px solid var(--secondary);
+    padding: 1rem;
+    border-radius: 0 0.75rem 0.75rem 0;
+}
+
+.notice-text {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #92400e;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.exp-details {
+    line-height: 1.6;
+    font-size: 0.85rem;
+    color: #475569;
+}
+
+.reason-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
+}
+
+.reason-item {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: var(--surface-container-low);
+    border-radius: 0.65rem;
+}
+
+.reason-icon {
+    color: #22c55e;
+    margin-top: 0.1rem;
+    flex-shrink: 0;
+}
+
+.reason-text h6 {
+    margin: 0 0 0.1rem;
+    font-size: 0.8rem;
+    font-weight: 800;
+}
+
+.reason-text p {
+    margin: 0;
+    font-size: 0.7rem;
+    color: var(--on-surface-variant);
+    line-height: 1.3;
+}
+
+.verification-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #f0f9ff;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid #e0f2fe;
+}
+
+.verification-info h4 {
+    margin: 0 0 0.2rem;
+    color: #0369a1;
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+.verification-info p {
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1.4;
+}
+
+.booking-card {
+    position: sticky;
+    top: 2rem;
+    background: #ffffff;
+    border-radius: 1rem;
+    padding: 1.25rem;
+    border: 1px solid var(--outline-variant);
+    box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.06);
+}
+
+.booking-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.7rem;
+}
+
+.status-available { background: #f0fdf4; color: #166534; }
+.status-booked { background: #fef2f2; color: #991b1b; }
+
+.fee-display {
+    text-align: center;
+    margin-bottom: 1.25rem;
+    background: var(--surface-container-low);
+    padding: 1rem;
+    border-radius: 0.75rem;
+}
+
+.fee-amount {
+    font-size: 1.35rem;
+    font-weight: 900;
+    color: var(--primary);
+    display: block;
+}
+
+.fee-period {
+    font-size: 0.6rem;
+    color: var(--on-surface-variant);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.btn-book {
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    font-weight: 800;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    box-shadow: 0 6px 12px -6px rgba(0, 74, 198, 0.3);
+}
+
+.btn-book:hover {
+    background: #0f172a;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 16px -8px rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 1200px) {
+    .sidebar { display: none; }
+    .main-content { margin-left: 0; }
+    .profile-grid { grid-template-columns: 1fr; }
+    .hero-overlay { left: 2rem; width: calc(100% - 4rem); }
+}
+</style>
+{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include "student/inc_sidebar.html" %}
+
+    <main class="main-content">
+        <!-- Hero Section -->
+        <div class="profile-hero">
+            <div class="hero-overlay">
+                <div class="profile-avatar-container">
+                    <img src="{% if teacher.profile_picture %}{{ teacher.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="{{ teacher.name }}" class="profile-avatar" />
+                    <div class="verified-badge">
+                        <span class="material-symbols-outlined" style="font-size: 1.5rem;">verified</span>
+                    </div>
+                </div>
+                <div class="hero-info">
+                    <h2 class="hero-name">
+                        {{ teacher.name }}
+                    </h2>
+                    <p class="hero-tagline">
+                        <span class="material-symbols-outlined">school</span>
+                        {{ profile.university }} | {{ profile.department }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-grid">
+            <div class="profile-left">
+                <!-- 1. Bio/Preface -->
+                <section class="profile-section">
+                    <h3 class="section-title"><span class="material-symbols-outlined">description</span> Preface</h3>
+                    <div class="bio-content">
+                        "{{ profile.preface or profile.bio or 'A dedicated educator focused on clarity, consistency, and a mentor-like approach to learning.' }}"
+                    </div>
+                </section>
+
+                <!-- 2. Experience & Qualifications -->
+                <section class="profile-section">
+                    <h3 class="section-title"><span class="material-symbols-outlined">workspace_premium</span> Experience & Qualifications</h3>
+                    <div class="academic-grid">
+                        <div class="academic-item">
+                            <div class="academic-icon"><span class="material-symbols-outlined">account_balance</span></div>
+                            <div class="academic-details">
+                                <h5>University</h5>
+                                <p>{{ profile.university or 'Verified' }}</p>
+                            </div>
+                        </div>
+                        <div class="academic-item">
+                            <div class="academic-icon"><span class="material-symbols-outlined">history_edu</span></div>
+                            <div class="academic-details">
+                                <h5>Degree</h5>
+                                <p>{{ profile.degree }} ({{ profile.department }})</p>
+                            </div>
+                        </div>
+                        <div class="academic-item">
+                            <div class="academic-icon"><span class="material-symbols-outlined">calendar_today</span></div>
+                            <div class="academic-details">
+                                <h5>Tutoring Since</h5>
+                                <p>{{ profile.experience or 0 }}+ Years ago</p>
+                            </div>
+                        </div>
+                        <div class="academic-item">
+                            <div class="academic-icon"><span class="material-symbols-outlined">military_tech</span></div>
+                            <div class="academic-details">
+                                <h5>Status</h5>
+                                <p>Verified Mentor</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. Key Strengths -->
+                <section class="profile-section">
+                    <h3 class="section-title"><span class="material-symbols-outlined">psychology</span> Key Strengths</h3>
+                    <div class="strength-list">
+                        {% set strengths = profile.key_strengths or profile.subject or 'Logical Reasoning,Concept Clarity,Exam Strategy,Patience' %}
+                        {% for strength in strengths.split(',') %}
+                        <div class="strength-item">
+                            <span class="material-symbols-outlined">check_circle</span>
+                            {{ strength.strip() }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <!-- 4. Why Students Notice Them -->
+                <section class="profile-section">
+                    <h3 class="section-title"><span class="material-symbols-outlined">visibility</span> Why Students Notice</h3>
+                    <div class="notice-box">
+                        <p class="notice-text">
+                            {{ profile.why_students_notice or 'Known for turning complex theories into logical, step-by-step problem solving sessions.' }}
+                        </p>
+                    </div>
+                </section>
+
+                <!-- 5. Tuition Job Experience -->
+                <section class="profile-section">
+                    <h3 class="section-title"><span class="material-symbols-outlined">history</span> Tuition Job Experience</h3>
+                    <div class="exp-details">
+                        {{ profile.tuition_experience or 'Extensive experience guiding science and engineering students through rigorous academic preparation, revision routines, and concept building.' }}
+                    </div>
+                </section>
+
+                <!-- 6. Reasons to Hire -->
+                <section class="profile-section">
+                    <h3 class="section-title"><span class="material-symbols-outlined">recommend</span> Reasons to Hire</h3>
+                    <div class="reason-grid">
+                        {% set reasons = [
+                            ('Concept-Based Learning', 'Focuses on understanding "why" rather than just memorizing.'),
+                            ('Proven Track Record', 'Helped dozens of students improve their grades significantly.'),
+                            ('Mentor Approach', 'Provides guidance beyond just subjects, helping with study habits.'),
+                            ('Flexible & Reliable', 'Consistent scheduling and adaptive teaching style.')
+                        ] %}
+                        {% if profile.reasons_to_hire %}
+                            {# Logic to parse reasons if stored as complex data could go here #}
+                        {% endif %}
+                        {% for title, desc in reasons %}
+                        <div class="reason-item">
+                            <div class="reason-icon"><span class="material-symbols-outlined">verified</span></div>
+                            <div class="reason-text">
+                                <h6>{{ title }}</h6>
+                                <p>{{ desc }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <!-- 7. Verification & Credentials -->
+                <section class="profile-section">
+                    <h3 class="section-title"><span class="material-symbols-outlined">verified_user</span> Verification & Credentials</h3>
+                    <div class="verification-card">
+                        <span class="material-symbols-outlined" style="font-size: 2.5rem; color: #22c55e;">verified</span>
+                        <div class="verification-info">
+                            <h4>Background Verified</h4>
+                            <p style="color: #64748b; margin: 0;">This mentor has completed a rigorous background check.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="profile-right">
+                <div class="booking-card">
+                    <div class="booking-status {{ 'status-available' if profile.availability == 'Available' else 'status-booked' }}">
+                        <span class="material-symbols-outlined">{{ 'check_circle' if profile.availability == 'Available' else 'block' }}</span>
+                        {{ profile.availability }}
+                    </div>
+
+                    <div class="fee-display">
+                        <span class="fee-amount">Tk {{ profile.fee }}</span>
+                        <span class="fee-period">/ month</span>
+                    </div>
+
+                    {% if profile.availability == 'Available' and not existing_request %}
+                    <form action="{{ url_for('student.send_request', teacher_id=teacher.id) }}" method="POST">
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; font-weight: 700; margin-bottom: 0.35rem; font-size: 0.7rem; color: #64748b; text-transform: uppercase;">Message</label>
+                            <textarea name="message" rows="3" style="width: 100%; border: 1px solid var(--outline-variant); border-radius: 0.75rem; padding: 0.75rem; font-family: inherit; resize: none; font-size:0.8rem;" placeholder="Hi, I'm interested..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-book">
+                            <span class="material-symbols-outlined">event_available</span>
+                            Book Now
+                        </button>
+                    </form>
+                    {% elif existing_request %}
+                    <div style="text-align: center; padding: 1rem; background: #eff6ff; border-radius: 0.75rem; color: #1e40af; font-weight: 700; font-size:0.85rem;">
+                        <span class="material-symbols-outlined" style="display: block; font-size: 1.5rem;">hourglass_empty</span>
+                        Request Sent ({{ existing_request.status }})
+                    </div>
+                    {% else %}
+                    <div style="text-align: center; padding: 1rem; background: #fff1f2; border-radius: 0.75rem; color: #9f1239; font-weight: 700; font-size:0.85rem;">
+                        <span class="material-symbols-outlined" style="display: block; font-size: 1.5rem;">block</span>
+                        Fully Booked
+                    </div>
+                    {% endif %}
+
+                    <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid #f1f5f9;">
+                        <h5 style="margin: 0 0 0.5rem; font-weight: 800; color: var(--primary); text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.1em;">Location</h5>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; color: #475569; font-weight: 600; font-size:0.85rem;">
+                            <span class="material-symbols-outlined" style="font-size:1rem;color: var(--primary);">location_on</span>
+                            {{ profile.location or 'Flexible / Online' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+<!-- Profile Popup -->
+<div class="profile-popup-overlay" id="profilePopup" onclick="closeProfilePopup(event)">
+    <div class="profile-popup" onclick="event.stopPropagation()">
+        <div class="popup-cover">
+            <button class="popup-close" onclick="closeProfilePopup()">
+                <span class="material-symbols-outlined" style="font-size: 1.2rem;">close</span>
+            </button>
+        </div>
+        <div class="popup-avatar" onclick="openLightbox(this.querySelector('img').src)">
+            <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="{{ current_user.name }}" />
+        </div>
+        <div class="popup-body">
+            <h3 class="popup-name">{{ current_user.name }}</h3>
+            <p class="popup-role">Student</p>
+            <div class="popup-email">
+                <span class="material-symbols-outlined" style="font-size: 1.1rem;">mail</span>
+                {{ current_user.email }}
+            </div>
+            <div class="popup-stats">
+                <div class="popup-stat">
+                    <div class="popup-stat-value">0</div>
+                    <div class="popup-stat-label">Requests</div>
+                </div>
+                <div class="popup-stat">
+                    <div class="popup-stat-value">0</div>
+                    <div class="popup-stat-label">Tutors</div>
+                </div>
+            </div>
+            <div class="popup-actions">
+                <a href="{{ url_for('student.edit_profile') }}" class="popup-btn-edit">Edit Profile</a>
+                <a href="{{ url_for('auth.logout') }}" class="popup-btn-logout">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openProfilePopup() {
+    document.getElementById('profilePopup').classList.add('active');
+}
+
+function closeProfilePopup(event) {
+    if (!event || event.target === document.getElementById('profilePopup')) {
+        document.getElementById('profilePopup').classList.remove('active');
+    }
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        document.getElementById('profilePopup').classList.remove('active');
+    }
+});
+</script>
+
+{% block footer %}{% endblock %}

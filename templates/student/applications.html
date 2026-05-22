@@ -1,0 +1,176 @@
+{% extends "student/base.html" %}
+{% block title %}Applications - Tuition Station{% endblock %}
+
+{% block kicker %}Applications{% endblock %}
+{% block page_title %}Post Applications{% endblock %}
+{% block page_subtitle %}Review tutor applications for your tuition post.{% endblock %}
+
+{% block extra_css %}
+<style>
+.post-card { background: #ffffff; border-radius: 1.25rem; padding: 1.5rem 2rem; border: 1px solid #f1f5f9; box-shadow: 0 1px 3px rgba(0,0,0,0.04); margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.post-card h4 { font-size: 1.15rem; font-weight: 800; margin: 0 0 0.25rem; }
+.post-meta { display: flex; flex-wrap: wrap; gap: 1.25rem; font-size: 0.85rem; color: #64748b; }
+.post-meta span { display: flex; align-items: center; gap: 0.35rem; }
+.post-meta i { color: #1a4d2e; width: 1rem; }
+.badge-custom { padding: 0.3rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; display: inline-block; }
+.badge-open { background: #f0fdf4; color: #166534; }
+.badge-closed { background: #f1f5f9; color: #475569; }
+.badge-filled { background: #eff6ff; color: #1e40af; }
+.badge-pending { background: #fffbeb; color: #92400e; }
+.badge-shortlisted { background: #eff6ff; color: #1e40af; }
+.badge-selected { background: #f0fdf4; color: #166534; }
+.badge-rejected { background: #fef2f2; color: #991b1b; }
+.apps-card { background: #ffffff; border-radius: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; overflow: hidden; }
+.apps-table { width: 100%; border-collapse: collapse; }
+.apps-table th { text-align: left; padding: 1rem 1.25rem; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
+.apps-table td { padding: 1rem 1.25rem; font-size: 0.9rem; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+.apps-table tr:last-child td { border-bottom: none; }
+.apps-table tr:hover td { background: #fafbfc; }
+.tutor-cell { display: flex; align-items: center; gap: 0.75rem; }
+.tutor-cell img { width: 2.5rem; height: 2.5rem; border-radius: 50%; object-fit: cover; background: #e2e8f0; }
+.tutor-cell .tutor-name { font-weight: 700; }
+.tutor-cell .tutor-subject { font-size: 0.75rem; color: #64748b; }
+.message-preview { max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #64748b; font-size: 0.85rem; }
+.btn-action { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.85rem; border-radius: 9999px; font-weight: 600; font-size: 0.78rem; text-decoration: none; border: none; cursor: pointer; transition: all 0.2s; }
+.btn-shortlist { background: #eff6ff; color: #1e40af; }
+.btn-shortlist:hover { background: #dbeafe; }
+.btn-select { background: #f0fdf4; color: #166534; }
+.btn-select:hover { background: #dcfce7; }
+.btn-reject { background: #fef2f2; color: #991b1b; }
+.btn-reject:hover { background: #fee2e2; }
+.btn-back { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.7rem 1.5rem; background: #ffffff; color: #64748b; border: 1px solid #e2e8f0; border-radius: 9999px; font-weight: 600; font-size: 0.9rem; text-decoration: none; transition: all 0.2s; margin-bottom: 1rem; }
+.btn-back:hover { background: #f8fafc; border-color: #cbd5e1; color: #334155; }
+.empty-state { text-align: center; padding: 4rem 2rem; }
+.empty-state i { font-size: 3.5rem; color: #cbd5e1; margin-bottom: 1rem; }
+.empty-state h4 { font-size: 1.25rem; font-weight: 800; margin-bottom: 0.5rem; }
+.empty-state p { color: #64748b; margin-bottom: 1.5rem; }
+@media (max-width: 768px) { .post-card { flex-direction: column; align-items: flex-start; } .apps-table { font-size: 0.8rem; } .apps-table th, .apps-table td { padding: 0.75rem; } .message-preview { max-width: 120px; } }
+</style>
+{% endblock %}
+
+{% block popup_stats %}
+<div class="popup-stat">
+    <div class="popup-stat-value">{{ applications|length if applications else 0 }}</div>
+    <div class="popup-stat-label">Applicants</div>
+</div>
+<div class="popup-stat">
+    <div class="popup-stat-value">{{ current_user.saved_count or 0 }}</div>
+    <div class="popup-stat-label">Saved</div>
+</div>
+{% endblock %}
+
+{% block dashboard_content %}
+<a href="{{ url_for('student.posts') }}" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Posts</a>
+
+<div class="post-card">
+    <div>
+        <h4><i class="fas fa-bullhorn" style="color:#1a4d2e;margin-right:0.5rem;"></i>{{ post.title }}</h4>
+        <div class="post-meta">
+            <span><i class="fas fa-book"></i> {{ post.subject }}</span>
+            <span><i class="fas fa-graduation-cap"></i> {{ post.class_level }}</span>
+            <span><i class="fas fa-map-marker-alt"></i> {{ post.location }}</span>
+            <span><i class="fas fa-money-bill-wave"></i> Tk {{ post.salary }}</span>
+        </div>
+    </div>
+    <div>
+        {% if post.status == 'Open' %}
+        <span class="badge-custom badge-open"><i class="fas fa-circle" style="font-size:0.5rem;margin-right:0.3rem;vertical-align:middle;"></i>Open</span>
+        {% elif post.status == 'Closed' %}
+        <span class="badge-custom badge-closed"><i class="fas fa-circle" style="font-size:0.5rem;margin-right:0.3rem;vertical-align:middle;"></i>Closed</span>
+        {% elif post.status == 'Filled' %}
+        <span class="badge-custom badge-filled"><i class="fas fa-check-circle" style="margin-right:0.3rem;"></i>Filled</span>
+        {% else %}
+        <span class="badge-custom badge-closed">{{ post.status }}</span>
+        {% endif %}
+    </div>
+</div>
+
+{% if applications %}
+<div class="apps-card">
+    <table class="apps-table">
+        <thead>
+            <tr>
+                <th>Tutor</th>
+                <th>Message</th>
+                <th>Status</th>
+                <th>Applied</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for app in applications %}
+            <tr>
+                <td>
+                    <div class="tutor-cell">
+                        {% if app.teacher.profile_picture %}
+                            <img src="{{ app.teacher.profile_picture }}" alt="{{ app.teacher.name }}">
+                        {% else %}
+                            {% set demo_images = ['DemoTeacher1.png', 'DemoTeacher2.png', 'DemoTeacher3.png', 'DemoTeacher4.png', 'DemoTeacher5.png'] %}
+                            {% set image_index = loop.index0 % 5 %}
+                            <img src="{{ url_for('static', filename='Assets/Image/' + demo_images[image_index]) }}" alt="{{ app.teacher.name }}">
+                        {% endif %}
+                        <div>
+                            <div class="tutor-name">{{ app.teacher.name }}</div>
+                            <div class="tutor-subject">{{ app.teacher.teacher_profile.subject if app.teacher.teacher_profile else 'Tutor' }}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    {% if app.message %}
+                    <div class="message-preview" title="{{ app.message }}">"{{ app.message }}"</div>
+                    {% else %}
+                    <span style="color:#94a3b8;font-style:italic;">No message</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if app.status == 'Pending' %}
+                    <span class="badge-custom badge-pending"><i class="fas fa-clock" style="margin-right:0.3rem;"></i>Pending</span>
+                    {% elif app.status == 'Shortlisted' %}
+                    <span class="badge-custom badge-shortlisted"><i class="fas fa-star" style="margin-right:0.3rem;"></i>Shortlisted</span>
+                    {% elif app.status == 'Selected' %}
+                    <span class="badge-custom badge-selected"><i class="fas fa-check-circle" style="margin-right:0.3rem;"></i>Selected</span>
+                    {% elif app.status == 'Rejected' %}
+                    <span class="badge-custom badge-rejected"><i class="fas fa-times-circle" style="margin-right:0.3rem;"></i>Rejected</span>
+                    {% else %}
+                    <span class="badge-custom badge-closed">{{ app.status }}</span>
+                    {% endif %}
+                </td>
+                <td style="color:#64748b;font-size:0.85rem;">{{ app.created_at.strftime('%b %d, %Y') if app.created_at else '' }}</td>
+                <td>
+                    <div style="display:flex;gap:0.35rem;flex-wrap:wrap;">
+                        {% if app.status == 'Pending' %}
+                        <form method="POST" action="{{ url_for('student.handle_application', app_id=app.id, action='shortlist') }}" style="display:inline;">
+                            <button type="submit" class="btn-action btn-shortlist"><i class="fas fa-star"></i> Shortlist</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('student.handle_application', app_id=app.id, action='select') }}" style="display:inline;">
+                            <button type="submit" class="btn-action btn-select"><i class="fas fa-check"></i> Select</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('student.handle_application', app_id=app.id, action='reject') }}" style="display:inline;" onsubmit="return confirm('Reject this application?')">
+                            <button type="submit" class="btn-action btn-reject"><i class="fas fa-times"></i> Reject</button>
+                        </form>
+                        {% elif app.status == 'Shortlisted' %}
+                        <form method="POST" action="{{ url_for('student.handle_application', app_id=app.id, action='select') }}" style="display:inline;">
+                            <button type="submit" class="btn-action btn-select"><i class="fas fa-check"></i> Select</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('student.handle_application', app_id=app.id, action='reject') }}" style="display:inline;" onsubmit="return confirm('Reject this application?')">
+                            <button type="submit" class="btn-action btn-reject"><i class="fas fa-times"></i> Reject</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="apps-card">
+    <div class="empty-state">
+        <i class="fas fa-users"></i>
+        <h4>No Applications Yet</h4>
+        <p>No tutors have applied to this post yet. Check back later or share the post.</p>
+        <a href="{{ url_for('student.posts') }}" class="btn-back" style="display:inline-flex;"><i class="fas fa-arrow-left"></i> Back to Posts</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

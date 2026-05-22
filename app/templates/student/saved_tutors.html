@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+
+{% block title %}Saved Tutors - Tuition Station{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap">
+<style>
+    .dashboard-layout { display: flex; min-height: 100vh; }
+
+    .main-content {
+        flex: 1;
+        margin-left: 280px;
+        padding: 3rem;
+    }
+
+    .page-header {
+        margin-bottom: 3rem;
+    }
+    .page-header h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+    .page-header p {
+        color: #64748b;
+        font-size: 1.1rem;
+    }
+
+    /* Tutor Grid */
+    .tutor-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2rem;
+    }
+
+    .tutor-card {
+        background: #ffffff;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        transition: all 0.3s;
+        position: relative;
+    }
+    .tutor-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+    }
+
+    .tutor-card-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .tutor-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        object-fit: cover;
+        background: #e2e8f0;
+    }
+
+    .tutor-info h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+    }
+    .tutor-info .subject {
+        color: #1a4d2e;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .tutor-details {
+        margin-bottom: 1.5rem;
+    }
+    .tutor-details p {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #64748b;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+    .tutor-details .material-symbols-outlined {
+        font-size: 1.1rem;
+        color: #1a4d2e;
+    }
+
+    .tutor-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .fee {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #1a4d2e;
+    }
+    .fee small {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #64748b;
+    }
+
+    .btn-view {
+        padding: 0.75rem 1.5rem;
+        background: #1a4d2e;
+        color: #ffffff;
+        border: none;
+        border-radius: 9999px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    .btn-view:hover {
+        background: #164a26;
+        transform: scale(1.05);
+    }
+
+    .btn-unsave {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #ef4444;
+        font-size: 1.5rem;
+        transition: all 0.2s;
+    }
+    .btn-unsave:hover {
+        transform: scale(1.2);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: #ffffff;
+        border-radius: 2rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+    .empty-state .material-symbols-outlined {
+        font-size: 4rem;
+        color: #cbd5e1;
+        margin-bottom: 1rem;
+    }
+    .empty-state h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .empty-state p {
+        color: #64748b;
+        margin-bottom: 2rem;
+    }
+    .btn-primary {
+        padding: 1rem 2rem;
+        background: #1a4d2e;
+        color: #ffffff;
+        border: none;
+        border-radius: 9999px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.2s;
+    }
+    .btn-primary:hover {
+        background: #164a26;
+        transform: scale(1.05);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include "student/inc_sidebar.html" %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Saved Tutors</h1>
+            <p>Tutors you've saved for quick access</p>
+        </div>
+
+        {% if saved_tutors %}
+            <div class="tutor-grid">
+                {% for item in saved_tutors %}
+                    {% set profile = item.profile %}
+                    {% set user = item.tutor %}
+                    <div class="mentor-card" style="position:relative;">
+                        <button onclick="unsaveTutor('{{ user.id }}')" style="position:absolute;top:0.5rem;right:0.5rem;z-index:2;background:none;border:none;cursor:pointer;color:#ef4444;" title="Remove">
+                            <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;font-size:1.25rem;">favorite</span>
+                        </button>
+                        <div class="mentor-card-top">
+                            <div class="mentor-image-container">
+                                <img src="{{ user.profile_picture or url_for('static', filename='Assets/Image/default_avatar.svg') }}" alt="{{ user.name }}" />
+                            </div>
+                            <div class="mentor-card-info">
+                                <h4 class="mentor-name">{{ user.name }}</h4>
+                                <span class="mentor-subject">{{ profile.subject if profile else 'N/A' }}</span>
+                            </div>
+                        </div>
+                        {% if profile %}
+                        <div class="mentor-stats">
+                            <div class="mentor-stat">
+                                <span class="material-symbols-outlined">location_on</span>
+                                <span>{{ profile.location or 'Flexible' }}</span>
+                            </div>
+                            <div class="mentor-stat">
+                                <span class="material-symbols-outlined">schedule</span>
+                                <span><strong>{{ profile.experience or 0 }}</strong> yrs</span>
+                            </div>
+                        </div>
+                        <div class="mentor-card-footer">
+                            <div class="mentor-price-compact">
+                                <span class="amount">Tk {{ profile.fee or 0 }}</span>
+                                <span class="period">/mo</span>
+                            </div>
+                            <a href="{{ url_for('student.teacher_profile', teacher_id=user.id) }}" class="btn-view-profile-compact">
+                                Profile
+                                <span class="material-symbols-outlined" style="font-size:0.85rem;">arrow_forward</span>
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <span class="material-symbols-outlined">favorite_border</span>
+                <h3>No saved tutors yet</h3>
+                <p>Start exploring and save tutors you're interested in!</p>
+                <a href="{{ url_for('student.search') }}" class="btn-primary">Explore Tutors</a>
+            </div>
+        {% endif %}
+    </main>
+</div>
+
+<footer class="dashboard-footer" id="dashboardFooter">
+    <p>&copy; 2026 Tuition Station. Developed by <strong>Elias, Sayadul, Mehejabin</strong></p>
+    <div>
+        <a href="{{ url_for('auth.developer') }}">Developer Info</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms</a>
+    </div>
+</footer>
+
+<!-- Profile Popup -->
+<div class="profile-popup-overlay" id="profilePopup" onclick="closeProfilePopup(event)">
+    <div class="profile-popup" onclick="event.stopPropagation()">
+        <div class="popup-cover">
+            <button class="popup-close" onclick="closeProfilePopup()">
+                <span class="material-symbols-outlined" style="font-size: 1.2rem;">close</span>
+            </button>
+        </div>
+        <div class="popup-avatar" onclick="openLightbox(this.querySelector('img').src)">
+            <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="{{ current_user.name }}" />
+        </div>
+        <div class="popup-body">
+            <h3 class="popup-name">{{ current_user.name }}</h3>
+            <p class="popup-role">Student</p>
+            <div class="popup-email">
+                <span class="material-symbols-outlined" style="font-size: 1.1rem;">mail</span>
+                {{ current_user.email }}
+            </div>
+            <div class="popup-stats">
+                <div class="popup-stat">
+                    <div class="popup-stat-value">0</div>
+                    <div class="popup-stat-label">Requests</div>
+                </div>
+                <div class="popup-stat">
+                    <div class="popup-stat-value">0</div>
+                    <div class="popup-stat-label">Tutors</div>
+                </div>
+            </div>
+            <div class="popup-actions">
+                <a href="{{ url_for('student.edit_profile') }}" class="popup-btn-edit">Edit Profile</a>
+                <a href="{{ url_for('auth.logout') }}" class="popup-btn-logout">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openProfilePopup() {
+    document.getElementById('profilePopup').classList.add('active');
+}
+
+function closeProfilePopup(event) {
+    if (!event || event.target === document.getElementById('profilePopup')) {
+        document.getElementById('profilePopup').classList.remove('active');
+    }
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        document.getElementById('profilePopup').classList.remove('active');
+    }
+});
+</script>
+
+{% block footer %}{% endblock %}
+{% endblock %}

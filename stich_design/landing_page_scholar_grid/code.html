@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Academic Atelier | Premium Private Tuition</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#004ac6",
+                        "surface-container-low": "#f3f3fe",
+                        "inverse-surface": "#2e3039",
+                        "on-error-container": "#93000a",
+                        "on-background": "#191b23",
+                        "surface-container-highest": "#e1e2ed",
+                        "tertiary-container": "#bc4800",
+                        "surface-variant": "#e1e2ed",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-tertiary-fixed-variant": "#7d2d00",
+                        "on-primary-container": "#eeefff",
+                        "tertiary-fixed-dim": "#ffb596",
+                        "primary-fixed": "#dbe1ff",
+                        "surface": "#faf8ff",
+                        "on-secondary-container": "#00714d",
+                        "on-tertiary-fixed": "#360f00",
+                        "inverse-on-surface": "#f0f0fb",
+                        "primary-container": "#2563eb",
+                        "secondary": "#006c49",
+                        "error-container": "#ffdad6",
+                        "error": "#ba1a1a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface-variant": "#434655",
+                        "on-primary-fixed": "#00174b",
+                        "background": "#faf8ff",
+                        "tertiary": "#943700",
+                        "on-secondary-fixed": "#002113",
+                        "secondary-container": "#6cf8bb",
+                        "surface-container-high": "#e7e7f3",
+                        "on-secondary": "#ffffff",
+                        "surface-dim": "#d9d9e5",
+                        "on-primary": "#ffffff",
+                        "outline": "#737686",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#005236",
+                        "on-error": "#ffffff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "tertiary-fixed": "#ffdbcd",
+                        "surface-bright": "#faf8ff",
+                        "inverse-primary": "#b4c5ff",
+                        "surface-container": "#ededf9",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "outline-variant": "#c3c6d7",
+                        "on-surface": "#191b23",
+                        "on-tertiary-container": "#ffede6",
+                        "secondary-fixed": "#6ffbbe",
+                        "surface-tint": "#0053db"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-surface text-on-background selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/70 dark:bg-slate-900/70 backdrop-blur-md shadow-sm dark:shadow-none h-20 w-full flex justify-between items-center px-8">
+<div class="text-2xl font-bold tracking-tighter text-blue-800 dark:text-blue-200">The Academic Atelier</div>
+<nav class="hidden md:flex items-center space-x-8 font-inter tracking-tight">
+<a class="text-blue-700 dark:text-blue-400 font-semibold border-b-2 border-blue-700 hover:text-blue-600 transition-colors" href="#">Find Tutors</a>
+<a class="text-on-surface-variant dark:text-slate-400 hover:text-blue-600 transition-colors" href="#">How it Works</a>
+<a class="text-on-surface-variant dark:text-slate-400 hover:text-blue-600 transition-colors" href="#">Resources</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant dark:text-slate-400 font-medium px-4 py-2 transition-all hover:text-blue-600">Sign In</button>
+<button class="bg-gradient-to-r from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-full font-semibold shadow-md active:scale-95 duration-150">Join as Tutor</button>
+</div>
+</header>
+<main class="pt-20">
+<!-- Hero Section -->
+<section class="relative min-h-[921px] flex items-center overflow-hidden">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover opacity-20" data-alt="high-end clean minimalist study space with soft natural light wooden desk and blurry library background in cool blue tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtbaVGj_ce89oOcUTQPNNGLMmO0v0mPCbCnyV_C-nTIVD7R_Ca9eKkrNHiIL26Az6JZoscywaUfHhWHmg2d46deEcOU2uECe8Qg4rARVe5TuBWboTYJjRr5wbwS90dx9yiq6Dkb1d8QCbzfr7wBeA-oHnhj1Ii0cLkmjitEtpjPbMKrU222Vs8fsuSWrhmb1c5ZqcI-LriYVCPVRUeTzn8rbU-fQtgXP7jAIJrwWF3Vfvy46m_Vch5GlrPhPXuZpC23vyik221g5QI"/>
+<div class="absolute inset-0 bg-gradient-to-b from-surface via-transparent to-surface-container-low"></div>
+</div>
+<div class="container mx-auto px-8 relative z-10 flex flex-col lg:flex-row items-center gap-12">
+<div class="lg:w-3/5 text-left">
+<span class="inline-block px-4 py-1 mb-6 text-sm font-bold tracking-widest uppercase text-secondary bg-secondary-container/30 rounded-full">Scholar Grid Premium</span>
+<h1 class="text-6xl lg:text-8xl font-black tracking-tighter leading-[0.9] text-on-surface mb-8">
+                        Find Trusted Home <br/> Tutors Near You.
+                    </h1>
+<p class="text-xl text-on-surface-variant max-w-xl leading-relaxed mb-12">
+                        Elevate your learning experience with bespoke private instruction from the world's most distinguished academic mentors.
+                    </p>
+<!-- Search Bar / Filters -->
+<div class="bg-surface-container-lowest p-4 rounded-3xl shadow-xl flex flex-col md:flex-row gap-4 items-center max-w-4xl">
+<div class="flex-1 w-full px-4 border-r-0 md:border-r border-outline-variant/30">
+<label class="block text-[10px] uppercase tracking-widest font-bold text-outline mb-1">Subject</label>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl">school</span>
+<input class="w-full bg-transparent border-none focus:ring-0 text-on-surface font-medium p-0 placeholder:text-outline-variant" placeholder="e.g. Mathematics" type="text"/>
+</div>
+</div>
+<div class="flex-1 w-full px-4 border-r-0 md:border-r border-outline-variant/30">
+<label class="block text-[10px] uppercase tracking-widest font-bold text-outline mb-1">Location</label>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl">location_on</span>
+<input class="w-full bg-transparent border-none focus:ring-0 text-on-surface font-medium p-0 placeholder:text-outline-variant" placeholder="Dhaka, Bangladesh" type="text"/>
+</div>
+</div>
+<div class="flex-1 w-full px-4">
+<label class="block text-[10px] uppercase tracking-widest font-bold text-outline mb-1">Budget (Hr)</label>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl">payments</span>
+<input class="w-full bg-transparent border-none focus:ring-0 text-on-surface font-medium p-0 placeholder:text-outline-variant" placeholder="Range" type="text"/>
+</div>
+</div>
+<button class="bg-primary text-on-primary p-4 rounded-2xl flex items-center justify-center hover:bg-primary-container transition-colors active:scale-95">
+<span class="material-symbols-outlined">search</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Categories Section (Bento Grid) -->
+<section class="py-32 bg-surface-container-low">
+<div class="container mx-auto px-8">
+<div class="flex justify-between items-end mb-16">
+<div>
+<span class="text-sm font-bold tracking-widest text-secondary uppercase mb-2 block">Curation</span>
+<h2 class="text-5xl font-black tracking-tighter text-on-surface">Curated Pathyways.</h2>
+</div>
+<a class="text-primary font-bold hover:underline mb-2 flex items-center gap-2" href="#">
+                        View All Categories <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<div class="md:col-span-2 md:row-span-2 group relative overflow-hidden rounded-3xl bg-surface-container-lowest h-[450px]">
+<img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="happy school children laughing in a bright classroom with colorful books and art supplies soft focus" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAr-ONU3_ax5w8kVd7HE0PQWXN7MDSvzek87ihz-5HKpl-eq9k9gAu3yKHdnW7qmSHXRdJ5s30UkutdOWltUiPxW_rI-FWIaWW_mrw1JDVuK77gZQsA4twsCVDbAi-iZIwAgiXkwV_sjCZWCcgjssr61j205LDD65nUQ0bn9QbONUE1pzALuhlJb9k5w8V6jixZ5gWdILdvtMStjfmkNmGyOYE842ulFRCLgQvqACwztD8i7oN79vnbNKz1hx7cCVemRP2ZopWROzJS"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/90 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-8">
+<h3 class="text-3xl font-black text-on-primary mb-2">Class 1-5</h3>
+<p class="text-on-primary/80 font-medium">Foundational Excellence for Young Minds</p>
+</div>
+</div>
+<div class="group relative overflow-hidden rounded-3xl bg-surface-container-lowest h-[215px]">
+<img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="focused teenager studying with laptop and notebook on a clean desk near a window" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUAYDyj_fW9Ifz6yBWj_HTKSIh4HawKY-I9XphxvewqJJ9cbmX633Mp7fsvk0IGxdt30KBFZan5KEznlZUhxhkcMxw1ZWHyVaRihXi4v4hotXS7J_5eFIPdidES0eOqh_czGSFCob6icsOGTSpX97dp7f1LswQIEaBHCok3PA_LWWPEcDFWgCjY1pMnqMK8vnAYXyXThdScWMSkS_e7k1D1xNCz-CiFXYHAKx3bQBbgF-jnF0BqgCLFbMgi0EyfrO5xtWDqbGV2DWe"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-6">
+<h3 class="text-xl font-black text-on-primary">SSC Prep</h3>
+</div>
+</div>
+<div class="group relative overflow-hidden rounded-3xl bg-surface-container-lowest h-[215px]">
+<img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="group of students discussing around a library table with digital tablets and research papers" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlbWDyLPkwSJ3pyxt7mky5LUjFh9PSUHFqx-fVa6Zb5n0PoIvijX9pV9Yye56VGrIPFo1QoG4VdiyRcZ02Y2xFgM7TdEvj13oNdbx2X-tXW8hazBiPDa5RbfaosyxPee-dkOuj93L-yTVlpou6sBSgozfTsntf8QjX7livIev9sCBtVN8HWYM3raOv4X5lchGnJXn_scgi9qyxuD46V--7oa4lEppcnjTCLZ21lX6_oj7DXDRBnMRTL8gnYH9aTL_a83kVBSOjCu0n"/>
+<div class="absolute inset-0 bg-gradient-to-t from-secondary/80 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-6">
+<h3 class="text-xl font-black text-on-primary">HSC Masters</h3>
+</div>
+</div>
+<div class="md:col-span-2 group relative overflow-hidden rounded-3xl bg-surface-container-lowest h-[215px]">
+<img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="grand university lecture hall architecture with historic pillars and modern technology accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClfXjRN8YxlgiFMx9C_AanSSfgJMQURY6-pLZV2NE7wpwX98tHu-ZMXmX0t6Nn1Jog-c_O3-ZLAXrJSnklScKfbvuF0OOwYSTZ6nUA_WrxWQ-uFsINnOlsM-ZjHCbLLTFex6CEY7ymnczwVqsnfRR7n8_bCMcY1kQbssOgygv4pQjaYya96dsTwp62ehi3ZcWRUudwggC6AWPJcXkqOpBC1Z9d3Hff_yKRFSkOViIyUhkCsVQIvVS2nO9YCg-8BPN8jyQ-5LcTtnDJ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-6">
+<h3 class="text-xl font-black text-on-primary">University &amp; Specialized Research</h3>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Professional Spotlight (Custom Component) -->
+<section class="py-32 overflow-hidden bg-surface">
+<div class="container mx-auto px-8 relative">
+<div class="flex flex-col lg:flex-row items-center">
+<!-- Left: Asymmetric Imagery -->
+<div class="lg:w-1/2 relative h-[600px] flex items-center justify-center">
+<div class="absolute w-[450px] h-[450px] bg-primary-fixed rounded-full blur-[100px] opacity-30"></div>
+<div class="relative z-10 w-full max-w-lg">
+<img class="rounded-[40px] shadow-2xl rotate-[-3deg] border-8 border-surface translate-x-4" data-alt="professional female professor smiling warmly in front of a white wall clean studio photography professional academic attire" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsJnx5rvqSnCPaky1hf-1-PvlbZTcRWAZxuhDwkqMAzLHxjiD37qGUIVNtmXRut3c6pA-PB8R9p5sBfOFjO3GKhQu0olcmSlQHqJNACbvpY8OkIruNJEcwWx317YzxNLtuygHS3dYlc-Y0L5bF83Is02QvqwE36ozTKWRHB-ofUia1E503VIPbn9EGGp2L_Uz246R6j57w8Mq-Peyq0Svhk8dJsTbU5K_9ZuRJscqOboucBCd9RX94E5BhBWDXFENu-IdxncSOucA7"/>
+<div class="absolute -bottom-8 -right-8 bg-secondary p-8 rounded-3xl shadow-xl rotate-[6deg]">
+<span class="text-white font-black text-4xl">98%</span>
+<p class="text-white/80 text-sm font-bold uppercase tracking-widest">Success Rate</p>
+</div>
+</div>
+</div>
+<!-- Right: Editorial Content -->
+<div class="lg:w-1/2 mt-20 lg:mt-0 z-20">
+<div class="bg-surface-container-low p-16 rounded-[48px] -ml-0 lg:-ml-24 shadow-sm relative">
+<span class="text-sm font-bold tracking-[0.2em] text-secondary uppercase mb-6 block">The Spotlight</span>
+<h2 class="text-5xl font-black tracking-tighter text-on-surface mb-8 leading-tight">
+                                Excellence is Not <br/> Accident. It's Mentorship.
+                            </h2>
+<p class="text-xl text-on-surface-variant leading-relaxed mb-10">
+                                At The Academic Atelier, we vet each tutor through a rigorous 5-stage selection process. We don't just find you a teacher; we find you a guide who understands your unique cognitive footprint.
+                            </p>
+<div class="flex gap-4">
+<button class="bg-primary text-on-primary px-10 py-5 rounded-full font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-transform">Find Your Match</button>
+<button class="bg-surface-container-high text-primary px-10 py-5 rounded-full font-bold hover:bg-surface-container-highest transition-colors">Our Methodology</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Featured Tutors Section -->
+<section class="py-32 bg-surface-container-low">
+<div class="container mx-auto px-8">
+<div class="text-center mb-20">
+<span class="text-sm font-bold tracking-widest text-primary uppercase mb-2 block">Elite Educators</span>
+<h2 class="text-5xl font-black tracking-tighter text-on-surface">Top Tier Mentors</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Tutor Card 1 -->
+<div class="bg-surface-container-lowest rounded-3xl p-6 transition-all hover:-translate-y-2 hover:shadow-xl relative overflow-visible flex flex-col h-full">
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 rounded-3xl overflow-hidden border-8 border-surface-container-lowest shadow-lg">
+<img class="w-full h-full object-cover" data-alt="portrait of a confident male mathematics tutor with glasses smiling softly outdoor setting natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRRFcJx4RiWkxSc6y3oZsqY2doPXbRJyN4Bp-UouMPnbYbIdLEepNHIRq0I2IZoAUDBOTSROTZFoRmAZd1n1146ch19wMCgYdIbjZ3MvNaih6cNJuzG-Px0YAVQAdAZYs8FDS_NVbFLHJGEdDFohYOJSDT9-pc71nEF0yX7WdjIoEo3L32YoxAaLCjLSvqE1QZZjX3gmowWnfYMPvfkVszqqTK8-RybIZM66dJvmdWOvP1wvb6obYZo6Iy2jS15gnfaLpceIduO_BF"/>
+</div>
+<div class="pt-24 text-center flex-grow">
+<div class="flex items-center justify-center gap-1 text-secondary mb-1">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-xs font-bold uppercase tracking-wider">4.9 (124 Reviews)</span>
+</div>
+<h3 class="text-2xl font-black tracking-tight text-on-surface mb-1">Dr. Ariful Haque</h3>
+<p class="text-primary font-bold text-sm uppercase tracking-widest mb-6">Physics &amp; Higher Math</p>
+<div class="flex flex-col gap-3 text-left bg-surface-container-low p-4 rounded-2xl mb-6">
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-lg">location_on</span>
+<span class="text-sm font-medium">Gulshan, Dhaka</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-lg">schedule</span>
+<span class="text-sm font-medium">8+ Years Experience</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<div class="text-on-surface">
+<span class="text-2xl font-black">৳1200</span>
+<span class="text-xs font-bold text-outline uppercase tracking-tighter">/hr</span>
+</div>
+<button class="bg-primary-container text-on-primary px-5 py-2.5 rounded-full font-bold text-sm hover:bg-primary transition-colors">Book Now</button>
+</div>
+</div>
+<!-- Tutor Card 2 -->
+<div class="bg-surface-container-lowest rounded-3xl p-6 transition-all hover:-translate-y-2 hover:shadow-xl relative overflow-visible flex flex-col h-full">
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 rounded-3xl overflow-hidden border-8 border-surface-container-lowest shadow-lg">
+<img class="w-full h-full object-cover" data-alt="intelligent young woman tutor with organized books professional minimalist office bright sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnNdOEGG96_dTxDWXJNtNp_SlujLVsIVdX5aUlciNzXhNd1WMBBTGwpNiDDZ-Y3IIdr7LW_xgvWXg_NTsb-vRt5oRnWaAie1jWJZuxUPRsVBx9ucPcCaEOUmTWiwrW6fqoHeqPdj-70837oQmVxXwv6h30BiEKAOT8pJzRdMz3zn_FYwbAcg0sBYWdq6mkbLi-Eh5Xxx_HbSPIy_RwEFfRQb9SMKyitAhJuMJZ8MrNKoz9UGEhh8DYfydJts5s73-rFXRX3oXYL8k_"/>
+</div>
+<div class="pt-24 text-center flex-grow">
+<div class="flex items-center justify-center gap-1 text-secondary mb-1">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-xs font-bold uppercase tracking-wider">5.0 (89 Reviews)</span>
+</div>
+<h3 class="text-2xl font-black tracking-tight text-on-surface mb-1">Sultana Kamal</h3>
+<p class="text-primary font-bold text-sm uppercase tracking-widest mb-6">English &amp; IELTS</p>
+<div class="flex flex-col gap-3 text-left bg-surface-container-low p-4 rounded-2xl mb-6">
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-lg">location_on</span>
+<span class="text-sm font-medium">Banani, Dhaka</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-lg">schedule</span>
+<span class="text-sm font-medium">5 Years Experience</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<div class="text-on-surface">
+<span class="text-2xl font-black">৳1500</span>
+<span class="text-xs font-bold text-outline uppercase tracking-tighter">/hr</span>
+</div>
+<button class="bg-primary-container text-on-primary px-5 py-2.5 rounded-full font-bold text-sm hover:bg-primary transition-colors">Book Now</button>
+</div>
+</div>
+<!-- Tutor Card 3 -->
+<div class="bg-surface-container-lowest rounded-3xl p-6 transition-all hover:-translate-y-2 hover:shadow-xl relative overflow-visible flex flex-col h-full">
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 rounded-3xl overflow-hidden border-8 border-surface-container-lowest shadow-lg">
+<img class="w-full h-full object-cover" data-alt="friendly male university student tutoring with a tablet computer bright studio setup modern academic style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvfS4cfL4MzrnSy45VMEYlB7PL9xJiaORFWEachz2gzlZicGUALX0JborTDnqK8QeMYXpO-vCHCslnYzn8Kv9pG5Q73cUXwU0VOttPZlVhqL1uHXQzKWUDQ6RVmY_fMQGQu4FhJpKp4DRj6m53tnzFUj5zm4OtA3zvjQgdUEp0JiiLb6O3NjFD1fl8d6h35BF1Ka6b9N1YWbFklv7IBA0jBvoeYu8eaRtGH4ETTWQ2s1O3CCP1kEp8vr6VLNBflWM8MHLZNy4eWKvJ"/>
+</div>
+<div class="pt-24 text-center flex-grow">
+<div class="flex items-center justify-center gap-1 text-secondary mb-1">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-xs font-bold uppercase tracking-wider">4.8 (210 Reviews)</span>
+</div>
+<h3 class="text-2xl font-black tracking-tight text-on-surface mb-1">Tanvir Ahmed</h3>
+<p class="text-primary font-bold text-sm uppercase tracking-widest mb-6">Chemistry &amp; Biology</p>
+<div class="flex flex-col gap-3 text-left bg-surface-container-low p-4 rounded-2xl mb-6">
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-lg">location_on</span>
+<span class="text-sm font-medium">Dhanmondi, Dhaka</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-lg">schedule</span>
+<span class="text-sm font-medium">10 Years Experience</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<div class="text-on-surface">
+<span class="text-2xl font-black">৳1000</span>
+<span class="text-xs font-bold text-outline uppercase tracking-tighter">/hr</span>
+</div>
+<button class="bg-primary-container text-on-primary px-5 py-2.5 rounded-full font-bold text-sm hover:bg-primary transition-colors">Book Now</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- How It Works Section -->
+<section class="py-32 bg-surface">
+<div class="container mx-auto px-8">
+<div class="flex flex-col md:flex-row items-center gap-20">
+<div class="md:w-1/2">
+<h2 class="text-5xl font-black tracking-tighter text-on-surface mb-12">The Atelier Method.</h2>
+<div class="space-y-12">
+<div class="flex gap-6">
+<div class="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center flex-shrink-0">
+<span class="text-on-primary font-black text-2xl">01</span>
+</div>
+<div>
+<h4 class="text-xl font-bold text-on-surface mb-2">Define Your Journey</h4>
+<p class="text-on-surface-variant leading-relaxed">Tell us your academic goals, current challenges, and preferred learning style through our adaptive consultation tool.</p>
+</div>
+</div>
+<div class="flex gap-6">
+<div class="w-16 h-16 rounded-2xl bg-surface-container-high flex items-center justify-center flex-shrink-0">
+<span class="text-primary font-black text-2xl">02</span>
+</div>
+<div>
+<h4 class="text-xl font-bold text-on-surface mb-2">Elite Matching</h4>
+<p class="text-on-surface-variant leading-relaxed">Our proprietary algorithm identifies the top 3 tutors that align perfectly with your pedagogical needs and schedule.</p>
+</div>
+</div>
+<div class="flex gap-6">
+<div class="w-16 h-16 rounded-2xl bg-surface-container-high flex items-center justify-center flex-shrink-0">
+<span class="text-primary font-black text-2xl">03</span>
+</div>
+<div>
+<h4 class="text-xl font-bold text-on-surface mb-2">Transformative Sessions</h4>
+<p class="text-on-surface-variant leading-relaxed">Begin your learning journey with dedicated home sessions or digital ateliers focused on mastery and excellence.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="md:w-1/2 relative">
+<div class="rounded-[64px] overflow-hidden bg-primary shadow-2xl relative aspect-square">
+<img class="w-full h-full object-cover opacity-80 mix-blend-overlay" data-alt="stack of vintage books in a modern brightly lit library setting with high end furniture and soft blur background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEK_g80Rf-Din3HghM5j2WM4XNUp2nJgE7z5IysDF7X6dqoo8L2ZheOqxct0Mh9usEppOtbHfnvNtgdwrftD8ayT9Eidw_FX59KSOyVFE0ZBFtPRwDTtqqFX2xnpFZuQoNV_g8qsZEujZPn7moB8LCSH4k-rYWQZUCGdOHbhGaZKBfqn-v_d_huYbPFPARpMcZZaewnmdmP13mNYwvo87DPJSJgss6KLhpdvVvkHRhhY-wZSKiZuvckh-20hEAWc8rPh3NFuxjrcoy"/>
+<div class="absolute inset-0 flex flex-col justify-end p-12 bg-gradient-to-t from-primary to-transparent">
+<blockquote class="text-3xl font-light italic text-on-primary mb-4">"Education is not the filling of a pail, but the lighting of a fire."</blockquote>
+<cite class="text-on-primary font-bold tracking-widest uppercase text-sm block">— W.B. Yeats</cite>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA -->
+<section class="py-32">
+<div class="container mx-auto px-8">
+<div class="bg-inverse-surface rounded-[48px] p-16 md:p-24 text-center relative overflow-hidden">
+<div class="absolute top-0 right-0 w-96 h-96 bg-primary/20 blur-[120px]"></div>
+<div class="absolute bottom-0 left-0 w-96 h-96 bg-secondary/10 blur-[120px]"></div>
+<div class="relative z-10 max-w-3xl mx-auto">
+<h2 class="text-5xl md:text-7xl font-black tracking-tighter text-inverse-on-surface mb-8">Ready to Master Your Future?</h2>
+<p class="text-xl text-inverse-on-surface/70 mb-12 leading-relaxed">Join thousands of students and distinguished mentors in the pursuit of academic mastery. Your seat in the atelier awaits.</p>
+<div class="flex flex-col sm:flex-row justify-center gap-6">
+<button class="bg-primary text-on-primary px-12 py-6 rounded-full font-black text-lg shadow-xl hover:scale-105 transition-transform active:scale-95">Enroll as Student</button>
+<button class="bg-surface-container-lowest text-on-surface px-12 py-6 rounded-full font-black text-lg shadow-xl hover:scale-105 transition-transform active:scale-95">Join the Faculty</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-outline_variant/15 bg-surface dark:bg-slate-950 flex flex-col md:flex-row justify-between items-center px-12 py-16 w-full font-inter text-xs leading-relaxed">
+<div class="mb-8 md:mb-0">
+<div class="text-xl font-bold tracking-tighter text-blue-800 mb-2">The Academic Atelier</div>
+<p class="text-slate-500">© 2024 The Academic Atelier. Curated Excellence in Education.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8 text-slate-500">
+<a class="hover:text-blue-600 transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-blue-600 transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-blue-600 transition-colors" href="#">Contact Support</a>
+<a class="hover:text-blue-600 transition-colors" href="#">Careers</a>
+</div>
+</footer>
+</body></html>

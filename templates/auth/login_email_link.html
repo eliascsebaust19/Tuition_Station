@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Login with Email Link - Tuition Station{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Passwordless Login</h4>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Enter your email address and we'll send you a link to log in instantly without a password.</p>
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" autocomplete="email" required placeholder="name@example.com">
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Send Login Link</button>
+                            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-secondary">Back to Password Login</a>
+                        </div>
+                    </form>
+
+                    {% if session.login_link %}
+                    <div class="mt-3 p-3 bg-light rounded">
+                        <p><strong>Demo Mode - Login Link:</strong></p>
+                        <a href="{{ session.login_link }}" class="btn btn-success btn-sm" target="_blank">Click to Login</a>
+                        <p class="mt-2 small text-muted">Copy link: <code>{{ session.login_link }}</code></p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

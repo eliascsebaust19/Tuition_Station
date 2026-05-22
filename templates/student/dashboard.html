@@ -1,0 +1,464 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Tuition Station{% endblock %}
+
+{% block extra_css %}
+<style>
+.header-text .kicker { color: var(--secondary); }
+
+.tutor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+}
+
+.mentor-card {
+    background: #ffffff;
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+}
+.mentor-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px -8px rgba(0,74,198,0.12);
+    border-color: rgba(0,74,198,0.08);
+}
+
+.mentor-card-top {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.mentor-avatar {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.mentor-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.mentor-info { flex: 1; min-width: 0; }
+.mentor-name {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.mentor-subject {
+    font-size: 0.75rem;
+    color: var(--primary);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+.mentor-subject .material-symbols-outlined { font-size: 0.85rem; }
+
+.mentor-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-bottom: 0.85rem;
+}
+.mentor-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 0.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.mentor-tag.online { background: #f0fdf4; color: #166534; border: 1px solid #dcfce7; }
+.mentor-tag.offline { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+.mentor-tag.demo { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+.mentor-tag .material-symbols-outlined { font-size: 0.6rem; }
+
+.mentor-badge {
+    position: absolute;
+    top: 0.75rem; right: 0.75rem;
+    background: #f0fdf4; color: #166534;
+    padding: 0.15rem 0.5rem; border-radius: 0.35rem;
+    font-size: 0.55rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.04em;
+    display: flex; align-items: center; gap: 0.2rem;
+    border: 1px solid #dcfce7;
+}
+
+.mentor-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+}
+.mentor-stat {
+    background: #f8fafc;
+    border-radius: 0.5rem;
+    padding: 0.45rem 0.5rem;
+    text-align: center;
+}
+.mentor-stat .stat-icon { font-size: 0.75rem; color: var(--primary); display: block; line-height: 1; }
+.mentor-stat .stat-value { font-size: 0.8rem; font-weight: 800; color: #0f172a; display: block; line-height: 1.3; margin-top: 0.15rem; }
+.mentor-stat .stat-label { font-size: 0.5rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.04em; }
+
+.mentor-card-footer {
+    margin-top: auto;
+    padding-top: 0.75rem;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.mentor-fee {
+    display: flex;
+    align-items: baseline;
+    gap: 0.2rem;
+}
+.mentor-fee .amount { font-size: 1.1rem; font-weight: 900; color: #0f172a; }
+.mentor-fee .period { font-size: 0.6rem; font-weight: 700; color: #94a3b8; }
+
+.btn-view {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.5rem 1rem;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    transition: all 0.2s;
+}
+.btn-view:hover { opacity: 0.9; }
+.btn-view .material-symbols-outlined { font-size: 0.85rem; }
+    text-transform: uppercase;
+}
+
+.btn-view-profile-compact {
+    background: var(--primary);
+    color: #ffffff;
+    padding: 0.45rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    font-size: 0.7rem;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    box-shadow: 0 4px 8px -4px rgba(0, 74, 198, 0.2);
+    text-decoration: none;
+}
+
+.btn-view-profile-compact:hover {
+    background: #0f172a;
+    transform: translateY(-1px);
+}
+
+.premium-badge-compact {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    padding: 0.15rem 0.4rem;
+    border-radius: 0.3rem;
+    font-size: 0.5rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    z-index: 2;
+}
+</style>
+{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include "student/inc_sidebar.html" %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="header-section">
+            <div class="header-text">
+                <p class="kicker">A Teacher Student Connector</p>
+                <h2>Find Your Mentor.</h2>
+                <p>Browse our atelier of vetted scholars. Filter by discipline and expertise level to find your perfect match.</p>
+            </div>
+
+            <div class="user-profile" onclick="openProfilePopup()">
+                <div class="user-avatar" onclick="event.stopPropagation(); openLightbox(this.querySelector('img').src)">
+                    <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="Profile" style="cursor: pointer;" />
+                </div>
+                <div class="user-info">
+                    <p class="role">Student</p>
+                    <p class="name">{{ current_user.name }}</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Search Section -->
+        <section class="search-section">
+            <form method="GET" action="{{ url_for('student.search') }}">
+                <div class="search-grid">
+                    <div class="search-field">
+                        <label for="search-subject">Subject Discipline</label>
+                        <div class="position-relative">
+                            <span class="material-symbols-outlined">school</span>
+                            <select id="search-subject" name="subject">
+                                <option value="">All Subjects</option>
+                                <option value="Mathematics">Mathematics</option>
+                                <option value="Physics">Physics</option>
+                                <option value="Chemistry">Chemistry</option>
+                                <option value="Biology">Biology</option>
+                                <option value="English">English</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="search-field">
+                        <label for="search-level">Academic Level</label>
+                        <div class="position-relative">
+                            <span class="material-symbols-outlined">trending_up</span>
+                            <select id="search-level" name="level">
+                                <option value="">All Levels</option>
+                                <option value="SSC">SSC</option>
+                                <option value="HSC">HSC</option>
+                                <option value="University">University</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="search-field">
+                        <label for="search-budget">Budget Range</label>
+                        <div class="position-relative">
+                            <span class="material-symbols-outlined">payments</span>
+                            <select id="search-budget" name="budget">
+                                <option value="">Any Budget</option>
+                                <option value="2000">Tk 2,000 - 5,000</option>
+                                <option value="5000">Tk 5,000 - 10,000</option>
+                                <option value="10000">Tk 10,000+</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="search-field">
+                        <label>&nbsp;</label>
+                        <button type="submit" class="btn-find-tutor">
+                            <span class="material-symbols-outlined">search</span>
+                            Find Tutor
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filter-tags">
+                    <button type="button" class="filter-tag primary" onclick="clearFilters()">
+                        Clear All <span class="material-symbols-outlined" style="font-size: 0.75rem;">close</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Active Requests Section -->
+        <section class="requests-section">
+            <div class="requests-header">
+                <h3>Active Requests</h3>
+            </div>
+
+            {% if requests %}
+            <div class="requests-grid">
+                {% for post, app in requests %}
+                <div class="request-card request-{{ app.status.lower() }}">
+                    <div class="request-header">
+                        <div class="request-tutor">
+                        <div class="tutor-avatar">
+                                {% set demo_images = ['DemoTeacher1.png', 'DemoTeacher2.png', 'DemoTeacher3.png', 'DemoTeacher4.png', 'DemoTeacher5.png'] %}
+                                {% set image_index = loop.index0 % 5 %}
+                                <img src="{{ url_for('static', filename='Assets/Image/' + demo_images[image_index]) }}" alt="Tutor" />
+                            </div>
+                            <div>
+                                <p class="tutor-name">{{ post.title }}</p>
+                                <p class="tutor-subject">{{ post.subject }}</p>
+                            </div>
+                        </div>
+                        <span class="status-badge status-{{ app.status.lower() }}">{{ app.status }}</span>
+                    </div>
+                    {% if app.message %}
+                    <p class="request-message">"{{ app.message }}"</p>
+                    {% endif %}
+                    <p class="request-date">{{ app.created_at.strftime('%b %d, %Y') }}</p>
+                    {% if app.status == 'Selected' %}
+                    <a href="{{ url_for('student.messages') }}" class="btn-session">
+                        Contact Tutor
+                    </a>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-requests">
+                <span class="material-symbols-outlined">inbox</span>
+                <p>No requests sent yet.</p>
+                <a href="{{ url_for('student.search') }}" class="btn-find">Find a Tutor</a>
+            </div>
+            {% endif %}
+        </section>
+
+        <section class="tutors-section">
+            <div class="tutors-header">
+                <h3>Available Masters</h3>
+                <a href="{{ url_for('student.search') }}">View All Scholars</a>
+            </div>
+
+            {% if tutors %}
+            <div class="tutor-grid">
+                {% for t in tutors[:8] %}
+                <a href="{{ url_for('student.teacher_profile', teacher_id=t.user.id) }}" class="mentor-card">
+
+                    {% if t.featured %}
+                    <div class="mentor-badge" style="background:#fef3c7;color:#92400e;border-color:#fde68a;">
+                        <span class="material-symbols-outlined" style="font-size:0.5rem;">stars</span>
+                        Featured
+                    </div>
+                    {% elif t.verified %}
+                    <div class="mentor-badge">
+                        <span class="material-symbols-outlined" style="font-size:0.5rem;">verified</span>
+                        Verified
+                    </div>
+                    {% endif %}
+
+                    <div class="mentor-card-top">
+                        <div class="mentor-avatar">
+                            {% if t.user.profile_picture %}
+                                <img src="{{ t.user.profile_picture }}" alt="{{ t.user.name }}" />
+                            {% else %}
+                                {% set demo_images = ['DemoTeacher1.png', 'DemoTeacher2.png', 'DemoTeacher3.png', 'DemoTeacher4.png', 'DemoTeacher5.png'] %}
+                                {% set image_index = loop.index0 % 5 %}
+                                <img src="{{ url_for('static', filename='Assets/Image/' + demo_images[image_index]) }}" alt="{{ t.user.name }}" />
+                            {% endif %}
+                        </div>
+                        <div class="mentor-info">
+                            <h4 class="mentor-name">{{ t.user.name }}</h4>
+                            <div class="mentor-subject">
+                                <span class="material-symbols-outlined">school</span>
+                                {{ t.profile.subject }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mentor-tags">
+                        {% if t.profile.teaching_mode == 'online' or t.profile.teaching_mode == 'both' %}
+                        <span class="mentor-tag online"><span class="material-symbols-outlined">wifi</span>Online</span>
+                        {% endif %}
+                        {% if t.profile.teaching_mode == 'offline' or t.profile.teaching_mode == 'both' %}
+                        <span class="mentor-tag offline"><span class="material-symbols-outlined">location_on</span>{{ t.profile.location or 'Offline' }}</span>
+                        {% endif %}
+                        {% if t.profile.demo_class_available %}
+                        <span class="mentor-tag demo"><span class="material-symbols-outlined">play_circle</span>Demo</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="mentor-stats">
+                        <div class="mentor-stat">
+                            <span class="stat-icon material-symbols-outlined">schedule</span>
+                            <span class="stat-value">{{ t.profile.experience or 0 }}y</span>
+                            <span class="stat-label">Exp</span>
+                        </div>
+                        <div class="mentor-stat">
+                            <span class="stat-icon material-symbols-outlined">location_on</span>
+                            <span class="stat-value" style="font-size:0.65rem;">{{ (t.profile.location or 'Flexible')|truncate(8, True) }}</span>
+                            <span class="stat-label">Location</span>
+                        </div>
+                        <div class="mentor-stat">
+                            <span class="stat-icon material-symbols-outlined">payments</span>
+                            <span class="stat-value">Tk{{ t.profile.fee }}</span>
+                            <span class="stat-label">Fee</span>
+                        </div>
+                    </div>
+
+                    <div class="mentor-card-footer">
+                        <div class="mentor-fee">
+                            <span class="amount">Tk {{ t.profile.fee }}</span>
+                            <span class="period">/mo</span>
+                        </div>
+                        <span class="btn-view">
+                            View
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </span>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <span class="material-symbols-outlined">school</span>
+                <h3>No Tutors Available</h3>
+                <p>Check back later for available tutors</p>
+            </div>
+            {% endif %}
+        </section>
+    </main>
+</div>
+
+<footer class="dashboard-footer" id="dashboardFooter">
+    <p>&copy; 2026 Tuition Station. Developed by <strong>Elias, Sayadul, Mehejabin</strong></p>
+    <div>
+        <a href="{{ url_for('auth.developer') }}">Developer Info</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms</a>
+    </div>
+</footer>
+
+<!-- Profile Popup -->
+<div class="profile-popup-overlay" id="profilePopup" onclick="closeProfilePopup(event)">
+    <div class="profile-popup" onclick="event.stopPropagation()">
+        <div class="popup-cover">
+            <button class="popup-close" onclick="closeProfilePopup()">
+                <span class="material-symbols-outlined" style="font-size: 1.2rem;">close</span>
+            </button>
+        </div>
+        <div class="popup-avatar" onclick="openLightbox(this.querySelector('img').src)">
+            <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="{{ current_user.name }}" />
+        </div>
+        <div class="popup-body">
+            <h3 class="popup-name">{{ current_user.name }}</h3>
+            <p class="popup-role">Student</p>
+            <div class="popup-email">
+                <span class="material-symbols-outlined" style="font-size: 1.1rem;">mail</span>
+                {{ current_user.email }}
+            </div>
+            <div class="popup-stats">
+                <div class="popup-stat">
+                    <div class="popup-stat-value" id="popupRequestCount">{{ requests|length }}</div>
+                    <div class="popup-stat-label">Requests</div>
+                </div>
+                <div class="popup-stat">
+                    <div class="popup-stat-value" id="popupTutorCount">{{ teachers|length }}</div>
+                    <div class="popup-stat-label">Tutors</div>
+                </div>
+            </div>
+            <div class="popup-actions">
+                <a href="{{ url_for('student.edit_profile') }}" class="popup-btn-edit">Edit Profile</a>
+                <a href="{{ url_for('auth.logout') }}" class="popup-btn-logout">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

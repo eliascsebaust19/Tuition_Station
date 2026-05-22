@@ -1,0 +1,495 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - Tuition Station{% endblock %}
+
+{% block extra_css %}
+<style>
+body { margin: 0; background: var(--surface); }
+.dashboard-layout { display: flex; min-height: 100vh; }
+
+.main-content { flex: 1; margin-left: 280px; padding: 2.5rem 3rem; }
+
+.page-header { margin-bottom: 2rem; }
+.page-header h2 { font-size: 2rem; font-weight: 900; letter-spacing: -0.02em; }
+.page-header p { color: var(--on-surface-variant); font-size: 0.9rem; margin-top: 0.25rem; }
+
+/* Two Column Grid */
+.content-grid { display: grid; grid-template-columns: 320px 1fr; gap: 2rem; align-items: start; }
+
+/* Profile Card (Left) */
+.profile-card {
+    background: var(--surface-container-lowest);
+    border-radius: 2rem;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+    position: sticky;
+    top: 2rem;
+}
+.profile-img-wrap {
+    width: 140px; height: 140px;
+    margin: 0 auto 1.25rem;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--surface-container);
+    border: 4px solid var(--primary-fixed);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+.profile-img-wrap:hover { transform: scale(1.03); box-shadow: 0 8px 30px rgba(0,74,198,0.15); }
+.profile-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.profile-img-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.35);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.2s;
+    border-radius: 50%;
+}
+.profile-img-wrap:hover .profile-img-overlay { opacity: 1; }
+.profile-img-overlay .material-symbols-outlined { color: #fff; font-size: 2rem; }
+
+.profile-card h3 { font-size: 1.25rem; font-weight: 800; margin-bottom: 0.25rem; }
+.profile-card .role { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--on-surface-variant); opacity: 0.7; margin-bottom: 1rem; }
+
+.status-pill {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 9999px;
+    font-size: 0.75rem; font-weight: 700;
+    background: rgba(108,248,187,0.2);
+    color: var(--on-secondary-container);
+    margin-bottom: 1.5rem;
+}
+.status-pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--secondary); }
+
+.btn-change-photo {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    border-radius: 9999px;
+    background: var(--surface-container-high);
+    color: var(--on-surface);
+    font-size: 0.75rem; font-weight: 700;
+    border: none; cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-change-photo:hover { background: var(--primary); color: var(--on-primary); }
+
+.quick-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1.5rem; }
+.quick-stat { background: var(--surface-container); border-radius: 1rem; padding: 1rem; }
+.quick-stat .value { font-size: 1.25rem; font-weight: 800; color: var(--primary); }
+.quick-stat .label { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--on-surface-variant); margin-top: 0.25rem; }
+
+/* Modal */
+.modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(12px);
+    z-index: 1000; align-items: center; justify-content: center;
+}
+.modal-overlay.active { display: flex; }
+.modal-card {
+    background: var(--surface-container-lowest);
+    border-radius: 2rem;
+    padding: 2.5rem;
+    width: 100%; max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    text-align: center;
+}
+.modal-card h3 { font-size: 1.25rem; font-weight: 800; margin-bottom: 0.25rem; }
+.modal-card p { font-size: 0.875rem; color: var(--on-surface-variant); margin-bottom: 1.5rem; }
+.modal-card .file-drop {
+    border: 2px dashed var(--outline-variant);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.modal-card .file-drop:hover { border-color: var(--primary); background: var(--surface-container-low); }
+.modal-card .file-drop .material-symbols-outlined { font-size: 3rem; color: var(--outline); margin-bottom: 0.5rem; }
+.modal-card .file-drop p { margin: 0; font-size: 0.875rem; color: var(--on-surface-variant); }
+.modal-card .btn-upload {
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    width: 100%; padding: 1rem;
+    background: var(--primary); color: var(--on-primary);
+    border: none; border-radius: 9999px;
+    font-size: 0.875rem; font-weight: 700;
+    cursor: pointer; transition: opacity 0.2s;
+}
+.modal-card .btn-upload:hover { opacity: 0.9; }
+.modal-card .btn-close {
+    margin-top: 0.75rem;
+    background: transparent; color: var(--on-surface-variant);
+    font-size: 0.875rem; font-weight: 600;
+    border: none; cursor: pointer;
+}
+
+/* Form Card */
+.form-card {
+    background: var(--surface-container-lowest);
+    border-radius: 2rem;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+}
+.form-card h3 { font-size: 1rem; font-weight: 800; margin-bottom: 1.5rem; }
+.form-grid-inner { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem 1.5rem; }
+.form-group { margin-bottom: 0; }
+.form-group.full { grid-column: 1 / -1; }
+.form-group label { display: block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--primary); margin-bottom: 0.5rem; }
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 0.75rem 1rem;
+    background: var(--surface-container-low);
+    border: none; border-radius: 0.75rem;
+    font-size: 0.875rem; font-weight: 500;
+    color: var(--on-surface);
+    font-family: inherit;
+}
+.form-group textarea { min-height: 100px; resize: vertical; }
+.btn-save {
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    width: 100%; padding: 1rem;
+    background: var(--primary); color: var(--on-primary);
+    border: none; border-radius: 9999px;
+    font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+    cursor: pointer; margin-top: 1.5rem;
+}
+
+/* Live Preview Card */
+.preview-card {
+    background: var(--surface-container-lowest);
+    border-radius: 2rem;
+    padding: 2rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+}
+.preview-card h3 { font-size: 1rem; font-weight: 800; margin-bottom: 1.5rem; }
+.preview-inner {
+    display: flex; gap: 1.5rem;
+    background: var(--surface-container-low);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    align-items: center;
+}
+.preview-img {
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: var(--surface-container);
+    border: 3px solid var(--primary-fixed);
+}
+.preview-img img { width: 100%; height: 100%; object-fit: cover; }
+.preview-info { flex: 1; }
+.preview-info h4 { font-size: 1.125rem; font-weight: 800; margin-bottom: 0.25rem; }
+.preview-info .subject { font-size: 0.875rem; font-weight: 600; color: var(--primary); margin-bottom: 0.5rem; }
+.preview-meta { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem; }
+.preview-meta span {
+    display: inline-flex; align-items: center; gap: 0.25rem;
+    font-size: 0.75rem; color: var(--on-surface-variant);
+}
+.preview-bio {
+    font-size: 0.875rem; color: var(--on-surface-variant);
+    line-height: 1.6;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* CV Upload */
+.cv-card { margin-bottom: 1.5rem; }
+.cv-status { display: flex; align-items: center; gap: 0.5rem; justify-content: center; padding: 1rem; background: var(--surface-container-low); border-radius: 1rem; margin-bottom: 1rem; }
+.cv-status .uploaded { color: var(--primary); }
+.cv-upload-btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 1.5rem; background: var(--primary); color: var(--on-primary);
+    border: none; border-radius: 9999px;
+    font-size: 0.75rem; font-weight: 700; cursor: pointer;
+    text-transform: uppercase; letter-spacing: 0.05em;
+}
+.cv-upload-btn input { display: none; }
+
+/* Footer */
+.dashboard-footer {
+    margin-left: 280px;
+    background: var(--surface-container-lowest);
+    padding: 3rem;
+    border-top: 1px solid rgba(195, 198, 215, 0.15);
+    display: flex; justify-content: space-between; align-items: center;
+}
+.dashboard-footer h5 { font-size: 1.125rem; font-weight: 900; color: var(--primary); }
+.dashboard-footer p { font-size: 0.75rem; color: var(--on-surface-variant); }
+.dashboard-footer a { font-size: 0.75rem; color: var(--on-surface-variant); margin-left: 2rem; }
+.dashboard-footer a:hover { color: var(--primary); }
+
+/* Flash Messages */
+.flash-messages { margin-bottom: 2rem; }
+.alert { padding: 1rem 1.25rem; border-radius: 1rem; margin-bottom: 0.75rem; font-size: 0.875rem; font-weight: 600; }
+.alert-success { background: rgba(108,248,187,0.15); color: var(--on-secondary-container); }
+.alert-error { background: rgba(255,100,100,0.12); color: var(--error); }
+.alert-warning { background: rgba(255,200,100,0.15); color: #b8860b; }
+
+/* Responsive */
+@media (max-width: 1100px) {
+    .content-grid { grid-template-columns: 1fr; }
+    .profile-card { position: static; display: flex; align-items: center; gap: 1.5rem; text-align: left; padding: 1.5rem; }
+    .profile-img-wrap { margin: 0; width: 100px; height: 100px; }
+    .profile-card .profile-info { flex: 1; }
+    .quick-stats { margin-top: 0; }
+}
+</style>
+{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include "teacher/inc_sidebar.html" %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h2>My Profile</h2>
+            <p>Manage your profile, update your details, and preview how students see you.</p>
+        </div>
+
+        <!-- Two Column Layout -->
+        <div class="content-grid">
+
+            <!-- LEFT: Profile Section -->
+            <div class="profile-card">
+                <div class="profile-img-wrap" onclick="openModal()">
+                    <img id="profileImage" src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="Profile" />
+                    <div class="profile-img-overlay">
+                        <span class="material-symbols-outlined">photo_camera</span>
+                    </div>
+                </div>
+
+                <div class="profile-info">
+                    <h3>{{ current_user.name }}</h3>
+                    <p class="role">Teacher</p>
+
+                    <div class="status-pill">
+                        <span class="dot"></span>
+                        {{ profile.availability }}
+                    </div>
+
+                    <button class="btn-change-photo" onclick="openModal()">
+                        <span class="material-symbols-outlined" style="font-size:1rem;">photo_camera</span>
+                        Change Photo
+                    </button>
+                </div>
+
+                <div class="quick-stats">
+                    <div class="quick-stat">
+                        <p class="value" id="sideExp">{{ profile.experience or 0 }}+</p>
+                        <p class="label">Years</p>
+                    </div>
+                    <div class="quick-stat">
+                        <p class="value" id="sideFee">৳{{ profile.fee or 0 }}</p>
+                        <p class="label">Monthly</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Form + Live Preview -->
+            <div>
+
+                <!-- Form Card -->
+                <div class="form-card">
+                    <h3>Edit Profile</h3>
+                    <form method="POST" action="{{ url_for('teacher.profile') }}" id="profileForm">
+                        <div class="form-grid-inner">
+
+                            <div class="form-group">
+                                <label for="name">Full Name</label>
+                                <input type="text" id="name" value="{{ current_user.name }}" disabled />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="subject">Subject *</label>
+                                <input type="text" id="subject" name="subject" value="{{ profile.subject or '' }}" placeholder="e.g., Mathematics" required oninput="updatePreview()" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="university">University *</label>
+                                <input type="text" id="university" name="university" value="{{ profile.university or '' }}" placeholder="e.g., University of Dhaka" required oninput="updatePreview()" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="department">Department *</label>
+                                <input type="text" id="department" name="department" value="{{ profile.department or '' }}" placeholder="e.g., Mathematics" required />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="degree">Degree</label>
+                                <select id="degree" name="degree">
+                                    <option value="BSc" {% if profile.degree == 'BSc' %}selected{% endif %}>BSc</option>
+                                    <option value="BA" {% if profile.degree == 'BA' %}selected{% endif %}>BA</option>
+                                    <option value="BCom" {% if profile.degree == 'BCom' %}selected{% endif %}>BCom</option>
+                                    <option value="BED" {% if profile.degree == 'BED' %}selected{% endif %}>BEd</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="graduation_year">Graduation Year *</label>
+                                <input type="number" id="graduation_year" name="graduation_year" value="{{ profile.graduation_year or '' }}" min="1990" max="2030" required />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="experience">Experience (Years) *</label>
+                                <input type="number" id="experience" name="experience" value="{{ profile.experience or 0 }}" min="0" required oninput="updatePreview()" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="fee">Monthly Fee (৳) *</label>
+                                <input type="number" id="fee" name="fee" value="{{ profile.fee or 0 }}" min="0" required oninput="updatePreview()" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="location">Location *</label>
+                                <input type="text" id="location" name="location" value="{{ profile.location or '' }}" placeholder="e.g., Dhanmondi, Dhaka" required oninput="updatePreview()" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="availability">Availability</label>
+                                <select id="availability" name="availability" onchange="updatePreview()">
+                                    <option value="Available" {% if profile.availability == 'Available' %}selected{% endif %}>Available</option>
+                                    <option value="Busy" {% if profile.availability == 'Busy' %}selected{% endif %}>Busy</option>
+                                    <option value="Unavailable" {% if profile.availability == 'Unavailable' %}selected{% endif %}>Unavailable</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group full">
+                                <label for="bio">About You</label>
+                                <textarea id="bio" name="bio" rows="3" placeholder="Tell students about your teaching style..." oninput="updatePreview()">{{ profile.bio or '' }}</textarea>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-save">
+                            <span class="material-symbols-outlined">save</span>
+                            Save Changes
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Live Preview Card -->
+                <div class="preview-card">
+                    <h3>Live Preview</h3>
+                    <div class="preview-inner">
+                        <div class="preview-img">
+                            <img id="previewImg" src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="Preview" />
+                        </div>
+                        <div class="preview-info">
+                            <h4 id="previewName">{{ current_user.name }}</h4>
+                            <p class="subject" id="previewSubject">{{ profile.subject or 'Subject' }}</p>
+                            <div class="preview-meta">
+                                <span><span class="material-symbols-outlined" style="font-size:1rem;">location_on</span> <span id="previewLocation">{{ profile.location or 'Location' }}</span>
+                                <span><span class="material-symbols-outlined" style="font-size:1rem;">payments</span> <span id="previewFee">৳{{ profile.fee or 0 }}/month</span>
+                                <span><span class="material-symbols-outlined" style="font-size:1rem;">school</span> <span id="previewUniversity">{{ profile.university or 'University' }}</span>
+                                <span><span class="material-symbols-outlined" style="font-size:1rem;">schedule</span> <span id="previewExperience">{{ profile.experience or 0 }}+ Years</span>
+                            </div>
+                            <p class="preview-bio" id="previewBio">{{ profile.bio or 'Your bio will appear here...' }}</p>
+                        </div>
+                </div>
+
+                <!-- CV Upload -->
+                <div class="form-card cv-card">
+                    <h3>CV & Documents</h3>
+                    <form method="POST" action="{{ url_for('teacher.upload_cv') }}" enctype="multipart/form-data" id="cv-upload-form">
+                        <div class="cv-status">
+                            {% if profile.cv %}
+                            <div class="uploaded">
+                                <span class="material-symbols-outlined" style="color: var(--primary);">check_circle</span>
+                                <p style="font-weight: 700; color: var(--primary);">CV Uploaded</p>
+                                <a href="{{ profile.cv }}" target="_blank" style="font-size: 0.75rem; color: var(--primary);">View or Download</a>
+                            </div>
+                            {% else %}
+                            <div>
+                                <span class="material-symbols-outlined" style="color: var(--on-surface-variant);">description</span>
+                                <p style="color: var(--on-surface-variant);">No CV uploaded yet</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <label for="cv" class="cv-upload-btn">
+                            <span class="material-symbols-outlined" style="font-size: 1rem;">upload</span>
+                            {% if profile.cv %}Update CV{% else %}Upload CV{% endif %}
+                        </label>
+                        <input type="file" id="cv" name="cv" accept=".pdf,.doc,.docx" onchange="document.getElementById('cv-upload-form').submit()" />
+                    </form>
+                </div>
+        </div>
+    </main>
+</div>
+
+<!-- Upload Modal -->
+<div class="modal-overlay" id="uploadModal">
+    <div class="modal-card">
+        <h3>Change Profile Photo</h3>
+        <p>Upload a clear, professional photo. JPG, JPEG, or PNG only.</p>
+
+        <form method="POST" action="{{ url_for('teacher.upload_picture') }}" enctype="multipart/form-data" id="modalUploadForm">
+            <div class="file-drop" onclick="document.getElementById('modalFileInput').click()">
+                <span class="material-symbols-outlined">cloud_upload</span>
+                <p>Click to select a photo</p>
+            </div>
+            <input type="file" id="modalFileInput" name="profile_picture" accept="image/jpeg,image/jpg,image/png" style="display:none;" onchange="document.getElementById('modalUploadForm').submit()" />
+
+            <button type="submit" class="btn-upload">
+                <span class="material-symbols-outlined">upload</span>
+                Upload Photo
+            </button>
+        </form>
+
+        <button class="btn-close" onclick="closeModal()">Cancel</button>
+    </div>
+
+<!-- JavaScript -->
+<script>
+function openModal() {
+    document.getElementById('uploadModal').classList.add('active');
+}
+function closeModal() {
+    document.getElementById('uploadModal').classList.remove('active');
+}
+
+// Close modal on overlay click
+document.getElementById('uploadModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+
+// Live preview update
+function updatePreview() {
+    const subject = document.getElementById('subject').value;
+    const location = document.getElementById('location').value;
+    const fee = document.getElementById('fee').value;
+    const experience = document.getElementById('experience').value;
+    const university = document.getElementById('university').value;
+    const bio = document.getElementById('bio').value;
+
+    document.getElementById('previewSubject').textContent = subject || 'Subject';
+    document.getElementById('previewLocation').textContent = location || 'Location';
+    document.getElementById('previewFee').textContent = '৳' + (fee || 0) + '/month';
+    document.getElementById('previewExperience').textContent = (experience || 0) + '+ Years';
+    document.getElementById('previewUniversity').textContent = university || 'University';
+    document.getElementById('previewBio').textContent = bio || 'Your bio will appear here...';
+
+    // Update side quick stats too
+    document.getElementById('sideExp').textContent = (experience || 0) + '+';
+    document.getElementById('sideFee').textContent = '৳' + (fee || 0);
+}
+</script>
+{% endblock %}
+

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Tuition Station - Find Trusted Home Tutors{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/atelier.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+    {% block nav %}
+    <nav class="glass-nav">
+        <div class="nav-container">
+            <a href="{{ url_for('auth.index', landing='1') }}" class="logo" style="gap:0.6rem;">
+                <i class="fas fa-graduation-cap" style="color:#6366f1;font-size:1.9rem;"></i>
+                <span class="logo-text" style="font-size:1.35rem;">Tuition<strong>Station</strong></span>
+            </a>
+            <ul class="nav-links">
+                {% if current_user.is_authenticated %}
+                    {% if current_user.role == 'student' %}
+                    <li><a href="{{ url_for('student.dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ url_for('student.search') }}">Browse Tutors</a></li>
+                    <li><a href="{{ url_for('student.messages') }}">Messages</a></li>
+                    {% elif current_user.role == 'teacher' %}
+                    <li><a href="{{ url_for('teacher.dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ url_for('teacher.profile') }}">Profile</a></li>
+                    <li><a href="{{ url_for('teacher.messages') }}">Messages</a></li>
+                    {% elif current_user.role == 'admin' %}
+                    <li><a href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ url_for('admin.users') }}">Users</a></li>
+                    <li><a href="{{ url_for('admin.requests') }}">Requests</a></li>
+                    {% endif %}
+                    <li>
+                        <div class="nav-user">
+                            <div class="nav-user-avatar">
+                                <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="{{ current_user.name }}" />
+                            </div>
+                            <div>
+                                <div class="nav-user-name">{{ current_user.name }}</div>
+                                <div class="nav-user-role">{{ current_user.role }}</div>
+                            </div>
+                        </div>
+                    </li>
+                    <li><a href="{{ url_for('auth.logout') }}" style="color: var(--error); font-weight: 600;">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('auth.login') }}" class="nav-signin"><i class="fas fa-sign-in-alt"></i> Sign In</a></li>
+                    <li><button class="nav-becometutor" onclick="window.location.href='{{ url_for('auth.register', role='teacher') }}'"><i class="fas fa-chalkboard-teacher"></i> Become a Tutor</button></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    {% endblock %}
+
+    {% block content %}{% endblock %}
+
+    {% block footer %}
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="{{ url_for('auth.index') }}" class="logo" style="gap:0.6rem;">
+                    <i class="fas fa-graduation-cap" style="color:#6366f1;font-size:1.8rem;"></i>
+                    <span class="logo-text" style="font-size:1.35rem;">Tuition<strong>Station</strong></span>
+                </a>
+                <p>&copy; 2026 TuitionStation.</p>
+                <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--on-surface-variant);">
+                    Developed by <strong>Elias, Sayadul, Mehejabin</strong><br>
+                    Level 2, Term II, CSE 2205<br>
+                     <i class="fas fa-envelope" style="margin-right: 0.25rem;"></i><a href="mailto:TuitionStationdev@gmail.com">TuitionStationdev@gmail.com</a>
+                </p>
+            </div>
+            <div class="footer-links">
+                <div>
+                    <h4>Platform</h4>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Safety Guidelines</a>
+                </div>
+                <div>
+                    <h4>Company</h4>
+                    <a href="{{ url_for('auth.developer') }}">Developer Info</a>
+                    <a href="#">Support</a>
+                    <a href="#">Careers</a>
+                    <a href="#">Partnerships</a>
+                </div>
+                <div>
+                    <h4>Social</h4>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    {% endblock %}
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <!-- Firebase Config -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "{{ config.FIREBASE_API_KEY }}",
+            authDomain: "{{ config.FIREBASE_PROJECT_ID }}.firebaseapp.com",
+            projectId: "{{ config.FIREBASE_PROJECT_ID }}",
+            storageBucket: "{{ config.FIREBASE_STORAGE_BUCKET }}",
+            appId: "{{ config.FIREBASE_APP_ID }}"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        window.firebaseAuth = firebase.auth();
+    </script>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Image Preview Lightbox -->
+    <div class="lightbox-overlay" id="lightboxOverlay" onclick="closeLightbox()">
+        <button class="lightbox-close" onclick="closeLightbox()">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+        <img class="lightbox-image" id="lightboxImage" src="" alt="Preview" />
+    </div>
+
+    <script>
+    function openLightbox(src) {
+        document.getElementById('lightboxImage').src = src;
+        document.getElementById('lightboxOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+        document.getElementById('lightboxOverlay').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            var lb = document.getElementById('lightboxOverlay');
+            if (lb.classList.contains('active')) closeLightbox();
+        }
+    });
+    </script>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        {% for category, message in messages %}
+        showToast('{{ message }}', '{{ category }}');
+        {% endfor %}
+    });
+    </script>
+    {% endif %}
+    {% endwith %}
+</body>
+</html>

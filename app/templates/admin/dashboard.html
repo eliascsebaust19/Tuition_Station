@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Tuition Station{% endblock %}
+
+{% block extra_css %}
+<style>
+body { margin: 0; }
+.dashboard-layout { display: flex; min-height: 100vh; }
+.sidebar { width: 280px; background: var(--surface-container-low); position: fixed; left: 0; top: 0; height: 100vh; display: flex; flex-direction: column; z-index: 100; padding: 1.5rem 0; }
+.sidebar-brand { padding: 0 1.5rem; margin-bottom: 1.5rem; background: transparent; text-align: center; }
+.sidebar-brand img { max-height: 75px; width: auto; }
+.sidebar-brand h1 { font-size: 1.125rem; font-weight: 900; letter-spacing: -0.02em; color: var(--primary); }
+.sidebar-brand p { font-size: 0.65rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--on-surface-variant); opacity: 0.6; margin-top: 0.25rem; }
+.sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 0.25rem; padding: 0 0.5rem; }
+.sidebar-nav a { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 0.5rem; color: var(--on-surface-variant); font-size: 0.875rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.2s; }
+.sidebar-nav a:hover { background: var(--surface-container-high); }
+.sidebar-nav a.active { background: var(--secondary); color: var(--on-secondary); }
+.sidebar-nav .material-symbols-outlined { font-size: 1.25rem; }
+.sidebar-footer { padding: 0 1rem; margin-top: auto; }
+.user-card { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: var(--surface-container-lowest); border-radius: 0.75rem; }
+.user-card img { width: 2.5rem; height: 2.5rem; border-radius: 50%; object-fit: cover; }
+.user-card .name { font-size: 0.875rem; font-weight: 700; }
+.user-card .role { font-size: 0.65rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: var(--on-surface-variant); opacity: 0.6; }
+.main-content { flex: 1; margin-left: 280px; padding: 2rem 3rem; }
+.page-header { margin-bottom: 3rem; }
+.page-header h2 { font-size: 2.5rem; font-weight: 900; letter-spacing: -0.02em; }
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 3rem; }
+.stat-card { background: var(--surface-container-low); border-radius: 1.5rem; padding: 1.5rem; text-align: center; }
+.stat-number { font-size: 2.5rem; font-weight: 900; color: var(--primary); }
+.stat-card:nth-child(3) .stat-number { color: var(--tertiary); }
+.stat-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--on-surface-variant); margin-top: 0.5rem; }
+.content-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+.data-card { background: var(--surface-container-lowest); border-radius: 1.5rem; padding: 1.5rem; overflow: hidden; }
+.data-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 1rem; }
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th { text-align: left; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--on-surface-variant); padding: 0.75rem; border-bottom: 1px solid var(--surface-container-high); }
+.data-table td { font-size: 0.875rem; padding: 0.75rem; border-bottom: 1px solid var(--surface-container-low); }
+.data-table tr:last-child td { border-bottom: none; }
+.action-btns { display: flex; gap: 0.5rem; }
+.btn-action { width: 2rem; height: 2rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; font-size: 0.75rem; }
+.btn-ok { background: var(--secondary); color: var(--on-secondary); }
+.btn-no { background: var(--surface-container-high); color: var(--on-surface-variant); }
+.dashboard-footer { margin-left: 280px; background: var(--surface-container-lowest); padding: 3rem; border-top: 1px solid rgba(195, 198, 215, 0.15); display: flex; justify-content: space-between; align-items: center; }
+.dashboard-footer h5 { font-size: 1.125rem; font-weight: 900; color: var(--primary); }
+.dashboard-footer p { font-size: 0.75rem; color: var(--on-surface-variant); }
+</style>
+{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    <aside class="sidebar">
+<div class="sidebar-brand">
+            <a href="{{ url_for('auth.index') }}" class="logo" style="display: inline-flex; align-items: center; gap: 0.6rem; text-decoration: none;">
+                <span class="logo-mark" style="width: 2.2rem; height: 2.2rem; font-size: 1.2rem;">T</span>
+                <span class="logo-text" style="font-size: 1.2rem; color: #1f2937;">Tuition <strong style="color: #10B981;">Station</strong></span>
+            </a>
+            <p style="font-size: 0.6rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: var(--secondary); margin-top: 0.25rem;">Student Teacher Connector</p>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('admin.dashboard') }}" class="{% if request.endpoint == 'admin.dashboard' %}active{% endif %}"><span class="material-symbols-outlined">dashboard</span>Dashboard</a>
+            <a href="{{ url_for('admin.users') }}" class="{% if request.endpoint == 'admin.users' %}active{% endif %}"><span class="material-symbols-outlined">people</span>Users</a>
+            <a href="{{ url_for('admin.requests') }}" class="{% if request.endpoint == 'admin.requests' %}active{% endif %}"><span class="material-symbols-outlined">assignment</span>Requests</a>
+            <a href="{{ url_for('admin.messages') }}" class="{% if request.endpoint == 'admin.messages' %}active{% endif %}"><span class="material-symbols-outlined">mail</span>Messages</a>
+            <a href="{{ url_for('admin.documentation') }}" class="{% if request.endpoint == 'admin.documentation' %}active{% endif %}"><span class="material-symbols-outlined">menu_book</span>Documentation</a>
+        </nav>
+        
+        <div class="sidebar-logout" style="padding: 0 0.5rem; margin-top: auto;">
+            <a href="{{ url_for('auth.logout') }}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 0.5rem; color: var(--on-surface-variant); font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: all 0.2s;">
+                <span class="material-symbols-outlined" style="font-size: 1.25rem;">logout</span>
+                Logout
+            </a>
+        </div>
+        <div class="sidebar-footer" style="padding:0 1rem;margin-top:1rem;">
+            <div class="user-card" style="position:relative;">
+                <div onclick="document.getElementById('profileUploadInput').click()" style="cursor:pointer;position:relative;flex-shrink:0;">
+                    <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="Admin" style="width:2.5rem;height:2.5rem;border-radius:50%;object-fit:cover;" onclick="event.stopPropagation();openLightbox(this.src)" />
+                    <div style="position:absolute;bottom:-2px;right:-2px;width:1rem;height:1rem;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--surface-container-low);">
+                        <span class="material-symbols-outlined" style="font-size:0.65rem;color:#fff;">photo_camera</span>
+                    </div>
+                </div>
+                <div style="flex:1;min-width:0;">
+                    <p class="name">{{ current_user.name }}</p>
+                    <p class="role">Admin</p>
+                </div>
+            </div>
+            <form method="POST" action="{{ url_for('admin.upload_picture') }}" enctype="multipart/form-data" id="profileUploadForm">
+                <input type="file" name="profile_picture" id="profileUploadInput" accept="image/*" style="display:none;" onchange="document.getElementById('profileUploadForm').submit()" />
+            </form>
+            {% if current_user.profile_picture %}
+            <form method="POST" action="{{ url_for('admin.delete_picture') }}" style="padding:0 0.5rem;margin-top:0.5rem;">
+                <button type="submit" style="width:100%;padding:0.35rem;border-radius:0.5rem;border:none;background:var(--surface-container-high);color:var(--error);font-size:0.7rem;font-weight:700;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='var(--surface-container-high)'">Remove Photo</button>
+            </form>
+            {% endif %}
+        </div>
+    </aside>
+    
+    <main class="main-content">
+        <div class="page-header">
+            <h2>Admin Dashboard</h2>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div style="margin-bottom: 2rem;">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <p class="stat-number">{{ total_students }}</p>
+                <p class="stat-label">Students</p>
+            </div>
+            <div class="stat-card">
+                <p class="stat-number">{{ total_teachers }}</p>
+                <p class="stat-label">Teachers</p>
+            </div>
+            <div class="stat-card">
+                <p class="stat-number" style="color: var(--tertiary);">{{ pending_teachers }}</p>
+                <p class="stat-label">Pending Approval</p>
+            </div>
+            <div class="stat-card">
+                <p class="stat-number">{{ total_requests }}</p>
+                <p class="stat-label">Total Requests</p>
+            </div>
+            <div class="stat-card">
+                <p class="stat-number" style="color: var(--tertiary);">{{ pending_messages }}</p>
+                <p class="stat-label">Pending Msg Approvals</p>
+            </div>
+        </div>
+        
+        <div class="content-grid">
+            <div class="data-card">
+                <h3>Recent Users</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for user in all_users[:8] %}
+                        <tr>
+                            <td>{{ user.name }}</td>
+                            <td>{{ user.email }}</td>
+                            <td style="text-transform: capitalize;">{{ user.role }}</td>
+                            <td>
+                                {% if user.is_active %}
+                                <span class="badge badge-active">Active</span>
+                                {% else %}
+                                <span class="badge badge-inactive">Blocked</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a href="{{ url_for('admin.users') }}" class="btn btn-secondary" style="margin-top: 1rem;">View All Users</a>
+            </div>
+            
+            <div class="data-card">
+                <h3>Recent Requests</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Student</th><th>Teacher</th><th>Status</th><th>Action</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for req in all_requests[:8] %}
+                        <tr>
+                            <td>{{ req.student.name }}</td>
+                            <td>{{ req.teacher.name }}</td>
+                            <td><span class="badge badge-{{ req.status }}">{{ req.status }}</span></td>
+                            <td>
+                                {% if req.status == 'pending' %}
+                                <div class="action-btns">
+                                    <a href="{{ url_for('admin.approve_request', request_id=req.id) }}" class="btn-action btn-ok" title="Approve">✓</a>
+                                    <a href="{{ url_for('admin.reject_request', request_id=req.id) }}" class="btn-action btn-no" title="Reject">✗</a>
+                                </div>
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a href="{{ url_for('admin.requests') }}" class="btn btn-secondary" style="margin-top: 1rem;">View All Requests</a>
+            </div>
+        </div>
+    </main>
+</div>
+
+{% endblock %}

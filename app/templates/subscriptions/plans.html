@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Subscription Plans - Tuition Station{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="display-4 fw-bold">Upgrade Your Profile</h2>
+        <p class="lead text-muted">Choose the perfect plan to grow your teaching career.</p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        {% for plan in plans %}
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 {% if plan.name == 'Premium' %}border-primary border-top border-4{% endif %}">
+                <div class="card-body p-4 text-center">
+                    <h3 class="card-title fw-bold mb-3">{{ plan.name }}</h3>
+                    <div class="mb-4">
+                        <span class="display-5 fw-bold">৳{{ plan.price }}</span>
+                        <span class="text-muted">/{{ plan.duration_days }} days</span>
+                    </div>
+                    
+                    <ul class="list-unstyled mb-4 text-start">
+                        <li class="mb-2">
+                            <i class="material-symbols-outlined text-success align-middle me-2">check_circle</i>
+                            {% if plan.max_applications %}
+                                Apply to {{ plan.max_applications }} posts monthly
+                            {% else %}
+                                Unlimited tuition applications
+                            {% endif %}
+                        </li>
+                        <li class="mb-2">
+                            <i class="material-symbols-outlined {% if plan.is_featured %}text-success{% else %}text-muted{% endif %} align-middle me-2">
+                                {% if plan.is_featured %}check_circle{% else %}cancel{% endif %}
+                            </i>
+                            Featured profile badge
+                        </li>
+                        <li class="mb-2">
+                            <i class="material-symbols-outlined {% if plan.has_verified_badge %}text-success{% else %}text-muted{% endif %} align-middle me-2">
+                                {% if plan.has_verified_badge %}check_circle{% else %}cancel{% endif %}
+                            </i>
+                            Verified badge
+                        </li>
+                        <li class="mb-2">
+                            <i class="material-symbols-outlined {% if plan.priority_ranking > 0 %}text-success{% else %}text-muted{% endif %} align-middle me-2">
+                                {% if plan.priority_ranking > 0 %}check_circle{% else %}cancel{% endif %}
+                            </i>
+                            Priority search ranking
+                        </li>
+                    </ul>
+
+                    <form action="{{ url_for('subscriptions.upgrade', plan_id=plan.id) }}" method="POST">
+
+                        <button type="submit" class="btn {% if plan.name == 'Premium' %}btn-primary{% else %}btn-outline-primary{% endif %} w-100 py-2 fw-bold">
+                            Select Plan
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Student Dashboard | The Academic Atelier</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary": "#004ac6",
+                    "surface-container-low": "#f3f3fe",
+                    "inverse-surface": "#2e3039",
+                    "on-error-container": "#93000a",
+                    "on-background": "#191b23",
+                    "surface-container-highest": "#e1e2ed",
+                    "tertiary-container": "#bc4800",
+                    "surface-variant": "#e1e2ed",
+                    "secondary-fixed-dim": "#4edea3",
+                    "on-tertiary-fixed-variant": "#7d2d00",
+                    "on-primary-container": "#eeefff",
+                    "tertiary-fixed-dim": "#ffb596",
+                    "primary-fixed": "#dbe1ff",
+                    "surface": "#faf8ff",
+                    "on-secondary-container": "#00714d",
+                    "on-tertiary-fixed": "#360f00",
+                    "inverse-on-surface": "#f0f0fb",
+                    "primary-container": "#2563eb",
+                    "secondary": "#006c49",
+                    "error-container": "#ffdad6",
+                    "error": "#ba1a1a",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface-variant": "#434655",
+                    "on-primary-fixed": "#00174b",
+                    "background": "#faf8ff",
+                    "tertiary": "#943700",
+                    "on-secondary-fixed": "#002113",
+                    "secondary-container": "#6cf8bb",
+                    "surface-container-high": "#e7e7f3",
+                    "on-secondary": "#ffffff",
+                    "surface-dim": "#d9d9e5",
+                    "on-primary": "#ffffff",
+                    "outline": "#737686",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed-variant": "#005236",
+                    "on-error": "#ffffff",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "tertiary-fixed": "#ffdbcd",
+                    "surface-bright": "#faf8ff",
+                    "inverse-primary": "#b4c5ff",
+                    "surface-container": "#ededf9",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "outline-variant": "#c3c6d7",
+                    "on-surface": "#191b23",
+                    "on-tertiary-container": "#ffede6",
+                    "secondary-fixed": "#6ffbbe",
+                    "surface-tint": "#0053db"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Inter"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .editorial-asymmetry {
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- SideNavBar Integration -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface_container_low dark:bg-slate-900 flex flex-col py-6 space-y-2 z-40">
+<div class="px-6 mb-8">
+<h1 class="text-lg font-black text-blue-800 dark:text-blue-200 tracking-tighter">The Academic Atelier</h1>
+<p class="font-inter text-[10px] font-medium uppercase tracking-widest text-on-surface-variant opacity-60">Premium Learning</p>
+</div>
+<nav class="flex-1 flex flex-col space-y-1">
+<a class="bg-secondary text-white rounded-md mx-2 px-4 py-3 flex items-center gap-3 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-inter text-sm font-medium uppercase tracking-widest">Dashboard</span>
+</a>
+<a class="text-on-surface-variant dark:text-slate-400 mx-2 px-4 py-3 flex items-center gap-3 hover:bg-surface_container_high dark:hover:bg-slate-800 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span class="font-inter text-sm font-medium uppercase tracking-widest">Active Requests</span>
+</a>
+<a class="text-on-surface-variant dark:text-slate-400 mx-2 px-4 py-3 flex items-center gap-3 hover:bg-surface_container_high dark:hover:bg-slate-800 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+<span class="font-inter text-sm font-medium uppercase tracking-widest">Schedule</span>
+</a>
+<a class="text-on-surface-variant dark:text-slate-400 mx-2 px-4 py-3 flex items-center gap-3 hover:bg-surface_container_high dark:hover:bg-slate-800 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+<span class="font-inter text-sm font-medium uppercase tracking-widest">Learning Materials</span>
+</a>
+<a class="text-on-surface-variant dark:text-slate-400 mx-2 px-4 py-3 flex items-center gap-3 hover:bg-surface_container_high dark:hover:bg-slate-800 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-inter text-sm font-medium uppercase tracking-widest">Settings</span>
+</a>
+</nav>
+<div class="px-4 mt-auto">
+<button class="w-full bg-primary text-white py-4 rounded-full font-bold text-sm uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[0.98] transition-transform">
+                Post a Request
+            </button>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-64 min-h-screen p-8 lg:p-12">
+<!-- Header Section -->
+<header class="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+<div class="max-w-2xl">
+<span class="text-secondary font-bold text-xs uppercase tracking-[0.2em] mb-2 block">Curation Hub</span>
+<h2 class="text-5xl font-black tracking-tighter text-on-surface leading-none">Find Your Mentor.</h2>
+<p class="mt-4 text-on-surface-variant text-lg leading-relaxed max-w-lg">
+                    Browse our atelier of vetted scholars and industry masters. Filter by discipline and expertise level to find your perfect match.
+                </p>
+</div>
+<div class="flex items-center gap-4 bg-surface-container-low p-2 rounded-full">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-primary-fixed">
+<img class="w-full h-full object-cover" data-alt="portrait of a young man smiling in a bright minimalist room with warm sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcoG6FgbOUBvbiB17dCGDBM-gw4IKbHNazNLPr8E6HYwSlvNfnyEo-7NU4kRos5u1KHhzM8px_BbCT80PIF1Y2KX3Y1QSXDarJrKdAzMtptShYGwFhqqFyuNd4SLd122D9QWAq2UVYwVPl8EodLjHnbopJ08lk5UVmCDJ6QDbDUOnxBrqUVYQD2QobyLpro-FtXyvr8vV-J6oITvSnL9MdnLuFWaV1M2f9whzuGyplHmw6H55RjHRqKzc_nq7ocHG39y1iZ6K2fzQc"/>
+</div>
+<div class="pr-6">
+<p class="text-xs font-bold uppercase tracking-widest opacity-50">Student</p>
+<p class="font-bold text-sm">Alex Henderson</p>
+</div>
+</div>
+</header>
+<!-- Advanced Search Filters (Glassmorphism & Surface Tones) -->
+<section class="bg-surface-container-low rounded-[2rem] p-8 mb-16">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+<div class="space-y-2">
+<label class="block text-[10px] font-black uppercase tracking-[0.15em] text-primary">Subject Discipline</label>
+<select class="w-full bg-surface-container-lowest border-none rounded-xl py-3 px-4 text-sm font-medium focus:ring-2 focus:ring-primary/20 transition-all">
+<option>Advanced Mathematics</option>
+<option>Quantum Physics</option>
+<option>Renaissance Art History</option>
+<option>Algorithmic Logic</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="block text-[10px] font-black uppercase tracking-[0.15em] text-primary">Academic Level</label>
+<select class="w-full bg-surface-container-lowest border-none rounded-xl py-3 px-4 text-sm font-medium focus:ring-2 focus:ring-primary/20 transition-all">
+<option>Post-Graduate</option>
+<option>Undergraduate</option>
+<option>High School Honors</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="block text-[10px] font-black uppercase tracking-[0.15em] text-primary">Budget Range</label>
+<select class="w-full bg-surface-container-lowest border-none rounded-xl py-3 px-4 text-sm font-medium focus:ring-2 focus:ring-primary/20 transition-all">
+<option>$50 - $100 / hr</option>
+<option>$100 - $200 / hr</option>
+<option>$200+ / hr</option>
+</select>
+</div>
+<div class="flex items-end">
+<button class="w-full bg-primary-container text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-sm">search</span>
+                        Refine Search
+                    </button>
+</div>
+</div>
+<div class="mt-8 flex flex-wrap gap-3">
+<span class="bg-secondary text-white px-4 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider flex items-center gap-2">
+                    Calculus <span class="material-symbols-outlined text-xs">close</span>
+</span>
+<span class="bg-surface-container-high text-on-surface-variant px-4 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider flex items-center gap-2">
+                    Remote <span class="material-symbols-outlined text-xs">close</span>
+</span>
+<button class="text-primary text-[10px] font-bold uppercase tracking-widest px-2">Clear All</button>
+</div>
+</section>
+<!-- Tutor Grid (Asymmetric & Tonal Depth) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-20">
+<!-- Featured Card (Professional Spotlight pattern) -->
+<div class="lg:col-span-8 group relative overflow-hidden rounded-[2.5rem] bg-surface-container-low min-h-[400px] flex items-center">
+<div class="absolute right-0 top-0 w-1/2 h-full hidden md:block">
+<div class="absolute inset-0 bg-primary-fixed rounded-full scale-125 -translate-y-12 translate-x-12 opacity-50 blur-3xl"></div>
+<img class="absolute bottom-0 right-0 h-[110%] w-auto object-contain z-10 transition-transform duration-500 group-hover:scale-105" data-alt="professional woman tutor in a bright office leaning against a desk with books and a laptop" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcdFE4IfltsQK6n7NdzTEWpThXj6YwvvTseDoStAVt5xnGoUGC-xB5R61dejOQL8F9D6k6a94alepke0OetUneX774qZtUOWVdpIQMTl1uQ1QUIXU9AiBXBiHzqDjh4XRsf6wCVk6vS80tfQ5r7uc1PfBKwn_NjVR1yW46P7ny3mJeNnqltpm9VQAJsYvbg0nbga-ia8AYf44ZtHdLROTZ8VszJj64I9KnxxxiEnOgWs4P6EywKLkWnPLAcFnLw4yS7BfXNSfZvSti"/>
+</div>
+<div class="relative z-20 p-12 max-w-lg">
+<div class="flex items-center gap-2 mb-6">
+<span class="bg-secondary text-on-secondary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Master Instructor</span>
+<div class="flex text-amber-500">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+<h3 class="text-4xl font-black tracking-tight text-on-surface mb-4">Dr. Elara Vance</h3>
+<p class="text-on-surface-variant text-base leading-relaxed mb-8">
+                        Specializing in Theoretical Physics and Advanced Calculus. Former MIT researcher with over 15 years of personalized mentorship experience.
+                    </p>
+<div class="flex gap-4">
+<button class="bg-primary text-white px-8 py-4 rounded-full font-bold text-sm transition-all hover:px-10">Request Consultation</button>
+<button class="w-12 h-12 rounded-full border border-outline-variant/30 flex items-center justify-center hover:bg-surface-container-lowest transition-colors">
+<span class="material-symbols-outlined text-primary">favorite</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Status Indicators Sidebar (Sent Requests) -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant">Active Requests</h4>
+<!-- Pending Request -->
+<div class="bg-surface-container-lowest p-6 rounded-[1.5rem] border-l-4 border-amber-400">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="professional male tutor with glasses in a library setting with soft morning light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXVXB9L6ovQbpK1ab0VMcrSY4fKe36pdsLDPCIG1P3EVzCAz7vkUeCKBJ5RG77Y0SKzKqTlJMOFg2adZn2Qgvad3deB_RRnruxSM6bLbNP_q1YjjKcCG3X0e8J14uvS41MYrvacF0DhHcGsB2R53DLsAOmonRvupM1fw7K_XwH1QvJoVXYWUZBnfpmHNTpMINB-A8IVElemw0YUI2Ftuhe4fpN62-2adkwaZGXZeM0a9EUUYgztqkpTBjhZH23uUkAbB21JMx0HWtJ"/>
+</div>
+<div>
+<p class="text-sm font-bold">Marcus Thorne</p>
+<p class="text-[10px] font-medium opacity-60">Linear Algebra</p>
+</div>
+</div>
+<span class="text-[9px] font-black uppercase bg-amber-50 text-amber-700 px-2 py-1 rounded">Pending</span>
+</div>
+</div>
+<!-- Accepted Request -->
+<div class="bg-surface-container-lowest p-6 rounded-[1.5rem] border-l-4 border-secondary">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="woman tutor smiling in a modern bright study area with natural plants" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCg9PJhPZvEgZa0-egtpNBpQrsNgCRfiQYnFG-dTXPhFz0kFyEUdpjN57eD2F3BRmKFebFGAAVVyPcxfxd4KAk8m2cuxDfnvvAWC1oFhMy6i_Rj-aWD6HUsjpFVLPNHd51zj89QpGhEJta34K_uq8x2TxZLLfDX8MmDEeqyP_VPkgeX63phpBvPB6YhA9VXJ9AHJo-mIaeScJMrnotwWF2jSjm5jV1xwLMvVZrY4x9ZKUW6dYoG3Il-35boHCMMNQxhuOAaXQXRCmre"/>
+</div>
+<div>
+<p class="text-sm font-bold">Sarah Jenkins</p>
+<p class="text-[10px] font-medium opacity-60">Macroeconomics</p>
+</div>
+</div>
+<span class="text-[9px] font-black uppercase bg-secondary/10 text-secondary px-2 py-1 rounded">Accepted</span>
+</div>
+<button class="mt-4 w-full bg-surface-container-low text-primary py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-surface-container-high transition-colors">Start Session</button>
+</div>
+<!-- Rejected Request -->
+<div class="bg-surface-container-lowest p-6 rounded-[1.5rem] border-l-4 border-error opacity-60">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="male scholar in front of a whiteboard with complex equations" src="https://lh3.googleusercontent.com/aida-public/AB6AXuACITxvRuwX6_THEjBpnrLRpVvS3Iif3G58d6CjhbofO-7rNChjkQ8-pD6dgKeSufbjckwYqdndBRA3HPN9KJOOx8HY0rLdrTEYp05UXNRBt-JNsJ4QCu7DNx3J32IcCUzPbjT4UM16aymrkz2WaFYDKgHPSaaGAsQZTYLHfnMRdH4mKgDA-9uanzhY0odj6lcyEXfce0VrX9W3dVqsMBPahPzZ6DPp5vF_-3Zcp6XreNo9IM4-GgqFBScGGu7uCqNr0Eh1eNt3yBID"/>
+</div>
+<div>
+<p class="text-sm font-bold">Prof. Julian Cole</p>
+<p class="text-[10px] font-medium opacity-60">Organic Chemistry</p>
+</div>
+</div>
+<span class="text-[9px] font-black uppercase bg-error/10 text-error px-2 py-1 rounded">Rejected</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Tutor Grid (Standard Cards but following Editorial Style) -->
+<section>
+<div class="flex justify-between items-center mb-8">
+<h3 class="text-2xl font-black tracking-tight">Available Masters</h3>
+<a class="text-primary font-bold text-xs uppercase tracking-widest hover:underline underline-offset-4" href="#">View All Scholars</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+<!-- Profile Card 1 -->
+<div class="group bg-surface-container-lowest rounded-[2rem] p-6 hover:translate-y-[-4px] transition-all duration-300">
+<div class="relative mb-6 rounded-2xl overflow-hidden aspect-square">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="male tutor in professional attire against a blurred architectural background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_LlqXu4933GzWvnDK_weYAM2J78P5Lj0w3iulKbhYqkeREY718dyZdibuoBgbb5laAa-EnEYLyYRJMyG6iSeMAXCbUUQvXhybFfgDfDkjk4_1dNOmGu3qkl9qpXq1ABMLplWsOS_p3KvZ_tOx_EXWUAQF_F-jF07vMV57BUwTvDQNKOfBSADlqeAEg6wMloFFLsE88kg7tUPYLeecGWXmWqs2wHJkmL3l9xWil45PG05xgtQxJTP5NMDVcQpATVZTEnPaGb_fWp9r"/>
+<div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-lg">
+<p class="text-[10px] font-black text-primary uppercase">$85/hr</p>
+</div>
+</div>
+<p class="text-[10px] font-black uppercase tracking-widest text-secondary mb-1">Economics</p>
+<h4 class="text-lg font-bold mb-2">Arthur Penhaligon</h4>
+<p class="text-xs text-on-surface-variant leading-relaxed mb-6 line-clamp-2">Specializing in behavioral economics and market forecasting for graduates.</p>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-xs">location_on</span>
+<span class="text-[10px] font-bold">Remote</span>
+</div>
+<button class="bg-surface-container-high p-2 rounded-full text-primary hover:bg-primary hover:text-white transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Profile Card 2 -->
+<div class="group bg-surface-container-lowest rounded-[2rem] p-6 hover:translate-y-[-4px] transition-all duration-300">
+<div class="relative mb-6 rounded-2xl overflow-hidden aspect-square">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="female tutor in a bright sunlit study with books in the background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAERe8e4gMAQP70YojtCowWbs_FIgSBK4bqxKlPLyik7R4-bqeYUTTUyA1uU-sozm7TfDUU0rMWXhRksX0cnsGw6BMErXFjn1gMaEs8-Ny7A89cr0QtEu94RsednW160zsXyud34t63zGrNFA95qo_63HJ1DXMCbBMinWFwU2j3g7yx5b-6JgDvflhu_ISwP7VWQHP1DQHAnCWfQfQmWHqLkVy8ruDLEnngA21rzPwzklob_1Flj8ivfjW9f7QrEbBX0X-xuj0UTwIt"/>
+<div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-lg">
+<p class="text-[10px] font-black text-primary uppercase">$120/hr</p>
+</div>
+</div>
+<p class="text-[10px] font-black uppercase tracking-widest text-secondary mb-1">Philosophy</p>
+<h4 class="text-lg font-bold mb-2">Clara Oswald</h4>
+<p class="text-xs text-on-surface-variant leading-relaxed mb-6 line-clamp-2">Exploring existentialism and ethical frameworks through discursive logic.</p>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-xs">location_on</span>
+<span class="text-[10px] font-bold">London, UK</span>
+</div>
+<button class="bg-surface-container-high p-2 rounded-full text-primary hover:bg-primary hover:text-white transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Profile Card 3 -->
+<div class="group bg-surface-container-lowest rounded-[2rem] p-6 hover:translate-y-[-4px] transition-all duration-300">
+<div class="relative mb-6 rounded-2xl overflow-hidden aspect-square">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="male data scientist tutor working with multiple screens showing code and graphs" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZRM5q08wE65JQLuf-28DrO2DIxJwj4gI60i-9q_rAT9Xsn31IJRS_HNj4v2WhER-x4HNBwE0hOu1SGzh9VoLd20ZIpqKs7PU6jIuJfyRVFKbMjH0rJb-znggSnf5ExMClhwRQdFX_lLmtgx4J7GsuvTn-Pdi-EFXDsTkioDF6aXHnXX8n3fsSG5K3Puui88z_pMM-dnxGOoxHOyajpf8NSjs2RlgRWA7DRJFvEyYZNnKG9JMJ_OAoQ02lTs5zoYHuZkphwZ-_oqGI"/>
+<div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-lg">
+<p class="text-[10px] font-black text-primary uppercase">$95/hr</p>
+</div>
+</div>
+<p class="text-[10px] font-black uppercase tracking-widest text-secondary mb-1">Computer Science</p>
+<h4 class="text-lg font-bold mb-2">Hideo Tanaka</h4>
+<p class="text-xs text-on-surface-variant leading-relaxed mb-6 line-clamp-2">Practical application of machine learning and structural data analysis.</p>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-xs">location_on</span>
+<span class="text-[10px] font-bold">Tokyo, JP</span>
+</div>
+<button class="bg-surface-container-high p-2 rounded-full text-primary hover:bg-primary hover:text-white transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Profile Card 4 -->
+<div class="group bg-surface-container-lowest rounded-[2rem] p-6 hover:translate-y-[-4px] transition-all duration-300">
+<div class="relative mb-6 rounded-2xl overflow-hidden aspect-square">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="young female tutor teaching in a bright modern classroom with colorful educational posters" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmGxk2hjOJkvuLD_77uOi2bTZcjAYYKJDRvv6ns9ymd-xACGcltzZanROKq3zMHDCJvcWifaJ5NWH177e24PXWiccr54mbQ3WPMr4UZcZh0FcUkEjDJ8l5v55mLoNU6M2iDwN2ib6KiYu6tMT2XTbcVcDUHEeB_D4uxDhz8tZruREta01fcHzcBE84jq1XUmE3rNagrL_KvZFhGJpDXYXBq97Ke5QlJ75mm30-p-P72AuUnDKGcDWQkHD2WyhbwP4FYXKS0fdxm0Kx"/>
+<div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-lg">
+<p class="text-[10px] font-black text-primary uppercase">$70/hr</p>
+</div>
+</div>
+<p class="text-[10px] font-black uppercase tracking-widest text-secondary mb-1">Linguistics</p>
+<h4 class="text-lg font-bold mb-2">Maya Rodriguez</h4>
+<p class="text-xs text-on-surface-variant leading-relaxed mb-6 line-clamp-2">Specializing in Spanish literature and comparative philology for advanced students.</p>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-xs">location_on</span>
+<span class="text-[10px] font-bold">Remote</span>
+</div>
+<button class="bg-surface-container-high p-2 rounded-full text-primary hover:bg-primary hover:text-white transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Integration -->
+<footer class="ml-64 bg-surface dark:bg-slate-950 flex flex-col md:flex-row justify-between items-center px-12 py-16 w-full border-t border-outline_variant/15 tonal-transition">
+<div class="flex flex-col items-start gap-4">
+<h5 class="text-xl font-bold tracking-tighter text-blue-800">The Academic Atelier</h5>
+<p class="font-inter text-xs leading-relaxed text-slate-500 opacity-80 hover:opacity-100 transition-opacity">© 2024 The Academic Atelier. Curated Excellence in Education.</p>
+</div>
+<div class="flex gap-8 mt-8 md:mt-0">
+<a class="font-inter text-xs leading-relaxed text-slate-500 hover:text-blue-600 opacity-80 hover:opacity-100 transition-opacity" href="#">Privacy Policy</a>
+<a class="font-inter text-xs leading-relaxed text-slate-500 hover:text-blue-600 opacity-80 hover:opacity-100 transition-opacity" href="#">Terms of Service</a>
+<a class="font-inter text-xs leading-relaxed text-slate-500 hover:text-blue-600 opacity-80 hover:opacity-100 transition-opacity" href="#">Contact Support</a>
+<a class="font-inter text-xs leading-relaxed text-slate-500 hover:text-blue-600 opacity-80 hover:opacity-100 transition-opacity" href="#">Careers</a>
+</div>
+</footer>
+</body></html>

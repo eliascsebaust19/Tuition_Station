@@ -1,0 +1,45 @@
+# Environment
+.env
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+*.pyo
+*.whl
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Secrets
+client_secret_*.json
+*firebase-adminsdk*.json
+
+# Logs
+*.log
+instance/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# OpenCode
+.agents/
+opencode-skillful-main/
+
+# Memory
+.memory/

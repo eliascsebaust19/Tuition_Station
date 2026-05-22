@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile - Tuition Station{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-layout { display: flex; min-height: 100vh; }
+
+    .main-content {
+        flex: 1;
+        margin-left: 280px;
+        padding: 3rem;
+    }
+
+    .profile-form {
+        max-width: 600px;
+        margin: 0 auto;
+        background: #ffffff;
+        padding: 3rem;
+        border-radius: 2rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+
+    .profile-pic-section {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .profile-pic-wrapper {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        margin: 0 auto 1.5rem;
+        border-radius: 50%;
+        overflow: hidden;
+        background: #f1f5f9;
+        border: 4px solid #1a4d2e;
+    }
+
+    .profile-pic-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .profile-pic-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.2s;
+        border-radius: 50%;
+    }
+
+    .profile-pic-wrapper:hover .profile-pic-overlay {
+        opacity: 1;
+    }
+
+    .profile-pic-overlay .material-symbols-outlined {
+        color: #ffffff;
+        font-size: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #334155;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.75rem;
+        font-size: 0.95rem;
+        font-family: inherit;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    .form-group input:focus {
+        border-color: #1a4d2e;
+    }
+
+    .btn-save {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.875rem 2rem;
+        background: #1a4d2e;
+        color: #ffffff;
+        border: none;
+        border-radius: 9999px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-save:hover {
+        background: #164a26;
+        transform: scale(1.05);
+    }
+
+    .btn-delete-pic {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1.25rem;
+        background: #fef2f2;
+        color: #991b1b;
+        border: none;
+        border-radius: 9999px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-top: 1rem;
+    }
+
+    .btn-delete-pic:hover {
+        background: #fee2e2;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include "student/inc_sidebar.html" %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="profile-form">
+            <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 2rem;">Edit Profile</h2>
+
+            <!-- Profile Picture Section -->
+            <div class="profile-pic-section">
+                <div class="profile-pic-wrapper">
+                    <img src="{{ current_user.profile_picture or url_for('static', filename='Assets/Image/default_' + current_user.name.split(' ')[0].lower() + '.png') }}" 
+                         alt="{{ current_user.name }}"
+                         id="profilePic">
+                    <div class="profile-pic-overlay">
+                        <span class="material-symbols-outlined">camera_alt</span>
+                    </div>
+                </div>
+
+                <!-- Upload Form -->
+                <form method="POST" action="{{ url_for('student.upload_picture') }}" enctype="multipart/form-data" style="margin-bottom: 1rem;">
+                    <input type="file" name="profile_picture" accept=".jpg,.jpeg,.png" onchange="this.form.submit()" style="display: none;" id="picInput">
+                    <button type="button" onclick="document.getElementById('picInput').click()" class="btn-save">
+                        <span class="material-symbols-outlined" style="font-size: 1.1rem;">upload</span>
+                        Change Picture
+                    </button>
+                </form>
+
+                {% if current_user.profile_picture %}
+                    <form method="POST" action="{{ url_for('student.delete_picture') }}" onsubmit="return confirm('Delete profile picture?')">
+                        <button type="submit" class="btn-delete-pic">
+                            <span class="material-symbols-outlined" style="font-size: 1rem;">delete</span>
+                            Remove Picture
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+
+            <!-- Edit Name Form -->
+            <form method="POST" action="{{ url_for('student.edit_profile') }}">
+                <div class="form-group">
+                    <label for="profile-name">Full Name</label>
+                    <input type="text" id="profile-name" name="name" value="{{ current_user.name }}" autocomplete="name" required>
+                </div>
+
+                <button type="submit" class="btn-save">
+                    <span class="material-symbols-outlined" style="font-size: 1.1rem;">save</span>
+                    Save Changes
+                </button>
+            </form>
+        </div>
+    </main>
+</div>
+
+<footer class="dashboard-footer" id="dashboardFooter">
+    <p>&copy; 2026 Tuition Station. Developed by <strong>Elias, Sayadul, Mehejabin</strong></p>
+    <div>
+        <a href="{{ url_for('auth.developer') }}">Developer Info</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms</a>
+    </div>
+</footer>
+{% endblock %}
+
+<!-- Profile Popup -->
+<div class="profile-popup-overlay" id="profilePopup" onclick="closeProfilePopup(event)">
+    <div class="profile-popup" onclick="event.stopPropagation()">
+        <div class="popup-cover">
+            <button class="popup-close" onclick="closeProfilePopup()">
+                <span class="material-symbols-outlined" style="font-size: 1.2rem;">close</span>
+            </button>
+        </div>
+        <div class="popup-avatar" onclick="openLightbox(this.querySelector('img').src)">
+            <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="{{ current_user.name }}" />
+        </div>
+        <div class="popup-body">
+            <h3 class="popup-name">{{ current_user.name }}</h3>
+            <p class="popup-role">Student</p>
+            <div class="popup-email">
+                <span class="material-symbols-outlined" style="font-size: 1.1rem;">mail</span>
+                {{ current_user.email }}
+            </div>
+            <div class="popup-stats">
+                <div class="popup-stat">
+                    <div class="popup-stat-value">0</div>
+                    <div class="popup-stat-label">Requests</div>
+                </div>
+                <div class="popup-stat">
+                    <div class="popup-stat-value">0</div>
+                    <div class="popup-stat-label">Tutors</div>
+                </div>
+            </div>
+            <div class="popup-actions">
+                <a href="{{ url_for('student.edit_profile') }}" class="popup-btn-edit">Edit Profile</a>
+                <a href="{{ url_for('auth.logout') }}" class="popup-btn-logout">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openProfilePopup() {
+    document.getElementById('profilePopup').classList.add('active');
+}
+
+function closeProfilePopup(event) {
+    if (!event || event.target === document.getElementById('profilePopup')) {
+        document.getElementById('profilePopup').classList.remove('active');
+    }
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        document.getElementById('profilePopup').classList.remove('active');
+    }
+});
+</script>
+
+{% block nav %}{% endblock %}
+
+{% block footer %}{% endblock %}

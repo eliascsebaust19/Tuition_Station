@@ -1,0 +1,200 @@
+{% extends "student/base.html" %}
+{% block title %}My Posts - Tuition Station{% endblock %}
+
+{% block kicker %}Tuition Posts{% endblock %}
+{% block page_title %}My Posts{% endblock %}
+{% block page_subtitle %}Manage your tuition requests and view applications.{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+.page-toolbar .count { font-size: 0.85rem; color: var(--on-surface-variant); font-weight: 600; }
+
+.btn-create {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.7rem 1.5rem;
+    background: linear-gradient(135deg, #1a4d2e, #256f46);
+    color: #fff; border: none; border-radius: 9999px;
+    font-weight: 700; font-size: 0.85rem; text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 4px 12px rgba(26,77,46,0.2);
+}
+.btn-create:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 8px 20px rgba(26,77,46,0.3); color: #fff; }
+.btn-create:active { transform: translateY(0) scale(1); }
+
+.posts-card {
+    background: #ffffff;
+    border-radius: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    border: 1px solid #f1f5f9;
+    overflow: hidden;
+    transition: box-shadow 0.3s;
+}
+.posts-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+
+.posts-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.posts-table thead { position: sticky; top: 0; z-index: 2; }
+.posts-table th {
+    text-align: left; padding: 1rem 1.25rem;
+    font-size: 0.65rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: #64748b; background: #f8fafc;
+    border-bottom: 2px solid #e2e8f0;
+    white-space: nowrap;
+}
+.posts-table td {
+    padding: 1rem 1.25rem; font-size: 0.88rem;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    transition: background 0.2s;
+}
+.posts-table tbody tr { transition: all 0.2s; }
+.posts-table tbody tr:last-child td { border-bottom: none; }
+.posts-table tbody tr:hover td { background: #f8fafc; }
+.posts-table tbody tr { cursor: default; }
+.posts-table .post-title { font-weight: 700; color: #0f172a; }
+.posts-table .post-subject { color: #475569; }
+.posts-table .post-location { color: #64748b; font-size: 0.82rem; display: flex; align-items: center; gap: 0.3rem; }
+.posts-table .post-salary { font-weight: 800; color: #1a4d2e; }
+.posts-table .post-date { color: #94a3b8; font-size: 0.82rem; white-space: nowrap; }
+
+.badge-custom {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    padding: 0.25rem 0.7rem; border-radius: 9999px;
+    font-size: 0.7rem; font-weight: 700;
+}
+.badge-open { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+.badge-closed { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+.badge-filled { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+.badge-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+.badge-dot.open { background: #22c55e; }
+.badge-dot.closed { background: #94a3b8; }
+.badge-dot.filled { background: #3b82f6; }
+
+.btn-action {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    padding: 0.35rem 0.75rem; border-radius: 9999px;
+    font-weight: 700; font-size: 0.72rem;
+    text-decoration: none; border: none; cursor: pointer;
+    transition: all 0.2s; font-family: inherit;
+}
+.btn-action-sm { padding: 0.25rem 0.6rem; font-size: 0.68rem; }
+.btn-action .material-symbols-outlined { font-size: 0.85rem; }
+.btn-view { background: #eff6ff; color: #1e40af; }
+.btn-view:hover { background: #dbeafe; color: #1e3a8a; }
+.btn-close-post { background: #fef2f2; color: #991b1b; }
+.btn-close-post:hover { background: #fee2e2; color: #7f1d1d; }
+
+.empty-state {
+    text-align: center; padding: 4rem 2.5rem;
+    position: relative; overflow: hidden;
+}
+.empty-state::before {
+    content: ''; position: absolute; top: -40px; right: -40px;
+    width: 140px; height: 140px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(26,77,46,0.06) 0%, transparent 70%);
+    pointer-events: none;
+}
+.empty-state .material-symbols-outlined { font-size: 3.5rem; color: #cbd5e1; margin-bottom: 1rem; }
+.empty-state h4 { font-size: 1.25rem; font-weight: 800; margin-bottom: 0.5rem; color: #1e293b; }
+.empty-state p { color: #64748b; margin-bottom: 1.5rem; max-width: 360px; margin-left: auto; margin-right: auto; }
+
+@media (max-width: 768px) {
+    .page-toolbar { flex-direction: column; gap: 1rem; align-items: stretch; }
+    .posts-table { font-size: 0.78rem; }
+    .posts-table th, .posts-table td { padding: 0.65rem 0.75rem; }
+    .posts-table .post-location span { display: none; }
+}
+</style>
+{% endblock %}
+
+{% block popup_stats %}
+<div class="popup-stat">
+    <div class="popup-stat-value">{{ posts|length if posts else 0 }}</div>
+    <div class="popup-stat-label">Posts</div>
+</div>
+<div class="popup-stat">
+    <div class="popup-stat-value">{{ current_user.saved_count or 0 }}</div>
+    <div class="popup-stat-label">Saved</div>
+</div>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-toolbar">
+    <span class="count">{{ posts|length if posts else 0 }} post{{ 's' if (posts|length) != 1 else '' }}</span>
+    <a href="{{ url_for('student.create_post') }}" class="btn-create">
+        <span class="material-symbols-outlined" style="font-size:1rem;">add</span>
+        Create New Post
+    </a>
+</div>
+
+{% if posts %}
+<div class="posts-card">
+    <table class="posts-table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Subject</th>
+                <th>Class</th>
+                <th>Location</th>
+                <th>Salary</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for post in posts %}
+            <tr>
+                <td><span class="post-title">{{ post.title }}</span></td>
+                <td><span class="post-subject">{{ post.subject }}</span></td>
+                <td>{{ post.class_level }}</td>
+                <td><span class="post-location"><span class="material-symbols-outlined" style="font-size:0.85rem;">location_on</span> <span>{{ post.location }}</span></span></td>
+                <td><span class="post-salary">Tk {{ post.salary }}</span></td>
+                <td>
+                    {% if post.status == 'Open' %}
+                    <span class="badge-custom badge-open"><span class="badge-dot open"></span>Open</span>
+                    {% elif post.status == 'Closed' %}
+                    <span class="badge-custom badge-closed"><span class="badge-dot closed"></span>Closed</span>
+                    {% elif post.status == 'Filled' %}
+                    <span class="badge-custom badge-filled"><span class="badge-dot filled"></span>Filled</span>
+                    {% else %}
+                    <span class="badge-custom badge-closed">{{ post.status }}</span>
+                    {% endif %}
+                </td>
+                <td><span class="post-date">{{ post.created_at.strftime('%b %d, %Y') if post.created_at else '' }}</span></td>
+                <td>
+                    <div style="display:flex;gap:0.35rem;flex-wrap:wrap;">
+                        <a href="{{ url_for('student.post_applications', id=post.id) }}" class="btn-action btn-view btn-action-sm">
+                            <span class="material-symbols-outlined">groups</span>
+                            Applications
+                        </a>
+                        {% if post.status == 'Open' %}
+                        <form method="POST" action="{{ url_for('student.close_post', id=post.id) }}" style="display:inline;" onsubmit="return confirm('Close this post?')">
+                            <button type="submit" class="btn-action btn-close-post btn-action-sm">
+                                <span class="material-symbols-outlined">close</span>
+                                Close
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="posts-card">
+    <div class="empty-state">
+        <span class="material-symbols-outlined">campaign</span>
+        <h4>No Posts Yet</h4>
+        <p>Create your first tuition post to start receiving applications from tutors.</p>
+        <a href="{{ url_for('student.create_post') }}" class="btn-create">
+            <span class="material-symbols-outlined" style="font-size:1rem;">add</span>
+            Create Your First Post
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

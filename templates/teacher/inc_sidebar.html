@@ -1,0 +1,76 @@
+<aside class="sidebar" id="mainSidebar" style="padding-top:0;">
+    <div class="sidebar-brand" style="padding:0.75rem 1.5rem 0;margin-bottom:1rem;">
+        <a href="{{ url_for('auth.index', landing='1') }}" class="logo" style="display: inline-flex; align-items: center; gap: 0.7rem; text-decoration: none;">
+            <i class="fas fa-graduation-cap" style="color:#6366f1;font-size:1.8rem;"></i>
+            <span class="logo-text sidebar-label logo-text-dark" style="font-size:1.2rem;">Tuition<strong>Station</strong></span>
+        </a>
+    </div>
+
+    <nav class="sidebar-nav">
+        <a href="{{ url_for('teacher.dashboard') }}" class="{% if request.endpoint == 'teacher.dashboard' %}active{% endif %}" title="Dashboard">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span class="sidebar-label">Dashboard</span>
+        </a>
+        <a href="{{ url_for('teacher.browse_posts') }}" class="{% if request.endpoint == 'teacher.browse_posts' %}active{% endif %}" title="Browse Posts">
+            <span class="material-symbols-outlined">work</span>
+            <span class="sidebar-label">Browse Posts</span>
+        </a>
+        <a href="{{ url_for('teacher.profile') }}" class="{% if request.endpoint == 'teacher.profile' %}active{% endif %}" title="My Profile">
+            <span class="material-symbols-outlined">person</span>
+            <span class="sidebar-label">My Profile</span>
+        </a>
+        <a href="{{ url_for('teacher.analytics') }}" class="{% if request.endpoint == 'teacher.analytics' %}active{% endif %}" title="Analytics">
+            <span class="material-symbols-outlined">analytics</span>
+            <span class="sidebar-label">Analytics</span>
+        </a>
+        <a href="{{ url_for('teacher.messages') }}" class="{% if request.endpoint == 'teacher.messages' %}active{% endif %}" title="Messages">
+            <span class="material-symbols-outlined">mail</span>
+            <span class="sidebar-label">Messages</span>
+        </a>
+        <a href="{{ url_for('teacher.notifications') }}" class="{% if request.endpoint == 'teacher.notifications' %}active{% endif %}" title="Notifications">
+            <span class="material-symbols-outlined">notifications</span>
+            <span class="sidebar-label">Notifications</span>
+        </a>
+        <a href="{{ url_for('subscriptions.plans') }}" class="{% if request.endpoint == 'subscriptions.plans' %}active{% endif %}" title="Subscription">
+            <span class="material-symbols-outlined">workspace_premium</span>
+            <span class="sidebar-label">Subscription</span>
+        </a>
+        <a href="{{ url_for('teacher.payment_history') }}" class="{% if request.endpoint == 'teacher.payment_history' %}active{% endif %}" title="Payment History">
+            <span class="material-symbols-outlined">receipt_long</span>
+            <span class="sidebar-label">Payment History</span>
+        </a>
+        <a href="{{ url_for('todo.index') }}" class="{% if request.endpoint == 'todo.index' %}active{% endif %}" title="ToDo">
+            <span class="material-symbols-outlined">check_circle</span>
+            <span class="sidebar-label">ToDo</span>
+        </a>
+    </nav>
+
+    <div class="sidebar-logout">
+        <a href="{{ url_for('auth.logout') }}" title="Logout">
+            <span class="material-symbols-outlined">logout</span>
+            <span class="sidebar-label">Logout</span>
+        </a>
+    </div>
+
+    <button class="sidebar-toggle" onclick="toggleSidebar()" title="Toggle sidebar">
+        <span class="material-symbols-outlined">menu_open</span>
+    </button>
+</aside>
+
+<script>
+let sidebarCollapsed = false;
+
+function toggleSidebar() {
+    sidebarCollapsed = !sidebarCollapsed;
+    document.getElementById('mainSidebar').classList.toggle('collapsed', sidebarCollapsed);
+    const mainContent = document.querySelector('.main-content');
+    const dashboardFooter = document.querySelector('.dashboard-footer');
+    if (sidebarCollapsed) {
+        mainContent.style.marginLeft = '80px';
+        if (dashboardFooter) dashboardFooter.style.marginLeft = '80px';
+    } else {
+        mainContent.style.marginLeft = '280px';
+        if (dashboardFooter) dashboardFooter.style.marginLeft = '280px';
+    }
+}
+</script>

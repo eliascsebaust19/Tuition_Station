@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Payment History - Tuition Station{% endblock %}
+
+{% block extra_css %}
+<style>
+.payments-card { background: var(--surface-container-lowest); border-radius: 1.25rem; border: 1px solid var(--outline-variant); box-shadow: 0 1px 3px rgba(0,0,0,0.04); overflow: hidden; }
+.payments-table { width: 100%; border-collapse: collapse; }
+.payments-table th { text-align: left; padding: 1rem 1.25rem; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--on-surface-variant); background: var(--surface-container); border-bottom: 1px solid var(--outline-variant); white-space: nowrap; }
+.payments-table td { padding: 1rem 1.25rem; font-size: 0.875rem; border-bottom: 1px solid var(--outline-variant); vertical-align: middle; }
+.payments-table tr:last-child td { border-bottom: none; }
+.payments-table tr:hover td { background: var(--surface-container); }
+.payments-table .plan-name { font-weight: 700; color: var(--on-surface); }
+.payments-table .amount { font-weight: 800; color: var(--on-surface); }
+.payments-table .txn-id { font-family: 'Inter', monospace; font-size: 0.8rem; color: var(--on-surface-variant); }
+.payments-table .admin-note { max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--on-surface-variant); font-size: 0.8rem; }
+.status-badge { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.75rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 700; text-transform: capitalize; }
+.status-confirmed { background: #f0fdf4; color: #166534; }
+.status-pending { background: #fffbeb; color: #92400e; }
+.status-failed { background: #fef2f2; color: #991b1b; }
+.status-cancelled { background: #f1f5f9; color: #475569; }
+.status-refunded { background: #f5f3ff; color: #6d28d9; }
+.status-badge .material-symbols-outlined { font-size: 0.6rem; }
+.empty-state { text-align: center; padding: 4rem 2rem; }
+.empty-state .material-symbols-outlined { font-size: 3.5rem; color: var(--outline-variant); margin-bottom: 1rem; }
+.empty-state h4 { font-size: 1.25rem; font-weight: 800; margin-bottom: 0.5rem; }
+.empty-state p { color: var(--on-surface-variant); margin-bottom: 1.5rem; }
+.summary-row { display: flex; justify-content: flex-end; gap: 2rem; padding: 1rem 1.25rem; background: var(--surface-container); border-top: 1px solid var(--outline-variant); font-size: 0.85rem; }
+.summary-row span { font-weight: 600; color: var(--on-surface-variant); }
+.summary-row strong { font-weight: 800; color: var(--on-surface); }
+.header-text .kicker { color: var(--secondary); }
+@media (max-width: 768px) { .payments-table { font-size: 0.8rem; } .payments-table th, .payments-table td { padding: 0.75rem; } .summary-row { flex-direction: column; gap: 0.5rem; } }
+</style>
+{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include "teacher/inc_sidebar.html" %}
+
+    <main class="main-content">
+        <header class="header-section">
+            <div class="header-text">
+                <p class="kicker">Billing</p>
+                <h2>Payment History</h2>
+                <p>View all your subscription payments and transaction records.</p>
+            </div>
+            <div class="user-profile" onclick="openProfilePopup()">
+                <div class="user-avatar">
+                    <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="Profile" />
+                </div>
+                <div class="user-info">
+                    <p class="role">Teacher</p>
+                    <p class="name">{{ current_user.name }}</p>
+                </div>
+            </div>
+        </header>
+
+        {% if payments %}
+        <div class="payments-card">
+            <div style="overflow-x:auto;">
+                <table class="payments-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Plan</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Sender</th>
+                            <th>Transaction ID</th>
+                            <th>Status</th>
+                            <th>Admin Note</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set total_paid = namespace(amount=0) %}
+                        {% for payment in payments %}
+                        {% set total_paid.amount = total_paid.amount + (payment.amount if payment.status in ('confirmed', 'completed') else 0) %}
+                        <tr>
+                            <td style="white-space:nowrap;color:var(--on-surface-variant);">{{ payment.created_at.strftime('%b %d, %Y') if payment.created_at else '' }}</td>
+                            <td><span class="plan-name">{{ payment.plan_ref.name if payment.plan_ref else 'N/A' }}</span></td>
+                            <td><span class="amount">৳{{ payment.amount }}</span></td>
+                            <td>{{ payment.method or '-' }}</td>
+                            <td>{{ payment.sender_number or '-' }}</td>
+                            <td><span class="txn-id">{{ payment.transaction_id or '-' }}</span></td>
+                            <td>
+                                {% set s = payment.status|lower if payment.status else 'pending' %}
+                                <span class="status-badge
+                                    {% if s in ('confirmed', 'completed') %}status-confirmed
+                                    {% elif s == 'pending' %}status-pending
+                                    {% elif s in ('failed', 'rejected') %}status-failed
+                                    {% elif s == 'cancelled' %}status-cancelled
+                                    {% elif s == 'refunded' %}status-refunded
+                                    {% else %}status-pending{% endif %}">
+                                    <span class="material-symbols-outlined" style="font-size:0.5rem;">circle</span> {{ payment.status }}
+                                </span>
+                            </td>
+                            <td><span class="admin-note" title="{{ payment.admin_note or '' }}">{{ payment.admin_note or '-' }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="summary-row">
+                <span>Total Payments: <strong>{{ payments|length }}</strong></span>
+                <span>Total Spent: <strong>৳{{ total_paid.amount }}</strong></span>
+            </div>
+        </div>
+        {% else %}
+        <div class="payments-card">
+            <div class="empty-state">
+                <span class="material-symbols-outlined">credit_card</span>
+                <h4>No Payments Yet</h4>
+                <p>Your payment history will appear here once you subscribe to a plan.</p>
+            </div>
+        </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

@@ -1,0 +1,874 @@
+{% extends "base.html" %}
+
+{% block title %}Find Your Perfect Tutor - Tuition Station{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+    html {
+        scroll-behavior: smooth;
+    }
+
+    /* Hero Section - Improved Design */
+    .hero-section {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        background: #1e3a8a;
+        padding: 9rem 0 5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url("{{ url_for('static', filename='Assets/Image/landing3.png') }}") center/cover no-repeat;
+        opacity: 0.4;
+        z-index: 0;
+    }
+
+    .hero-section::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(30, 58, 138, 0.8) 0%, rgba(37, 99, 235, 0.4) 100%);
+        z-index: 1;
+    }
+
+    .hero-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 10;
+    }
+
+    .hero-content {
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.45rem 0.9rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 1.2rem;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .hero-content h1 {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        line-height: 0.95;
+        font-weight: 800;
+        color: #ffffff;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.02em;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .hero-content h1 span {
+        color: #fbbf24;
+    }
+
+    .hero-subtitle {
+        font-size: 1.15rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2.5rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.6;
+    }
+
+    .hero-cta {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .btn-primary-hero {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 2rem;
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        color: #1e3a8a;
+        border: none;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.3s;
+        box-shadow: 0 4px 20px rgba(251, 191, 36, 0.4);
+    }
+
+    .btn-primary-hero:hover {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(251, 191, 36, 0.5);
+        color: #1e3a8a;
+    }
+
+    .btn-secondary-hero {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 2rem;
+        background: rgba(255, 255, 255, 0.95);
+        color: #1e3a8a;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .btn-secondary-hero:hover {
+        background: #ffffff;
+        border-color: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
+    }
+
+    .hero-image {
+        display: none;
+    }
+
+    .hero-search-bar {
+        display: flex;
+        gap: 1rem;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 1.5rem;
+        border-radius: 1.6rem;
+        box-shadow: 0 24px 50px rgba(15, 23, 42, 0.2);
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 2.5rem;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-search-bar .search-input-group {
+        flex: 1;
+        min-width: 180px;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        background: rgba(249, 250, 251, 0.8);
+        border: none;
+        border-radius: 999px;
+        transition: all 0.2s;
+    }
+
+    .hero-search-bar .search-input-group:focus-within {
+        background: #ffffff;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    /* Featured Tutors Section */
+    .featured-section {
+        padding: 6rem 0;
+        background: #F9FAFB;
+    }
+
+    .featured-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .section-header h2 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #111827;
+        margin-bottom: 0.5rem;
+    }
+
+    .section-header p {
+        font-size: 1.1rem;
+        color: #6B7280;
+    }
+
+    /* Tutor Grid - Smaller Compact Cards */
+    .tutor-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 1rem;
+    }
+
+    @media (max-width: 1199px) {
+        .tutor-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (max-width: 767px) {
+        .tutor-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+        .tutor-grid { grid-template-columns: 1fr; }
+    }
+
+    .tutor-card {
+        background: transparent;
+        border-radius: 0.75rem;
+        padding: 0;
+        box-shadow: none;
+        transition: all 0.3s ease;
+        overflow: hidden;
+        cursor: pointer;
+        border: 1px solid #E5E7EB;
+    }
+
+    .tutor-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+        border-color: #2563EB;
+    }
+
+    .tutor-card-image {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        background: #E5E7EB;
+    }
+
+    .tutor-card-body {
+        padding: 0.5rem 0.5rem;
+        background: #ffffff;
+    }
+
+    .tutor-card-name {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #2563EB;
+        margin-bottom: 0.15rem;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+        line-height: 1.2;
+    }
+
+    .tutor-card-subjects {
+        font-size: 0.7rem;
+        color: #6B7280;
+        margin-bottom: 0.4rem;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+        line-height: 1.15;
+    }
+
+    .tutor-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 0.4rem;
+        border-top: 1px solid #F3F4F6;
+        gap: 0.2rem;
+        flex-wrap: wrap;
+    }
+
+    .tutor-card-rate {
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: #10B981;
+        line-height: 1.25;
+        min-width: 0;
+        word-break: break-word;
+    }
+
+    .tutor-card-rating {
+        display: flex;
+        align-items: center;
+        gap: 0.15rem;
+        color: #10B981;
+        font-size: 0.65rem;
+        font-weight: 600;
+        flex-shrink: 0;
+        min-width: 0;
+    }
+
+    .tutor-card-rating i {
+        font-size: 0.7rem;
+    }
+
+    .btn-view-profile {
+        display: inline-block;
+        width: 100%;
+        padding: 0.35rem;
+        margin-top: 0.4rem;
+        background: transparent;
+        color: #2563EB;
+        border: 1.5px solid #2563EB;
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: 0.7rem;
+        text-align: center;
+        text-decoration: none;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+
+    .tutor-card:hover .btn-view-profile {
+        background: #2563EB;
+        color: #ffffff;
+    }
+
+    /* How It Works Section */
+    .how-it-works {
+        padding: 6rem 0;
+        background: #ffffff;
+    }
+
+    .steps-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+
+    .steps-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 3rem;
+        margin-top: 3rem;
+    }
+
+    .step-card {
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .step-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+        background: rgba(37, 99, 235, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: #2563EB;
+    }
+
+    .step-card h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 0.75rem;
+    }
+
+    .step-card p {
+        color: #6B7280;
+        line-height: 1.6;
+    }
+
+    /* CTA Section */
+    .cta-section {
+        padding: 6rem 0;
+        background: linear-gradient(135deg, #2563EB 0%, #10B981 100%);
+        text-align: center;
+    }
+
+    .cta-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+
+    .cta-section h2 {
+        font-size: 3rem;
+        font-weight: 800;
+        color: #ffffff;
+        margin-bottom: 1rem;
+    }
+
+    .cta-section p {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2rem;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+        .hero-container {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+
+        .hero-content h1 {
+            font-size: 2.5rem;
+        }
+
+        .hero-cta {
+            justify-content: center;
+        }
+
+        .hero-image {
+            display: none;
+        }
+
+        .steps-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .search-bar {
+            flex-direction: column;
+        }
+
+        .search-field {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-container">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-star"></i>
+                Premium Tutors Available
+            </div>
+            <h1>Find Your Perfect <span>Tutor</span></h1>
+            <p class="hero-subtitle">
+                Connect with qualified tutors in your area. From Mathematics to Music, 
+                find the right mentor to help you succeed.
+            </p>
+            
+        <!-- Search Bar in Hero Section -->
+        <form class="search-bar" action="{{ url_for('student.search') }}" method="GET">
+            <div class="search-field">
+                <label for="hero-location" style="display: none;">Location</label>
+                <i class="fas fa-map-marker-alt"></i>
+                <input type="text" id="hero-location" name="location" placeholder="Enter your location" value="{{ request.args.get('location', '') }}" autocomplete="address-level2">
+            </div>
+            <div class="search-field">
+                <label for="hero-subject" style="display: none;">Subject</label>
+                <i class="fas fa-book"></i>
+                <select id="hero-subject" name="subject">
+                    <option value="">All Subjects</option>
+                    <option value="Mathematics" {% if request.args.get('subject') == 'Mathematics' %}selected{% endif %}>Mathematics</option>
+                    <option value="English" {% if request.args.get('subject') == 'English' %}selected{% endif %}>English</option>
+                    <option value="Physics" {% if request.args.get('subject') == 'Physics' %}selected{% endif %}>Physics</option>
+                    <option value="Chemistry" {% if request.args.get('subject') == 'Chemistry' %}selected{% endif %}>Chemistry</option>
+                    <option value="Biology" {% if request.args.get('subject') == 'Biology' %}selected{% endif %}>Biology</option>
+                    <option value="Class 1-5" {% if request.args.get('subject') == 'Class 1-5' %}selected{% endif %}>Class 1-5</option>
+                </select>
+            </div>
+            <button type="submit" class="search-btn">
+                <i class="fas fa-search"></i>
+                Search
+            </button>
+        </form>
+    </div>
+</section>
+
+<!-- Featured Tutors Section -->
+<section class="featured-section">
+    <div class="featured-container">
+        <div class="section-header">
+            <h2>Featured Tutors</h2>
+            <p>Meet our top-rated tutors who are ready to help you succeed</p>
+        </div>
+
+        <div class="tutor-grid">
+            {% for teacher in teachers %}
+            {% set pic_index = loop.index0 % 5 + 1 %}
+            {% set t = teacher.user %}
+            {% set p = teacher.profile %}
+            {% if t.profile_picture %}
+                {% set img_src = t.profile_picture %}
+            {% else %}
+                {% set img_src = url_for('static', filename='Assets/Image/DemoTeacher' ~ pic_index ~ '.png') %}
+            {% endif %}
+                <div class="tutor-card" onclick="window.location.href='{{ url_for('student.teacher_profile', teacher_id=t.id) }}'">
+                    {% if teacher.featured %}<div class="tutor-card-badge">Featured</div>{% endif %}
+                    {% if teacher.verified %}<div class="tutor-card-badge" style="right: 0.5rem; left: auto; background: #059669;">Verified</div>{% endif %}
+                    <img src="{{ img_src }}" 
+                         alt="{{ t.name }}" 
+                         class="tutor-card-image"
+                         onerror="this.src='{{ url_for('static', filename='Assets/Image/DemoTeacher' ~ pic_index ~ '.png') }}'">
+                    <div class="tutor-card-body">
+                        <h3 class="tutor-card-name">
+                            {{ t.name }}
+                        </h3>
+                        <p class="tutor-card-subjects">
+                            <i class="fas fa-book" style="color: #2563EB; margin-right: 0.5rem;"></i>
+                            {{ p.subject or 'Various Subjects' }}
+                        </p>
+                        <div style="display:flex;gap:0.25rem;margin-bottom:0.25rem;flex-wrap:wrap;">
+                            {% if p.teaching_mode == 'online' or p.teaching_mode == 'both' %}
+                            <span style="display:inline-flex;align-items:center;gap:0.15rem;padding:0.1rem 0.35rem;background:#f0fdf4;color:#166534;border-radius:0.25rem;font-size:0.55rem;font-weight:700;border:1px solid #dcfce7;">
+                                <i class="fas fa-wifi" style="font-size:0.5rem;"></i> Online
+                            </span>
+                            {% endif %}
+                            {% if p.teaching_mode == 'offline' or p.teaching_mode == 'both' %}
+                            <span style="display:inline-flex;align-items:center;gap:0.15rem;padding:0.1rem 0.35rem;background:#eff6ff;color:#1d4ed8;border-radius:0.25rem;font-size:0.55rem;font-weight:700;border:1px solid #bfdbfe;">
+                                <i class="fas fa-map-marker-alt" style="font-size:0.5rem;"></i> Offline
+                            </span>
+                            {% endif %}
+                        </div>
+                        <div class="tutor-card-footer">
+                            <div class="tutor-card-rate">
+                                ৳{{ p.fee or 0 }}<small style="font-size: 0.75rem; font-weight: 500; color: #6B7280;">/month</small>
+                            </div>
+                            <div class="tutor-card-rating">
+                                <i class="fas fa-star" style="color: #f59e0b;"></i>
+                                {{ teacher.avg_rating }} ({{ teacher.review_count }})
+                            </div>
+                        </div>
+                        <a href="{{ url_for('student.teacher_profile', teacher_id=t.id) }}" 
+                           class="btn-view-profile"
+                           onclick="event.stopPropagation();">
+                            View Profile
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+
+            {% if not teachers %}
+                <div style="text-align: center; padding: 3rem; color: #6B7280;">
+                    <i class="fas fa-chalkboard-teacher" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
+                    <p>No tutors available at the moment. Please check back later!</p>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+<!-- How It Works Section -->
+<section class="how-it-works">
+    <div class="steps-container">
+        <div class="section-header">
+            <h2>How It Works</h2>
+            <p>Get started with just three simple steps</p>
+        </div>
+
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3>Find a Tutor</h3>
+                <p>Search for tutors by subject, location, and budget. Filter through our verified tutor database.</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h3>Connect & Learn</h3>
+                <p>Send requests to tutors, communicate your needs, and schedule your first session.</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h3>Achieve Goals</h3>
+                <p>Work with your tutor, track progress, and achieve your academic goals together.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section style="padding: 4rem 0; background: #1e3a8a; color: #ffffff;">
+    <div class="featured-container">
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; text-align: center;">
+            <div>
+                <div style="font-size: 3rem; font-weight: 900; color: #fbbf24; margin-bottom: 0.5rem;">500+</div>
+                <div style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.8;">Active Tutors</div>
+            </div>
+            <div>
+                <div style="font-size: 3rem; font-weight: 900; color: #fbbf24; margin-bottom: 0.5rem;">2000+</div>
+                <div style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.8;">Students Helped</div>
+            </div>
+            <div>
+                <div style="font-size: 3rem; font-weight: 900; color: #fbbf24; margin-bottom: 0.5rem;">15+</div>
+                <div style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.8;">Subjects Covered</div>
+            </div>
+            <div>
+                <div style="font-size: 3rem; font-weight: 900; color: #fbbf24; margin-bottom: 0.5rem;">4.8</div>
+                <div style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.8;">Average Rating</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section style="padding: 6rem 0; background: #ffffff;">
+    <div class="featured-container">
+        <div class="section-header">
+            <h2>Why Choose Tuition Station?</h2>
+            <p>We provide the best platform for connecting students with qualified tutors</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;">
+            <div style="padding: 2rem; border-radius: 1.5rem; background: #F9FAFB; text-align: center;">
+                <div style="width: 80px; height: 80px; margin: 0 auto 1.5rem; background: rgba(37, 99, 235, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #2563EB;">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.75rem; color: #111827;">Verified Tutors</h3>
+                <p style="color: #6B7280; line-height: 1.6; margin: 0;">All tutors are verified with proper credentials and background checks.</p>
+            </div>
+
+            <div style="padding: 2rem; border-radius: 1.5rem; background: #F9FAFB; text-align: center;">
+                <div style="width: 80px; height: 80px; margin: 0 auto 1.5rem; background: rgba(16, 185, 129, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #10B981;">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.75rem; color: #111827;">Local & Convenient</h3>
+                <p style="color: #6B7280; line-height: 1.6; margin: 0;">Find tutors in your area for convenient home tutoring sessions.</p>
+            </div>
+
+            <div style="padding: 2rem; border-radius: 1.5rem; background: #F9FAFB; text-align: center;">
+                <div style="width: 80px; height: 80px; margin: 0 auto 1.5rem; background: rgba(251, 191, 36, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #fbbf24;">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.75rem; color: #111827;">Top-Rated</h3>
+                <p style="color: #6B7280; line-height: 1.6; margin: 0;">Read reviews and ratings from other students to make informed decisions.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Subscription Plans Section -->
+<section style="padding: 4rem 0; background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);">
+    <div class="featured-container">
+        <div class="section-header">
+            <h2 style="font-size: 2rem;">Subscription Plans</h2>
+            <p style="font-size: 0.95rem;">Unlock more features and reach more students with the right plan</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; max-width: 1050px; margin: 0 auto;">
+            {% for plan in plans %}
+            {% set is_most_popular = plan.is_featured %}
+            <div style="background: #fff; border-radius: 20px; padding: 1.5rem 1.25rem; border: 1px solid #e9edf2; position: relative; transition: all 0.25s; {% if is_most_popular %}border-color: #6366f1; box-shadow: 0 0 0 1px #6366f1, 0 20px 40px -12px rgba(99,102,241,0.15);{% endif %}"
+                 onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 40px -12px rgba(0,0,0,0.08)'"
+                 onmouseout="this.style.transform='';this.style.boxShadow=''">
+                {% if is_most_popular %}
+                <div style="position: absolute; top: -0.65rem; left: 50%; transform: translateX(-50%); background: #6366f1; color: #fff; font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.8rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.04em;">Most Popular</div>
+                {% endif %}
+
+                <div style="font-size: 0.85rem; font-weight: 700; color: {% if is_most_popular %}#6366f1{% else %}#94a3b8{% endif %}; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.25rem;">{{ plan.name }}</div>
+                <div style="font-size: 2rem; font-weight: 800; color: #0f172a; letter-spacing: -0.03em;">
+                    {% if plan.price == 0 %}Free{% else %}BDT {{ plan.price|int }}{% endif %}
+                    {% if plan.duration_days < 9999 %}<span style="font-size: 0.85rem; font-weight: 500; color: #94a3b8;"> /{{ plan.duration_days }}d</span>{% endif %}
+                </div>
+                {% if plan.description %}
+                <div style="font-size: 0.8rem; color: #64748b; margin: 0.75rem 0; line-height: 1.5;">{{ plan.description }}</div>
+                {% endif %}
+
+                <ul style="list-style: none; padding: 0; margin: 0 0 1.25rem;">
+                    <li style="display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.4rem 0; font-size: 0.8rem; color: #334155; border-bottom: 1px solid #f1f5f9;">
+                        {% if plan.max_applications == -1 %}
+                            <i class="fas fa-check" style="color: #22c55e; font-size: 0.75rem; margin-top: 0.15rem;"></i><span>Unlimited applications</span>
+                        {% elif plan.max_applications == 0 %}
+                            <i class="fas fa-xmark" style="color: #94a3b8; font-size: 0.75rem; margin-top: 0.15rem;"></i><span>No applications</span>
+                        {% else %}
+                            <i class="fas fa-check" style="color: #22c55e; font-size: 0.75rem; margin-top: 0.15rem;"></i><span>{{ plan.max_applications }} apps/month</span>
+                        {% endif %}
+                    </li>
+                    <li style="display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.4rem 0; font-size: 0.8rem; color: #334155; border-bottom: 1px solid #f1f5f9;">
+                        {% if plan.has_verified_badge %}
+                            <i class="fas fa-check" style="color: #22c55e; font-size: 0.75rem; margin-top: 0.15rem;"></i><span>Verified badge</span>
+                        {% else %}
+                            <i class="fas fa-xmark" style="color: #94a3b8; font-size: 0.75rem; margin-top: 0.15rem;"></i><span>No verified badge</span>
+                        {% endif %}
+                    </li>
+                    <li style="display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.4rem 0; font-size: 0.8rem; color: #334155; border-bottom: 1px solid #f1f5f9;">
+                        {% if plan.priority_ranking > 0 %}
+                            <i class="fas fa-check" style="color: #22c55e; font-size: 0.75rem; margin-top: 0.15rem;"></i><span>Priority ranking</span>
+                        {% else %}
+                            <i class="fas fa-xmark" style="color: #94a3b8; font-size: 0.75rem; margin-top: 0.15rem;"></i><span>Standard ranking</span>
+                        {% endif %}
+                    </li>
+                    <li style="display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.4rem 0; font-size: 0.8rem; color: #334155; border-bottom: 1px solid #f1f5f9;">
+                        {% if plan.is_featured %}
+                            <i class="fas fa-check" style="color: #22c55e; font-size: 0.75rem; margin-top: 0.15rem;"></i><span>Featured listing</span>
+                        {% else %}
+                            <i class="fas fa-xmark" style="color: #94a3b8; font-size: 0.75rem; margin-top: 0.15rem;"></i><span>No featured listing</span>
+                        {% endif %}
+                    </li>
+                </ul>
+
+                {% if plan.price > 0 %}
+                <div style="background: #f1f5f9; border-radius: 10px; padding: 0.75rem; margin-bottom: 0.75rem;">
+                    <div style="font-size: 0.7rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;"><i class="fas fa-credit-card me-1"></i>Payment</div>
+                    <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                        <span style="display: inline-flex; align-items: center; gap: 0.3rem; background: #fff; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.7rem; font-weight: 600; color: #1e293b; border: 1px solid #e2e8f0;">
+                            <i class="fas fa-mobile-alt" style="color: #E2136E;"></i> bKash
+                        </span>
+                        <span style="display: inline-flex; align-items: center; gap: 0.3rem; background: #fff; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.7rem; font-weight: 600; color: #1e293b; border: 1px solid #e2e8f0;">
+                            <i class="fas fa-mobile-alt" style="color: #981CEB;"></i> Nagad
+                        </span>
+                        <span style="display: inline-flex; align-items: center; gap: 0.3rem; background: #fff; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.7rem; font-weight: 600; color: #1e293b; border: 1px solid #e2e8f0;">
+                            <i class="fas fa-university" style="color: #059669;"></i> Bank
+                        </span>
+                    </div>
+                </div>
+                {% endif %}
+
+                <a href="{{ url_for('subscriptions.plans') }}"
+                   style="display: block; width: 100%; padding: 0.6rem; border-radius: 10px; font-weight: 700; font-size: 0.85rem; border: none; text-align: center; text-decoration: none; transition: all 0.2s; box-sizing: border-box;
+                   {% if is_most_popular %}background: #6366f1; color: #fff;
+                   {% elif plan.price == 0 %}background: #f1f5f9; color: #94a3b8; cursor: default;
+                   {% else %}background: transparent; color: #6366f1; border: 1.5px solid #6366f1;{% endif %}">
+                    {% if plan.price == 0 %}Free Plan{% else %}Subscribe Now{% endif %}
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div style="text-align: center; margin-top: 2.5rem;">
+            <p style="color: #64748b; font-size: 0.85rem;">
+                <i class="fas fa-info-circle me-1" style="color: #6366f1;"></i>
+                Teachers can upgrade anytime. Payments via bKash, Nagad & Bank.
+            </p>
+            <a href="{{ url_for('auth.register', role='teacher') }}" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.75rem; background: #1e3a8a; color: #fff; border-radius: 999px; font-weight: 700; font-size: 0.85rem; text-decoration: none; margin-top: 0.5rem; transition: all 0.2s;"
+               onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#1e3a8a'">
+                <i class="fas fa-chalkboard-teacher"></i> Become a Tutor &mdash; Start Free
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section style="padding: 6rem 0; background: #F9FAFB;">
+    <div class="featured-container">
+        <div class="section-header">
+            <h2>What Students Say</h2>
+            <p>Real feedback from students who found their perfect tutor</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;">
+            <div style="background: #ffffff; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+                <div style="color: #fbbf24; font-size: 1.25rem; margin-bottom: 1rem;">★★★★★</div>
+                <p style="color: #374151; line-height: 1.6; margin-bottom: 1.5rem; font-style: italic;">"Found an amazing math tutor through this platform. My grades improved significantly within just 2 months!"</p>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <img src="{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
+                    <div>
+                        <div style="font-weight: 600; color: #111827;">Rahim M.</div>
+                        <div style="font-size: 0.85rem; color: #6B7280;">SSC Student</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: #ffffff; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+                <div style="color: #fbbf24; font-size: 1.25rem; margin-bottom: 1rem;">★★★★★</div>
+                <p style="color: #374151; line-height: 1.6; margin-bottom: 1.5rem; font-style: italic;">"The tutor I found was excellent. Very patient and explains complex concepts in simple ways."</p>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <img src="{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
+                    <div>
+                        <div style="font-weight: 600; color: #111827;">Sarah K.</div>
+                        <div style="font-size: 0.85rem; color: #6B7280;">HSC Student</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: #ffffff; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+                <div style="color: #fbbf24; font-size: 1.25rem; margin-bottom: 1rem;">★★★★★</div>
+                <p style="color: #374151; line-height: 1.6; margin-bottom: 1.5rem; font-style: italic;">"Easy to use platform. Found a biology tutor near me within minutes. Highly recommended!"</p>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <img src="{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
+                    <div>
+                        <div style="font-weight: 600; color: #111827;">Karim A.</div>
+                        <div style="font-size: 0.85rem; color: #6B7280;">University Student</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Bengali Tutor Selection Section -->
+<section style="padding: 6rem 0; background: #ffffff;">
+    <div class="featured-container">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;">
+            <!-- Left Side - Bengali Content -->
+            <div>
+                <h2 style="font-size: 2.5rem; font-weight: 800; color: #2563eb; margin-bottom: 1.5rem;">কঠোর নির্বাচন.</h2>
+                <p style="font-size: 1.1rem; color: #6B7280; line-height: 1.8; margin-bottom: 2rem;">
+                    আমাদের টিউটররা যোগ্যতা, শিক্ষাদান দক্ষতা এবং বুদ্ধিমত্তার ভিত্তিতে সতর্কতার সাথে নির্বাচিত হয়। আমরা নিশ্চিত করি যে প্রতিটি টিউটর আমাদের মানদণ্ড পূরণ করে এবং শিক্ষার্থীদের সর্বোত্তম সেবা প্রদান করতে সক্ষম।
+                </p>
+                
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                        <div style="width: 48px; height: 48px; background: rgba(37, 99, 235, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #2563EB; font-size: 1.25rem; flex-shrink: 0;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div>
+                            <h3 style="font-size: 1.25rem; font-weight: 700; color: #111827; margin-bottom: 0.5rem;">একাডেমিক যাচাই</h3>
+                            <p style="color: #6B7280; line-height: 1.6;">আমরা প্রতিটি টিউটরের একাডেমিক ব্যাকগ্রাউন্ড যাচাই করি এবং নিশ্চিত করি যে তারা সঠিক যোগ্যতা রাখেন।</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                        <div style="width: 48px; height: 48px; background: rgba(37, 99, 235, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #2563EB; font-size: 1.25rem; flex-shrink: 0;">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div>
+                            <h3 style="font-size: 1.25rem; font-weight: 700; color: #111827; margin-bottom: 0.5rem;">পদ্ধতি মূল্যায়ন</h3>
+                            <p style="color: #6B7280; line-height: 1.6;">ডেমো ক্লাসের মাধ্যমে আমরা টিউটরদের শিক্ষাদান পদ্ধতি মূল্যায়ন করি এবং সেরা নির্বাচন করি।</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Side - Dev Image -->
+            <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+                <img src="{{ url_for('static', filename='Assets/Devloper/dev.png') }}" 
+                     alt="Developer" 
+                     style="width: 100%; max-width: 500px; height: auto; border-radius: 1.5rem; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);">
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Smooth scroll for search section
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}

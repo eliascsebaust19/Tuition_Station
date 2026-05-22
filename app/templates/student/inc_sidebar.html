@@ -1,0 +1,63 @@
+<aside class="sidebar" id="mainSidebar">
+    <div class="sidebar-brand">
+        <a href="{{ url_for('auth.index', landing='1') }}" class="logo" style="display: inline-flex; align-items: center; gap: 0.6rem; text-decoration: none;">
+            <span class="logo-mark" style="width: 2.2rem; height: 2.2rem; font-size: 1.2rem; flex-shrink: 0;">T</span>
+            <span class="logo-text sidebar-label logo-text-dark">Tuition <strong>Station</strong></span>
+        </a>
+    </div>
+
+    <nav class="sidebar-nav">
+        <a href="{{ url_for('student.dashboard') }}" class="{% if request.endpoint == 'student.dashboard' %}active{% endif %}" title="Dashboard">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span class="sidebar-label">Dashboard</span>
+        </a>
+        <a href="{{ url_for('student.search') }}" class="{% if request.endpoint == 'student.search' %}active{% endif %}" title="Browse Tutors">
+            <span class="material-symbols-outlined">search</span>
+            <span class="sidebar-label">Browse Tutors</span>
+        </a>
+        <a href="{{ url_for('student.messages') }}" class="{% if request.endpoint == 'student.messages' %}active{% endif %}" title="Messages">
+            <span class="material-symbols-outlined">mail</span>
+            <span class="sidebar-label">Messages</span>
+        </a>
+        <a href="{{ url_for('student.edit_profile') }}" class="{% if request.endpoint == 'student.edit_profile' %}active{% endif %}" title="My Profile">
+            <span class="material-symbols-outlined">person</span>
+            <span class="sidebar-label">My Profile</span>
+        </a>
+    </nav>
+
+    <div class="sidebar-logout">
+        <a href="{{ url_for('auth.logout') }}" title="Logout">
+            <span class="material-symbols-outlined">logout</span>
+            <span class="sidebar-label">Logout</span>
+        </a>
+    </div>
+
+    <div class="sidebar-footer">
+        <a href="{{ url_for('student.search') }}" class="btn-post">
+            <span class="material-symbols-outlined">add</span>
+            <span class="sidebar-label">Post a Request</span>
+        </a>
+    </div>
+
+    <button class="sidebar-toggle" onclick="toggleSidebar()" title="Toggle sidebar">
+        <span class="material-symbols-outlined">menu_open</span>
+    </button>
+</aside>
+
+<script>
+let sidebarCollapsed = false;
+
+function toggleSidebar() {
+    sidebarCollapsed = !sidebarCollapsed;
+    document.getElementById('mainSidebar').classList.toggle('collapsed', sidebarCollapsed);
+    const mainContent = document.querySelector('.main-content');
+    const dashboardFooter = document.querySelector('.dashboard-footer');
+    if (sidebarCollapsed) {
+        mainContent.style.marginLeft = '80px';
+        if (dashboardFooter) dashboardFooter.style.marginLeft = '80px';
+    } else {
+        mainContent.style.marginLeft = '280px';
+        if (dashboardFooter) dashboardFooter.style.marginLeft = '280px';
+    }
+}
+</script>

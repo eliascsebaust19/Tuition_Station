@@ -1,0 +1,526 @@
+{% extends "base.html" %}
+
+{% block title %}{% if is_login %}Login{% else %}Sign Up{% endif %} - Tuition Station{% endblock %}
+
+{% block body_class %}auth-body{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% set old_role = old_role if old_role is defined else 'student' %}
+
+{% block content %}
+<div class="auth-container">
+    <aside class="auth-hero-section">
+        <div class="hero-bg-1"></div>
+        <div class="hero-bg-2"></div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="material-symbols-outlined">verified</span>
+                Trusted Platform
+            </div>
+            <h2>Start Your <span>Learning</span> Journey</h2>
+            <p>Join thousands of students and teachers already connected on Tuition Station.</p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="hero-stat-value">500+</span>
+                    <span class="hero-stat-label">Active Tutors</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-value">2000+</span>
+                    <span class="hero-stat-label">Students</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-value">4.8</span>
+                    <span class="hero-stat-label">Avg. Rating</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="auth-form-section">
+        <div class="brand-logo">
+            <a href="{{ url_for('auth.index') }}" style="text-decoration:none;">
+                <i class="fas fa-graduation-cap" style="color:#6366f1;margin-right:0.3rem;"></i>
+                <span style="font-weight:700;">Tuition<strong>Station</strong></span>
+            </a>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div style="margin-bottom: 1.5rem;">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <div class="tab-switcher">
+            <button type="button" class="tab-switch-btn {% if is_login %}active{% endif %}" onclick="window.location.href='{{ url_for('auth.login') }}'">
+                <span class="material-symbols-outlined">login</span>
+                <span>Login</span>
+            </button>
+            <button type="button" class="tab-switch-btn {% if not is_login %}active{% endif %}" onclick="window.location.href='{{ url_for('auth.register') }}'">
+                <span class="material-symbols-outlined">how_to_reg</span>
+                <span>Sign Up</span>
+            </button>
+        </div>
+
+        {% if is_login %}
+        <form method="POST" action="{{ url_for('auth.login') }}" style="animation: fadeUp 0.4s ease;">
+            <div class="form-group">
+                <label for="login-email">Email Address</label>
+                <div class="input-icon-wrap">
+                    <span class="material-symbols-outlined input-icon">mail</span>
+                    <input type="email" id="login-email" name="email" placeholder="example@tuition.com" autocomplete="email" required />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="login-password">Password</label>
+                <div class="password-wrapper">
+                    <span class="material-symbols-outlined input-icon" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);z-index:1;color:var(--outline);font-size:1.25rem;">lock</span>
+                    <input type="password" name="password" id="login-password" placeholder="Enter your password" autocomplete="current-password" required />
+                    <button type="button" class="password-toggle" onclick="togglePassword('login-password', this)">
+                        <span class="material-symbols-outlined">visibility_off</span>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <span class="material-symbols-outlined">login</span>
+                Sign In
+            </button>
+        </form>
+        {% else %}
+        <form method="POST" action="{{ url_for('auth.register') }}" style="animation: fadeUp 0.4s ease;">
+            <div class="role-selector">
+                <label class="role-card-sm">
+                    <input type="radio" name="role" value="student" id="role_student" {% if default_role != 'teacher' %}checked{% endif %} onchange="toggleTeacherFields()" />
+                    <div class="role-card-sm-content">
+                        <span class="material-symbols-outlined">school</span>
+                        <span>Student</span>
+                    </div>
+                </label>
+                <label class="role-card-sm">
+                    <input type="radio" name="role" value="teacher" id="role_teacher" {% if default_role == 'teacher' %}checked{% endif %} onchange="toggleTeacherFields()" />
+                    <div class="role-card-sm-content">
+                        <span class="material-symbols-outlined">workspace_premium</span>
+                        <span>Teacher</span>
+                    </div>
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label for="reg-name">Full Name</label>
+                <div class="input-icon-wrap">
+                    <span class="material-symbols-outlined input-icon">person</span>
+                    <input type="text" id="reg-name" name="name" placeholder="Enter your full name" value="{{ old.name or '' }}" autocomplete="name" required />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="reg-email">Email Address</label>
+                <div class="input-icon-wrap">
+                    <span class="material-symbols-outlined input-icon">mail</span>
+                    <input type="email" id="reg-email" name="email" placeholder="example@tuition.com" value="{{ old.email or '' }}" autocomplete="email" required />
+                </div>
+            </div>
+
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="reg-password">Password</label>
+                    <div class="password-wrapper">
+                        <span class="material-symbols-outlined input-icon" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);z-index:1;color:var(--outline);font-size:1.25rem;">lock</span>
+                        <input type="password" name="password" id="reg-password" placeholder="Create password" autocomplete="new-password" required />
+                        <button type="button" class="password-toggle" onclick="togglePassword('reg-password', this)">
+                            <span class="material-symbols-outlined">visibility_off</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="reg-confirm">Confirm Password</label>
+                    <div class="password-wrapper">
+                        <span class="material-symbols-outlined input-icon" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);z-index:1;color:var(--outline);font-size:1.25rem;">lock</span>
+                        <input type="password" name="confirm_password" id="reg-confirm" placeholder="Confirm password" autocomplete="new-password" required />
+                        <button type="button" class="password-toggle" onclick="togglePassword('reg-confirm', this)">
+                            <span class="material-symbols-outlined">visibility_off</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="teacher-fields" class="teacher-fields">
+                <div class="teacher-fields-header">
+                    <span class="material-symbols-outlined">badge</span>
+                    <span>Professional Information</span>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="reg-subject">Subject</label>
+                        <div class="input-icon-wrap">
+                            <span class="material-symbols-outlined input-icon">book</span>
+                            <input type="text" id="reg-subject" name="subject" placeholder="e.g. Mathematics" value="{{ old.subject or '' }}" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-experience">Experience</label>
+                        <div class="input-icon-wrap">
+                            <span class="material-symbols-outlined input-icon">timer</span>
+                            <input type="number" id="reg-experience" name="experience" min="0" placeholder="Years" value="{{ old.experience or '0' }}" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="reg-fee">Monthly Fee (BDT)</label>
+                        <div class="input-icon-wrap">
+                            <span class="material-symbols-outlined input-icon">payments</span>
+                            <input type="number" id="reg-fee" name="fee" min="0" placeholder="e.g. 5000" value="{{ old.fee or '' }}" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-location">Location</label>
+                        <div class="input-icon-wrap">
+                            <span class="material-symbols-outlined input-icon">location_on</span>
+                            <input type="text" id="reg-location" name="location" placeholder="e.g. Dhanmondi" value="{{ old.location or '' }}" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <span class="material-symbols-outlined">how_to_reg</span>
+                Create Account
+            </button>
+        </form>
+        {% endif %}
+
+        <div class="social-divider">
+            <span>or continue with</span>
+        </div>
+
+        <div class="social-btns">
+            <button type="button" class="social-btn" id="googleLoginBtn">
+                <svg viewBox="0 0 24 24" style="width: 18px; height: 18px;"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-1 .67-2.28 1.07-3.71 1.07-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path><path d="M5.84 14.09c-.22-.67-.35-1.39-.35-2.09s.13-1.42.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path><path d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path></svg>
+                <span>Google</span>
+            </button>
+            <button type="button" class="social-btn" id="facebookLoginBtn">
+                <svg viewBox="0 0 24 24" style="width: 18px; height: 18px;"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.301c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" fill="#1877F2"></path></svg>
+                <span>Facebook</span>
+            </button>
+        </div>
+    </main>
+</div>
+
+<style>
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-hero-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 40%, #2563eb 100%);
+}
+.auth-hero-section .hero-content h2 { font-size: 2.5rem; }
+.auth-hero-section .hero-content h2 span { color: #6cf8bb; }
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.9);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255,255,255,0.15);
+}
+.hero-badge .material-symbols-outlined { font-size: 1rem; }
+.hero-stats {
+    display: flex;
+    gap: 2rem;
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.12);
+}
+.hero-stat { display: flex; flex-direction: column; }
+.hero-stat-value { font-size: 1.5rem; font-weight: 800; color: #fff; line-height: 1; }
+.hero-stat-label { font-size: 0.75rem; color: rgba(255,255,255,0.6); margin-top: 0.25rem; font-weight: 500; }
+
+.tab-switcher {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    background: var(--surface-container);
+    padding: 0.375rem;
+    border-radius: 0.75rem;
+}
+.tab-switch-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.5rem;
+    border: none;
+    background: transparent;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.25s;
+    color: var(--on-surface-variant);
+    font-family: var(--font-family);
+}
+.tab-switch-btn .material-symbols-outlined { font-size: 1.2rem; }
+.tab-switch-btn.active {
+    background: var(--primary);
+    color: var(--on-primary);
+    box-shadow: 0 2px 8px rgba(0,74,198,0.25);
+}
+.tab-switch-btn:hover:not(.active) { background: var(--surface-container-high); }
+
+.role-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+.role-card-sm {
+    cursor: pointer;
+}
+.role-card-sm input { display: none; }
+.role-card-sm-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.65rem 1rem;
+    border: 2px solid var(--surface-container-high);
+    border-radius: 0.75rem;
+    transition: all 0.2s;
+    background: var(--surface-container-low);
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--on-surface-variant);
+}
+.role-card-sm-content .material-symbols-outlined { font-size: 1.15rem; }
+.role-card-sm:hover .role-card-sm-content {
+    border-color: var(--outline-variant);
+    background: var(--surface-container);
+}
+.role-card-sm input:checked + .role-card-sm-content {
+    border-color: var(--primary);
+    background: var(--primary-fixed);
+    color: var(--primary);
+    box-shadow: 0 2px 8px rgba(0,74,198,0.1);
+}
+
+.input-icon-wrap {
+    position: relative;
+}
+.input-icon-wrap .input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--outline);
+    font-size: 1.25rem;
+    z-index: 1;
+    pointer-events: none;
+}
+.input-icon-wrap input {
+    padding-left: 3rem !important;
+}
+.password-wrapper .input-icon + input {
+    padding-left: 3rem !important;
+}
+
+.form-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.teacher-fields {
+    display: none;
+    animation: fadeUp 0.35s ease;
+}
+.teacher-fields.active {
+    display: block;
+}
+.teacher-fields-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(0,74,198,0.06);
+    border-radius: 0.75rem;
+    margin: 1rem 0 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+.teacher-fields-header .material-symbols-outlined { font-size: 1.25rem; }
+
+.btn-submit {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 1rem;
+    margin-top: 1rem;
+    background: linear-gradient(135deg, var(--primary), #2563eb);
+    color: #fff;
+    border: none;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    font-size: 0.95rem;
+    font-family: var(--font-family);
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 4px 16px rgba(0,74,198,0.25);
+}
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(0,74,198,0.35);
+}
+.btn-submit:active {
+    transform: translateY(0);
+}
+.btn-submit .material-symbols-outlined { font-size: 1.25rem; }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<script>
+    var GOOGLE_CLIENT_ID = '604643711076-f4f05tru3bbrcmf01u79qradu3hjn4em.apps.googleusercontent.com';
+
+    function showError(msg) {
+        var el = document.createElement('div');
+        el.style.cssText = 'background:#dc3545;color:#fff;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:14px;text-align:center;z-index:999';
+        el.textContent = msg;
+        var container = document.querySelector('.auth-form-section > form') || document.querySelector('.auth-form-section > .tab-switcher');
+        if (container) container.parentNode.insertBefore(el, container.nextSibling || null);
+    }
+
+    var googleTokenClient = null;
+
+    function initGoogleTokenClient() {
+        if (typeof google === 'undefined' || !google.accounts || !google.accounts.oauth2) return false;
+        googleTokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: GOOGLE_CLIENT_ID,
+            scope: 'openid email profile',
+            prompt: 'select_account',
+            callback: function(response) {
+                if (response.error) {
+                    showError('Google login error: ' + (response.error_description || response.error) + '. Add http://localhost:5000 to Authorized JavaScript origins in Google Cloud Console.');
+                    return;
+                }
+                var role = document.querySelector('input[name="role"]:checked');
+                role = role ? role.value : 'student';
+                fetch('/google-login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ access_token: response.access_token, role: role })
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.success) {
+                        window.location.href = data.redirect;
+                    } else {
+                        showError('Google login failed: ' + data.error);
+                    }
+                })
+                .catch(function(error) {
+                    showError('Google login error: ' + error.message);
+                });
+            }
+        });
+        return true;
+    }
+
+    document.getElementById('googleLoginBtn').addEventListener('click', function () {
+        if (!googleTokenClient && !initGoogleTokenClient()) {
+            showError('Google Services not loaded. Try again or disable ad blocker.');
+            return;
+        }
+        googleTokenClient.requestAccessToken();
+    });
+
+    document.getElementById('facebookLoginBtn').addEventListener('click', async function () {
+        try {
+            if (typeof firebase === 'undefined' || !firebase.auth) {
+                showError('Firebase SDK not loaded. Check internet connection.');
+                return;
+            }
+            var provider = new firebase.auth.FacebookAuthProvider();
+            var result = await firebase.auth().signInWithPopup(provider);
+            var idToken = await result.user.getIdToken();
+            var role = document.querySelector('input[name="role"]:checked');
+            role = role ? role.value : 'student';
+            var resp = await fetch('/facebook-login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_token: idToken, role: role })
+            });
+            var data = await resp.json();
+            if (data.success) {
+                window.location.href = data.redirect;
+            } else {
+                showError('Facebook login failed: ' + data.error);
+            }
+        } catch (error) {
+            console.error('Facebook login error:', error);
+            if (error.code === 'auth/popup-blocked') {
+                showError('Popup was blocked. Please allow popups for this site.');
+            } else if (error.code === 'auth/unauthorized-domain') {
+                showError('This domain is not authorized. Add it in Firebase Console > Auth > Settings.');
+            } else if (error.code === 'auth/operation-not-allowed') {
+                showError('Facebook sign-in is not enabled. Enable it in Firebase Console > Auth > Sign-in methods.');
+            } else {
+                showError('Facebook login error: ' + (error.message || error));
+            }
+        }
+    });
+</script>
+<script>
+function toggleTeacherFields() {
+    var teacherFields = document.getElementById('teacher-fields');
+    var roleTeacher = document.getElementById('role_teacher');
+    if (roleTeacher && roleTeacher.checked) {
+        teacherFields.classList.add('active');
+    } else {
+        teacherFields.classList.remove('active');
+    }
+}
+document.addEventListener('DOMContentLoaded', function() {
+    toggleTeacherFields();
+});
+
+function togglePassword(inputId, btn) {
+    var input = document.getElementById(inputId);
+    var icon = btn.querySelector('.material-symbols-outlined');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = 'visibility';
+    } else {
+        input.type = 'password';
+        icon.textContent = 'visibility_off';
+    }
+}
+</script>
+{% endblock %}

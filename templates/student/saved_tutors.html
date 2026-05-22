@@ -1,0 +1,279 @@
+{% extends "student/base.html" %}
+{% block title %}Saved Tutors - Tuition Station{% endblock %}
+
+{% block kicker %}Bookmarks{% endblock %}
+{% block page_title %}Saved Tutors{% endblock %}
+{% block page_subtitle %}Tutors you've bookmarked for quick access.{% endblock %}
+
+{% block extra_css %}
+<style>
+.tutor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+.tutor-card { background: #ffffff; border-radius: 1.25rem; padding: 1.75rem; border: 1px solid #f1f5f9; box-shadow: 0 1px 3px rgba(0,0,0,0.04); transition: all 0.3s; position: relative; }
+.tutor-card:hover { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(0,0,0,0.08); }
+.tutor-card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; }
+.tutor-card-header img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; background: #e2e8f0; border: 3px solid #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.tutor-card-info h4 { font-size: 1.1rem; font-weight: 800; margin: 0 0 0.15rem; }
+.tutor-card-info .subject { color: #1a4d2e; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.tutor-details { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #f1f5f9; }
+.tutor-details p { display: flex; align-items: center; gap: 0.5rem; color: #64748b; font-size: 0.85rem; margin: 0; }
+.tutor-details i { color: #1a4d2e; width: 1.1rem; text-align: center; font-size: 0.9rem; }
+.rating-stars { color: #f59e0b; font-size: 0.9rem; letter-spacing: 0.1rem; }
+.rating-stars .empty { color: #e2e8f0; }
+.rating-value { color: #64748b; font-size: 0.8rem; font-weight: 600; margin-left: 0.3rem; }
+.tutor-card-footer { display: flex; justify-content: space-between; align-items: center; }
+.tutor-fee { display: flex; flex-direction: column; }
+.tutor-fee .amount { font-size: 1.3rem; font-weight: 900; color: #1a4d2e; }
+.tutor-fee .period { font-size: 0.65rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+.tutor-actions { display: flex; gap: 0.5rem; }
+.btn-profile { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.6rem 1.25rem; background: #1a4d2e; color: #ffffff; border: none; border-radius: 9999px; font-weight: 700; font-size: 0.8rem; text-decoration: none; transition: all 0.2s; }
+.btn-profile:hover { background: #164a26; color: #ffffff; transform: scale(1.03); }
+.btn-remove { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.6rem 1rem; background: #fef2f2; color: #991b1b; border: none; border-radius: 9999px; font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
+.btn-remove:hover { background: #fee2e2; }
+.empty-state {
+    text-align: center;
+    padding: 4rem 2.5rem;
+    background: #ffffff;
+    border-radius: 1.5rem;
+    border: 1px solid #f1f5f9;
+    position: relative;
+    overflow: hidden;
+}
+.empty-state::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(26,77,46,0.06) 0%, transparent 70%);
+    pointer-events: none;
+}
+.empty-state::after {
+    content: '';
+    position: absolute;
+    bottom: -60px;
+    left: -60px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(26,77,46,0.04) 0%, transparent 70%);
+    pointer-events: none;
+}
+.empty-icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    margin-bottom: 1.5rem;
+    position: relative;
+    animation: floatIcon 3s ease-in-out infinite;
+}
+.empty-icon-wrap .material-symbols-outlined {
+    font-size: 2.5rem;
+    color: #1a4d2e;
+}
+.empty-icon-ring {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 2px dashed #bbf7d0;
+    animation: spinRing 12s linear infinite;
+}
+@keyframes floatIcon {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+@keyframes spinRing {
+    to { transform: rotate(360deg); }
+}
+.empty-state h4 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin: 0 0 0.6rem;
+    color: #1e293b;
+}
+.empty-state p {
+    color: #64748b;
+    margin: 0 auto 2rem;
+    max-width: 360px;
+    line-height: 1.6;
+    font-size: 0.92rem;
+}
+.btn-explore {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.9rem 2.2rem;
+    background: linear-gradient(135deg, #1a4d2e, #256f46);
+    color: #ffffff;
+    border: none;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 4px 16px rgba(26,77,46,0.2);
+    position: relative;
+    z-index: 1;
+}
+.btn-explore:hover {
+    background: linear-gradient(135deg, #256f46, #1a4d2e);
+    color: #ffffff;
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 24px rgba(26,77,46,0.35);
+}
+.btn-explore:active {
+    transform: translateY(0) scale(1);
+}
+.empty-float-icons {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-bottom: 1.25rem;
+}
+.empty-float-icons span {
+    font-size: 1.6rem;
+    color: #cbd5e1;
+    animation: floatIcon 3s ease-in-out infinite;
+}
+.empty-float-icons span:nth-child(2) { animation-delay: 0.5s; color: #94a3b8; }
+.empty-float-icons span:nth-child(3) { animation-delay: 1s; color: #cbd5e1; }
+@media (max-width: 768px) { .tutor-grid { grid-template-columns: 1fr; } .tutor-card-footer { flex-direction: column; gap: 1rem; align-items: stretch; } .tutor-actions { flex-direction: column; } }
+</style>
+{% endblock %}
+
+{% block popup_stats %}
+<div class="popup-stat">
+    <div class="popup-stat-value">{{ tutors|length if tutors else 0 }}</div>
+    <div class="popup-stat-label">Saved</div>
+</div>
+<div class="popup-stat">
+    <div class="popup-stat-value">{{ current_user.saved_count or 0 }}</div>
+    <div class="popup-stat-label">Tutors</div>
+</div>
+{% endblock %}
+
+{% block dashboard_content %}
+{% if tutors %}
+<div class="tutor-grid">
+    {% for t in tutors %}
+    <div class="tutor-card" id="tutor-card-{{ t.user.id }}">
+        <div class="tutor-card-header">
+            {% if t.user.profile_picture %}
+                <img src="{{ t.user.profile_picture }}" alt="{{ t.user.name }}">
+            {% else %}
+                {% set demo_images = ['DemoTeacher1.png', 'DemoTeacher2.png', 'DemoTeacher3.png', 'DemoTeacher4.png', 'DemoTeacher5.png'] %}
+                {% set image_index = loop.index0 % 5 %}
+                <img src="{{ url_for('static', filename='Assets/Image/' + demo_images[image_index]) }}" alt="{{ t.user.name }}">
+            {% endif %}
+            <div class="tutor-card-info">
+                <h4>{{ t.user.name }}</h4>
+                <span class="subject">{{ t.profile.subject if t.profile else 'Tutor' }}</span>
+            </div>
+        </div>
+        <div class="tutor-details">
+            {% if t.profile %}
+            <p><i class="fas fa-map-marker-alt"></i> {{ t.profile.location or 'Flexible' }}</p>
+            <p>
+                <i class="fas fa-star"></i>
+                <span class="rating-stars">
+                    {% if t.avg_rating %}
+                        {% set full = t.avg_rating|int %}
+                        {% set half = (t.avg_rating - full) >= 0.5 %}
+                        {% for i in range(5) %}
+                            {% if i < full %}
+                            <i class="fas fa-star"></i>
+                            {% elif i == full and half %}
+                            <i class="fas fa-star-half-alt"></i>
+                            {% else %}
+                            <i class="far fa-star empty"></i>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        {% for i in range(5) %}
+                        <i class="far fa-star empty"></i>
+                        {% endfor %}
+                    {% endif %}
+                </span>
+                {% if t.avg_rating %}
+                <span class="rating-value">{{ '%.1f'|format(t.avg_rating) }}</span>
+                {% else %}
+                <span class="rating-value" style="color:#94a3b8;">No ratings</span>
+                {% endif %}
+            </p>
+            <p><i class="fas fa-graduation-cap"></i> {{ t.profile.subject or 'General' }}</p>
+            {% else %}
+            <p style="color:#94a3b8;"><i class="fas fa-info-circle"></i> Profile details not available</p>
+            {% endif %}
+        </div>
+        <div class="tutor-card-footer">
+            <div class="tutor-fee">
+                <span class="amount">Tk {{ t.profile.fee if t.profile and t.profile.fee else '—' }}</span>
+                <span class="period">/ month</span>
+            </div>
+            <div class="tutor-actions">
+                <a href="{{ url_for('student.teacher_profile', teacher_id=t.user.id) }}" class="btn-profile">
+                    <i class="fas fa-user"></i> Profile
+                </a>
+                <button onclick="removeSave({{ t.user.id }})" class="btn-remove">
+                    <i class="fas fa-bookmark"></i> Unsave
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <div class="empty-float-icons">
+        <span class="material-symbols-outlined">school</span>
+        <span class="material-symbols-outlined">star</span>
+        <span class="material-symbols-outlined">menu_book</span>
+    </div>
+    <div class="empty-icon-wrap">
+        <div class="empty-icon-ring"></div>
+        <span class="material-symbols-outlined">bookmark</span>
+    </div>
+    <h4>No Saved Tutors Yet</h4>
+    <p>Start exploring and bookmark the tutors you like — they'll appear here for quick access whenever you need them.</p>
+    <a href="{{ url_for('student.search') }}" class="btn-explore">
+        <span class="material-symbols-outlined" style="font-size:1.2rem;">explore</span>
+        Explore Tutors
+        <span class="material-symbols-outlined" style="font-size:1rem;">arrow_forward</span>
+    </a>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function removeSave(teacherId) {
+    if (!confirm('Remove this tutor from your saved list?')) return;
+    var formData = new FormData();
+    formData.append('teacher_id', teacherId);
+    fetch('{{ url_for("student.save_tutor", teacher_id=0) }}'.replace('0', teacherId), {
+        method: 'POST',
+        body: formData
+    })
+    .then(function(response) { return response.json(); })
+    .then(function(data) {
+        if (data.success) {
+            var card = document.getElementById('tutor-card-' + teacherId);
+            if (card) {
+                card.style.transition = 'all 0.3s';
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.9)';
+                setTimeout(function() { card.remove(); }, 300);
+            }
+        } else {
+            alert(data.error || 'Failed to unsave tutor.');
+        }
+    })
+    .catch(function() { alert('An error occurred. Please try again.'); });
+}
+</script>
+{% endblock %}

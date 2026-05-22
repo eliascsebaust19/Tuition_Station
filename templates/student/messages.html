@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Messages - Tuition Station{% endblock %}
+
+{% block extra_css %}
+<style>
+.dashboard-layout { display: flex; min-height: 100vh; }
+.main-content { flex: 1; margin-left: 280px; padding: 2rem 3rem; }
+.header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 3rem; gap: 2rem; }
+.header-text .kicker { color: var(--secondary); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+.header-text h2 { font-size: 3rem; font-weight: 900; letter-spacing: -0.02em; line-height: 1; }
+.header-text p { color: var(--on-surface-variant); font-size: 1rem; margin-top: 1rem; max-width: 500px; }
+.message-section { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+.message-card { background: var(--surface-container-lowest); border-radius: 1.5rem; padding: 1.5rem; }
+.message-card h3 { font-size: 1.25rem; font-weight: 800; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(195,198,215,0.1); }
+.message-list { display: flex; flex-direction: column; gap: 1rem; max-height: 400px; overflow-y: auto; }
+.message-item { padding: 1rem; background: var(--surface-container-low); border-radius: 0.75rem; }
+.message-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+.message-header strong { font-size: 0.875rem; }
+.message-header span { font-size: 0.65rem; color: var(--on-surface-variant); }
+.message-content { font-size: 0.875rem; color: var(--on-surface-variant); }
+.empty-state { text-align: center; padding: 3rem; }
+.empty-state .material-symbols-outlined { font-size: 3rem; color: var(--outline-variant); }
+
+</style>
+{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include "student/inc_sidebar.html" %}
+    
+    <main class="main-content">
+        <header class="header-section">
+            <div class="header-text">
+                <p class="kicker">Communication</p>
+                <h2>Messages</h2>
+                <p>View your sent and received messages.</p>
+            </div>
+            <div class="user-profile" onclick="openProfilePopup()">
+                <div class="user-avatar">
+                    <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="Profile" />
+                </div>
+                <div class="user-info">
+                    <p class="role">Student</p>
+                    <p class="name">{{ current_user.name }}</p>
+                </div>
+            </div>
+        </header>
+        
+        <div class="message-section">
+            <div class="message-card">
+                <h3>Sent Messages</h3>
+                {% if sent %}
+                <div class="message-list">
+                    {% for msg in sent %}
+                    <div class="message-item">
+                        <div class="message-header">
+                            <strong>To: {{ msg.receiver.name }}</strong>
+                            <span>{{ msg.created_at.strftime('%b %d, %H:%M') }}
+                                {% if msg.status == 'pending' %}
+                                <span style="display:inline-block;padding:0.1rem 0.4rem;border-radius:0.25rem;font-size:0.6rem;font-weight:700;background:rgba(180,197,255,0.3);color:var(--on-primary-fixed-variant);margin-left:0.4rem;">PENDING</span>
+                                {% elif msg.status == 'approved' %}
+                                <span style="display:inline-block;padding:0.1rem 0.4rem;border-radius:0.25rem;font-size:0.6rem;font-weight:700;background:rgba(108,248,187,0.3);color:var(--on-secondary-container);margin-left:0.4rem;">APPROVED</span>
+                                {% elif msg.status == 'rejected' %}
+                                <span style="display:inline-block;padding:0.1rem 0.4rem;border-radius:0.25rem;font-size:0.6rem;font-weight:700;background:rgba(255,218,214,0.5);color:var(--on-error-container);margin-left:0.4rem;">REJECTED</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <p class="message-content">{{ msg.message }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <span class="material-symbols-outlined">send</span>
+                    <p style="color: var(--on-surface-variant); margin-top: 1rem;">No sent messages</p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="message-card">
+                <h3>Received Messages</h3>
+                {% if received %}
+                <div class="message-list">
+                    {% for msg in received %}
+                    <div class="message-item">
+                        <div class="message-header">
+                            <strong>From: {{ msg.sender.name }}</strong>
+                            <span>{{ msg.created_at.strftime('%b %d, %H:%M') }}</span>
+                        </div>
+                        <p class="message-content">{{ msg.message }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <span class="material-symbols-outlined">inbox</span>
+                    <p style="color: var(--on-surface-variant); margin-top: 1rem;">No received messages</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+
+<footer class="dashboard-footer" id="dashboardFooter">
+    <p>&copy; 2026 Tuition Station. Developed by <strong>Elias, Sayadul, Mehejabin</strong></p>
+    <div>
+        <a href="{{ url_for('auth.developer') }}">Developer Info</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms</a>
+    </div>
+</footer>
+
+<!-- Profile Popup -->
+<div class="profile-popup-overlay" id="profilePopup" onclick="closeProfilePopup(event)">
+    <div class="profile-popup" onclick="event.stopPropagation()">
+        <div class="popup-cover">
+            <button class="popup-close" onclick="closeProfilePopup()">
+                <span class="material-symbols-outlined" style="font-size: 1.2rem;">close</span>
+            </button>
+        </div>
+        <div class="popup-avatar" onclick="openLightbox(this.querySelector('img').src)">
+            <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="{{ current_user.name }}" />
+        </div>
+        <div class="popup-body">
+            <h3 class="popup-name">{{ current_user.name }}</h3>
+            <p class="popup-role">Student</p>
+            <div class="popup-email">
+                <span class="material-symbols-outlined" style="font-size: 1.1rem;">mail</span>
+                {{ current_user.email }}
+            </div>
+            <div class="popup-stats">
+                <div class="popup-stat">
+                    <div class="popup-stat-value">0</div>
+                    <div class="popup-stat-label">Requests</div>
+                </div>
+                <div class="popup-stat">
+                    <div class="popup-stat-value">0</div>
+                    <div class="popup-stat-label">Tutors</div>
+                </div>
+            </div>
+            <div class="popup-actions">
+                <a href="{{ url_for('student.edit_profile') }}" class="popup-btn-edit">Edit Profile</a>
+                <a href="{{ url_for('auth.logout') }}" class="popup-btn-logout">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openProfilePopup() {
+    document.getElementById('profilePopup').classList.add('active');
+}
+
+function closeProfilePopup(event) {
+    if (!event || event.target === document.getElementById('profilePopup')) {
+        document.getElementById('profilePopup').classList.remove('active');
+    }
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        document.getElementById('profilePopup').classList.remove('active');
+    }
+});
+</script>
+
+{% block footer %}{% endblock %}
+{% endblock %}

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - TuitionStation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; }
+        .navbar { background: #fff; border-bottom: 1px solid #e9edf2; padding: 0.75rem 0; }
+        .navbar-brand { font-weight: 800; font-size: 1.35rem; color: #1e293b; letter-spacing: -0.02em; text-decoration:none; }
+        .navbar-brand i { color: #6366f1; margin-right: 0.4rem; }
+        .navbar .btn-signin { color: #6366f1; font-weight: 600; font-size: 0.875rem; padding: 0.5rem 1.25rem; border-radius: 8px; border: 1px solid #e2e8f0; background: #fff; transition: all 0.2s; text-decoration:none; }
+        .navbar .btn-signin:hover { background: #f1f5f9; }
+        .navbar .user-badge { display: flex; align-items: center; gap: 0.5rem; background: #f1f5f9; padding: 0.35rem 0.75rem 0.35rem 0.35rem; border-radius: 999px; }
+        .navbar .user-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+        .navbar .user-name { font-size: 0.85rem; font-weight: 600; color: #1e293b; }
+        .navbar .nav-link { color: #64748b; font-weight: 500; font-size: 0.875rem; padding: 0.5rem 1rem !important; text-decoration:none; }
+        .navbar .nav-link:hover { color: #6366f1; }
+        .payment-wrapper { max-width: 600px; margin: 3rem auto; padding: 0 1.5rem; flex: 1; width:100%; }
+        .plan-summary-card { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); border-radius: 20px; padding: 2rem; color: #fff; margin-bottom: 2rem; position: relative; overflow: hidden; }
+        .plan-summary-card::before { content: ''; position: absolute; top: -50%; right: -30%; width: 200px; height: 200px; background: rgba(255,255,255,0.06); border-radius: 50%; }
+        .plan-summary-card::after { content: ''; position: absolute; bottom: -30%; left: -20%; width: 160px; height: 160px; background: rgba(255,255,255,0.04); border-radius: 50%; }
+        .plan-summary-card .ps-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.8; }
+        .plan-summary-card .ps-name { font-size: 1.75rem; font-weight: 800; margin: 0.25rem 0; }
+        .plan-summary-card .ps-price { font-size: 2.5rem; font-weight: 800; }
+        .plan-summary-card .ps-price small { font-size: 1rem; font-weight: 500; opacity: 0.8; }
+        .plan-summary-card .ps-features { margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .plan-summary-card .ps-features span { background: rgba(255,255,255,0.15); padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 500; }
+        .payment-card { background: #fff; border-radius: 20px; padding: 2rem; border: 1px solid #e9edf2; }
+        .payment-card .section-title { font-size: 1.15rem; font-weight: 700; color: #0f172a; margin-bottom: 1.5rem; }
+
+        .bkash-btn-wrap { text-align: center; padding: 1rem 0; }
+        .btn-bkash {
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem;
+            padding: 1rem 2.5rem; border: none; border-radius: 12px;
+            background: linear-gradient(135deg, #E2136E, #C41E6B);
+            color: #fff; font-weight: 700; font-size: 1.1rem; font-family: inherit;
+            cursor: pointer; transition: all 0.3s; text-decoration: none;
+            box-shadow: 0 4px 16px rgba(226,19,110,0.3); width: 100%;
+        }
+        .btn-bkash:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(226,19,110,0.4); }
+        .btn-bkash:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn-bkash img { height: 28px; }
+        .bkash-merchant-info {
+            text-align: center; padding: 1.25rem; background: #fef2f6; border-radius: 12px;
+            border: 1px solid #fbcfe8; margin-top: 1.5rem;
+        }
+        .bkash-merchant-info .merchant-label { font-size: 0.75rem; color: #9d174d; font-weight: 600; }
+        .bkash-merchant-info .merchant-number { font-size: 1.3rem; font-weight: 800; color: #E2136E; letter-spacing: 0.03em; }
+        .bkash-merchant-info p { font-size: 0.8rem; color: #831843; margin: 0.25rem 0 0; }
+
+        .or-divider { display: flex; align-items: center; gap: 1rem; margin: 1.5rem 0; color: #94a3b8; font-size: 0.8rem; font-weight: 600; }
+        .or-divider::before, .or-divider::after { content: ''; flex: 1; height: 1px; background: #e2e8f0; }
+
+        .manual-form .form-label { font-weight: 600; font-size: 0.875rem; color: #334155; }
+        .manual-form .form-control { border-radius: 10px; border: 1.5px solid #e2e8f0; padding: 0.65rem 1rem; font-size: 0.9rem; }
+        .manual-form .form-control:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.12); }
+        .btn-submit-manual { width: 100%; padding: 0.85rem; border-radius: 12px; font-weight: 700; font-size: 1rem; background: #64748b; color: #fff; border: none; transition: all 0.2s; }
+        .btn-submit-manual:hover { background: #475569; }
+
+        .bkash-loader { display: none; text-align: center; padding: 2rem; }
+        .bkash-loader.active { display: block; }
+        .bkash-loader .spinner { width: 48px; height: 48px; border: 4px solid #fbcfe8; border-top-color: #E2136E; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .bkash-loader p { color: #64748b; font-size: 0.9rem; }
+
+        .footer-custom { background: #fff; border-top: 1px solid #e9edf2; padding: 2rem 1.5rem; text-align: center; color: #94a3b8; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-md">
+        <div class="container">
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+                <a href="javascript:history.back()" style="display:inline-flex;align-items:center;justify-content:center;width:2.25rem;height:2.25rem;border-radius:0.6rem;border:1px solid #e2e8f0;background:#fff;color:#475569;text-decoration:none;flex-shrink:0;">
+                    <i class="fas fa-arrow-left" style="font-size:0.85rem;"></i>
+                </a>
+                <a class="navbar-brand" href="{{ url_for('auth.index') }}"><i class="fas fa-graduation-cap"></i>TuitionStation</a>
+            </div>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navPayReq">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navPayReq">
+                <ul class="navbar-nav ms-auto align-items-center gap-2">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('student.dashboard') }}">Dashboard</a></li>
+                        <li class="nav-item">
+                            <div class="user-badge">
+                                <img class="user-avatar" src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="avatar">
+                                <span class="user-name">{{ current_user.name }}</span>
+                            </div>
+                        </li>
+                        <li class="nav-item"><a href="{{ url_for('auth.logout') }}" class="btn btn-signin"><i class="fas fa-sign-out-alt me-1"></i>Logout</a></li>
+                    {% else %}
+                        <li class="nav-item"><a href="{{ url_for('auth.login') }}" class="btn btn-signin"><i class="fas fa-sign-in-alt me-1"></i>Sign In</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="payment-wrapper">
+        <div class="plan-summary-card">
+            <div class="ps-label">Selected Plan</div>
+            <div class="ps-name">{{ plan.name }}</div>
+            <div class="ps-price">BDT {{ plan.price|int }} <small>/ {{ plan.duration_days }} days</small></div>
+            <div class="ps-features">
+                {% if plan.max_applications == -1 %}
+                    <span><i class="fas fa-infinity me-1"></i>Unlimited applications</span>
+                {% else %}
+                    <span><i class="fas fa-check me-1"></i>{{ plan.max_applications }} applications</span>
+                {% endif %}
+                {% if plan.has_verified_badge %}<span><i class="fas fa-badge-check me-1"></i>Verified badge</span>{% endif %}
+                {% if plan.priority_ranking > 0 %}<span><i class="fas fa-arrow-up me-1"></i>Priority ranking</span>{% endif %}
+                {% if plan.is_featured %}<span><i class="fas fa-star me-1"></i>Featured</span>{% endif %}
+            </div>
+        </div>
+
+        <div class="payment-card">
+            <div class="section-title"><i class="fas fa-credit-card me-2"></i>Complete Payment</div>
+
+            <!-- bKash Checkout Button -->
+            <div class="bkash-btn-wrap">
+                <button onclick="payWithBkash()" class="btn-bkash" id="bkashPayBtn">
+                    <img src="https://cdn.jsdelivr.net/gh/nizamcse/bKash-logo@main/bKash_logo_white.png" alt="bKash" onerror="this.style.display='none'">
+                    Pay with bKash
+                </button>
+            </div>
+
+            <div class="bkash-merchant-info">
+                <div class="merchant-label">Merchant Number</div>
+                <div class="merchant-number">{{ config.BKASH_MERCHANT_NUMBER or '01XXXXXXXXX' }}</div>
+                <p>You'll be redirected to bKash to complete the payment securely.</p>
+            </div>
+
+            <div class="bkash-loader" id="bkashLoader">
+                <div class="spinner"></div>
+                <p>Connecting to bKash...</p>
+            </div>
+
+            <div class="or-divider">OR pay manually</div>
+
+            <!-- Manual Payment Form -->
+            <form method="POST" action="{{ url_for('payments.request_payment', plan_id=plan.id) }}" class="manual-form">
+                <input type="hidden" name="method" value="bKash">
+
+                <div class="mb-3">
+                    <label for="sender_number" class="form-label">Your bKash Number</label>
+                    <input type="text" class="form-control" id="sender_number" name="sender_number" placeholder="01XXXXXXXXX" required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="transaction_id" class="form-label">Transaction ID (TrxID)</label>
+                    <input type="text" class="form-control" id="transaction_id" name="transaction_id" placeholder="e.g. A7D8X9K1L2M3" required>
+                </div>
+
+                <button type="submit" class="btn-submit-manual"><i class="fas fa-paper-plane me-2"></i>Submit for Verification</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer-custom">
+        &copy; 2026 TuitionStation. All rights reserved. &mdash; Developed by <strong>Elias, Sayadul, Mehejabin</strong>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    function payWithBkash() {
+        var btn = document.getElementById('bkashPayBtn');
+        var loader = document.getElementById('bkashLoader');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+        loader.classList.add('active');
+
+        var formData = new FormData();
+        formData.append('plan_id', '{{ plan.id }}');
+
+        fetch('{{ url_for("bkash.create_payment") }}', {
+            method: 'POST',
+            body: formData
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.success) {
+                if (data.bkashURL) {
+                    window.location.href = data.bkashURL;
+                } else if (data.demo) {
+                    window.location.href = data.redirect;
+                } else {
+                    window.location.href = data.redirect || '{{ url_for("subscriptions.plans") }}';
+                }
+            } else {
+                alert('bKash payment failed: ' + (data.error || 'Unknown error'));
+                btn.disabled = false;
+                btn.innerHTML = 'Pay with bKash';
+                loader.classList.remove('active');
+            }
+        })
+        .catch(function(err) {
+            alert('Connection error. Please try again.');
+            btn.disabled = false;
+            btn.innerHTML = 'Pay with bKash';
+            loader.classList.remove('active');
+        });
+    }
+    </script>
+</body>
+</html>

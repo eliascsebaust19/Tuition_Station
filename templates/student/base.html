@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block nav %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include "student/inc_sidebar.html" %}
+
+    <main class="main-content">
+        <header class="header-section">
+            <div class="header-text">
+                <p class="kicker">{% block kicker %}Overview{% endblock %}</p>
+                <h2>{% block page_title %}Dashboard{% endblock %}</h2>
+                <p>{% block page_subtitle %}{% endblock %}</p>
+            </div>
+            <div class="user-profile" onclick="openProfilePopup()">
+                <div class="user-avatar">
+                    <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="Profile" />
+                </div>
+                <div class="user-info">
+                    <p class="role">Student</p>
+                    <p class="name">{{ current_user.name }}</p>
+                </div>
+            </div>
+        </header>
+
+        {% block dashboard_content %}{% endblock %}
+    </main>
+</div>
+
+<footer class="dashboard-footer">
+    <p>&copy; 2026 Tuition Station. Developed by <strong>Elias, Sayadul, Mehejabin</strong></p>
+    <div>
+        <a href="{{ url_for('auth.developer') }}">Developer Info</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms</a>
+    </div>
+</footer>
+
+<div class="profile-popup-overlay" id="profilePopup" onclick="closeProfilePopup(event)">
+    <div class="profile-popup" onclick="event.stopPropagation()">
+        <div class="popup-cover">
+            <button class="popup-close" onclick="closeProfilePopup()">
+                <span class="material-symbols-outlined" style="font-size: 1.2rem;">close</span>
+            </button>
+        </div>
+        <div class="popup-avatar" onclick="openLightbox(this.querySelector('img').src)">
+            <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="{{ current_user.name }}" />
+        </div>
+        <div class="popup-body">
+            <h3 class="popup-name">{{ current_user.name }}</h3>
+            <p class="popup-role">Student</p>
+            <div class="popup-email">
+                <span class="material-symbols-outlined" style="font-size: 1.1rem;">mail</span>
+                {{ current_user.email }}
+            </div>
+            <div class="popup-stats">
+                {% block popup_stats %}
+                <div class="popup-stat">
+                    <div class="popup-stat-value">-</div>
+                    <div class="popup-stat-label">Items</div>
+                </div>
+                <div class="popup-stat">
+                    <div class="popup-stat-value">-</div>
+                    <div class="popup-stat-label">Saved</div>
+                </div>
+                {% endblock %}
+            </div>
+            <div class="popup-actions">
+                <a href="{{ url_for('student.edit_profile') }}" class="popup-btn-edit">Edit Profile</a>
+                <a href="{{ url_for('auth.logout') }}" class="popup-btn-logout">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openProfilePopup() { document.getElementById('profilePopup').classList.add('active'); }
+function closeProfilePopup(event) { if (!event || event.target === document.getElementById('profilePopup')) { document.getElementById('profilePopup').classList.remove('active'); } }
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { document.getElementById('profilePopup').classList.remove('active'); } });
+</script>
+{% endblock %}

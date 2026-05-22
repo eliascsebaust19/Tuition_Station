@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Message Approvals - Tuition Station{% endblock %}
+
+{% block extra_css %}
+<style>
+body { margin: 0; }
+.dashboard-layout { display: flex; min-height: 100vh; }
+.sidebar { width: 280px; background: var(--surface-container-low); position: fixed; left: 0; top: 0; height: 100vh; display: flex; flex-direction: column; z-index: 100; padding: 1.5rem 0; }
+.sidebar-brand { padding: 0 1.5rem; margin-bottom: 1.5rem; background: transparent; text-align: center; }
+.sidebar-brand h1 { font-size: 1.125rem; font-weight: 900; letter-spacing: -0.02em; color: var(--primary); }
+.sidebar-brand p { font-size: 0.65rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--on-surface-variant); opacity: 0.6; margin-top: 0.25rem; }
+.sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 0.25rem; padding: 0 0.5rem; }
+.sidebar-nav a { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 0.5rem; color: var(--on-surface-variant); font-size: 0.875rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.2s; }
+.sidebar-nav a:hover { background: var(--surface-container-high); }
+.sidebar-nav a.active { background: var(--secondary); color: var(--on-secondary); }
+.sidebar-nav .material-symbols-outlined { font-size: 1.25rem; }
+.sidebar-footer { padding: 0 1rem; margin-top: auto; }
+.user-card { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: var(--surface-container-lowest); border-radius: 0.75rem; }
+.user-card img { width: 2.5rem; height: 2.5rem; border-radius: 50%; object-fit: cover; }
+.user-card .name { font-size: 0.875rem; font-weight: 700; }
+.user-card .role { font-size: 0.65rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: var(--on-surface-variant); opacity: 0.6; }
+.main-content { flex: 1; margin-left: 280px; padding: 2rem 3rem; }
+.page-header { margin-bottom: 2rem; }
+.page-header h2 { font-size: 2.5rem; font-weight: 900; letter-spacing: -0.02em; }
+.page-header .subtitle { color: var(--on-surface-variant); font-size: 0.9rem; margin-top: 0.5rem; }
+.data-card { background: var(--surface-container-lowest); border-radius: 1.5rem; padding: 0; overflow: hidden; margin-bottom: 2rem; }
+.data-card .card-title { padding: 1.25rem 1.5rem; font-size: 1rem; font-weight: 800; border-bottom: 1px solid var(--surface-container-high); display: flex; align-items: center; gap: 0.5rem; }
+.data-card .card-title .count { background: var(--primary); color: white; font-size: 0.65rem; padding: 0.15rem 0.5rem; border-radius: 999px; }
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th { text-align: left; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--on-surface-variant); padding: 1rem 1.5rem; border-bottom: 1px solid var(--surface-container-high); background: var(--surface-container-low); }
+.data-table td { font-size: 0.875rem; padding: 1rem 1.5rem; border-bottom: 1px solid var(--surface-container-low); }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--surface-container-low); }
+.action-btns { display: flex; gap: 0.5rem; }
+.btn-approve, .btn-reject { padding: 0.4rem 0.9rem; border: none; border-radius: 0.5rem; font-size: 0.7rem; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem; transition: all 0.2s; }
+.btn-approve { background: var(--secondary); color: var(--on-secondary); }
+.btn-approve:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,108,73,0.3); }
+.btn-reject { background: var(--surface-container-high); color: var(--on-surface-variant); }
+.btn-reject:hover { background: var(--error-container); color: var(--on-error-container); transform: translateY(-1px); }
+.badge { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 0.25rem; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; }
+.badge-pending { background: rgba(180,197,255,0.3); color: var(--on-primary-fixed-variant); }
+.badge-approved { background: rgba(108,248,187,0.3); color: var(--on-secondary-container); }
+.badge-rejected { background: rgba(255,218,214,0.5); color: var(--on-error-container); }
+.dashboard-footer { margin-left: 280px; background: var(--surface-container-lowest); padding: 3rem; border-top: 1px solid rgba(195, 198, 215, 0.15); display: flex; justify-content: space-between; align-items: center; }
+.dashboard-footer p { font-size: 0.75rem; color: var(--on-surface-variant); }
+</style>
+{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    <aside class="sidebar">
+<div class="sidebar-brand">
+            <a href="{{ url_for('auth.index') }}" class="logo" style="display: inline-flex; align-items: center; gap: 0.6rem; text-decoration: none;">
+                <span class="logo-mark" style="width: 2.2rem; height: 2.2rem; font-size: 1.2rem;">T</span>
+                <span class="logo-text" style="font-size: 1.2rem; color: #1f2937;">Tuition <strong style="color: #10B981;">Station</strong></span>
+            </a>
+            <p style="font-size: 0.6rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: var(--secondary); margin-top: 0.25rem;">Student Teacher Connector</p>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('admin.dashboard') }}" class="{% if request.endpoint == 'admin.dashboard' %}active{% endif %}"><span class="material-symbols-outlined">dashboard</span>Dashboard</a>
+            <a href="{{ url_for('admin.users') }}" class="{% if request.endpoint == 'admin.users' %}active{% endif %}"><span class="material-symbols-outlined">people</span>Users</a>
+            <a href="{{ url_for('admin.requests') }}" class="{% if request.endpoint == 'admin.requests' %}active{% endif %}"><span class="material-symbols-outlined">assignment</span>Requests</a>
+            <a href="{{ url_for('admin.messages') }}" class="{% if request.endpoint == 'admin.messages' %}active{% endif %}"><span class="material-symbols-outlined">mail</span>Messages</a>
+            <a href="{{ url_for('admin.documentation') }}" class="{% if request.endpoint == 'admin.documentation' %}active{% endif %}"><span class="material-symbols-outlined">menu_book</span>Documentation</a>
+        </nav>
+        
+        <div class="sidebar-logout" style="padding: 0 0.5rem; margin-top: auto;">
+            <a href="{{ url_for('auth.logout') }}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 0.5rem; color: var(--on-surface-variant); font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: all 0.2s;">
+                <span class="material-symbols-outlined" style="font-size: 1.25rem;">logout</span>
+                Logout
+            </a>
+        </div>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop{% endif %}" alt="Admin" />
+                <div><p class="name">{{ current_user.name }}</p><p class="role">Admin</p></div>
+            </div>
+        </div>
+    </aside>
+    
+    <main class="main-content">
+        <div class="page-header">
+            <h2>Message Approvals</h2>
+            <p class="subtitle">Review messages from students before they reach teachers</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div style="margin-bottom: 1.5rem;">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <!-- Pending Approvals -->
+        <div class="data-card">
+            <div class="card-title">
+                <span class="material-symbols-outlined" style="font-size: 1.25rem;">pending_actions</span>
+                Pending Approvals
+                <span class="count">{{ pending_messages|length }}</span>
+            </div>
+            {% if pending_messages %}
+            <table class="data-table">
+                <thead>
+                    <tr><th>From</th><th>To</th><th>Message</th><th>Sent</th><th>Action</th></tr>
+                </thead>
+                <tbody>
+                    {% for msg in pending_messages %}
+                    <tr>
+                        <td><strong>{{ msg.sender.name }}</strong><br><span style="font-size:0.7rem;color:var(--on-surface-variant);">{{ msg.sender.email }}</span></td>
+                        <td><strong>{{ msg.receiver.name }}</strong><br><span style="font-size:0.7rem;color:var(--on-surface-variant);">{{ msg.receiver.role|capitalize }}</span></td>
+                        <td style="max-width:250px;word-break:break-word;">{{ msg.message }}</td>
+                        <td style="white-space:nowrap;">{{ msg.created_at.strftime('%b %d, %H:%M') }}</td>
+                        <td>
+                            <div class="action-btns">
+                                <a href="{{ url_for('admin.approve_message', msg_id=msg.id) }}" class="btn-approve" onclick="return confirm('Approve this message?')">
+                                    <span class="material-symbols-outlined" style="font-size:0.9rem;">check</span> Approve
+                                </a>
+                                <a href="{{ url_for('admin.reject_message', msg_id=msg.id) }}" class="btn-reject" onclick="return confirm('Reject this message?')">
+                                    <span class="material-symbols-outlined" style="font-size:0.9rem;">close</span> Reject
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div style="text-align:center;padding:3rem;color:var(--on-surface-variant);">
+                <span class="material-symbols-outlined" style="font-size:3rem;color:var(--outline-variant);">check_circle</span>
+                <p style="margin-top:1rem;">No pending messages. All caught up!</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- All Messages History -->
+        <div class="data-card">
+            <div class="card-title">
+                <span class="material-symbols-outlined" style="font-size: 1.25rem;">history</span>
+                Message History
+            </div>
+            {% if messages %}
+            <table class="data-table">
+                <thead>
+                    <tr><th>ID</th><th>From</th><th>To</th><th>Message</th><th>Status</th><th>Date</th></tr>
+                </thead>
+                <tbody>
+                    {% for msg in messages %}
+                    <tr>
+                        <td>#{{ msg.id }}</td>
+                        <td>{{ msg.sender.name }}</td>
+                        <td>{{ msg.receiver.name }}</td>
+                        <td style="max-width:200px;word-break:break-word;">{{ msg.message }}</td>
+                        <td><span class="badge badge-{{ msg.status }}">{{ msg.status }}</span></td>
+                        <td style="white-space:nowrap;">{{ msg.created_at.strftime('%b %d, %Y') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div style="text-align:center;padding:2rem;color:var(--on-surface-variant);font-size:0.875rem;">No messages yet.</div>
+            {% endif %}
+        </div>
+    </main>
+</div>
+
+<footer class="dashboard-footer" id="dashboardFooter">
+    <p>&copy; 2026 Tuition Station. Developed by <strong>Elias, Sayadul, Mehejabin</strong></p>
+    <div>
+        <a href="{{ url_for('auth.developer') }}">Developer Info</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms</a>
+    </div>
+</footer>
+{% endblock %}

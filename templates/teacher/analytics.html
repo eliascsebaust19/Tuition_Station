@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics - Tuition Station{% endblock %}
+
+{% block extra_css %}
+<style>
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+.stat-card { background: var(--surface-container-lowest); border-radius: 1.25rem; padding: 1.5rem; border: 1px solid var(--outline-variant); box-shadow: 0 1px 3px rgba(0,0,0,0.04); text-align: center; }
+.stat-card .stat-icon { width: 3rem; height: 3rem; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; font-size: 1.25rem; }
+.stat-card .stat-icon .material-symbols-outlined { font-size: 1.4rem; }
+.stat-card .stat-icon.blue { background: #eff6ff; color: #1e40af; }
+.stat-card .stat-icon.amber { background: #fffbeb; color: #d97706; }
+.stat-card .stat-icon.green { background: #f0fdf4; color: #16a34a; }
+.stat-card .stat-icon.red { background: #fef2f2; color: #dc2626; }
+.stat-card .stat-icon.purple { background: #f5f3ff; color: #7c3aed; }
+.stat-card .stat-value { font-size: 1.75rem; font-weight: 900; color: var(--on-surface); line-height: 1.2; }
+.stat-card .stat-label { font-size: 0.7rem; color: var(--on-surface-variant); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.25rem; }
+.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+.chart-card { background: var(--surface-container-lowest); border-radius: 1.25rem; padding: 1.5rem; border: 1px solid var(--outline-variant); box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.chart-card h4 { font-size: 1rem; font-weight: 800; margin-bottom: 1rem; }
+.chart-card canvas { max-height: 280px; max-width: 100%; }
+.empty-state { text-align: center; padding: 4rem 2rem; background: var(--surface-container-lowest); border-radius: 1.25rem; border: 1px solid var(--outline-variant); }
+.empty-state .material-symbols-outlined { font-size: 3.5rem; color: var(--outline-variant); margin-bottom: 1rem; }
+.empty-state h4 { font-size: 1.25rem; font-weight: 800; margin-bottom: 0.5rem; }
+.empty-state p { color: var(--on-surface-variant); }
+.header-text .kicker { color: var(--secondary); }
+@media (max-width: 1024px) { .charts-grid { grid-template-columns: 1fr; } }
+@media (max-width: 768px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+</style>
+{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include "teacher/inc_sidebar.html" %}
+
+    <main class="main-content">
+        <header class="header-section">
+            <div class="header-text">
+                <p class="kicker">Insights</p>
+                <h2>Analytics Dashboard</h2>
+                <p>Track your application performance and tutoring statistics.</p>
+            </div>
+            <div class="user-profile" onclick="openProfilePopup()">
+                <div class="user-avatar">
+                    <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="Profile" />
+                </div>
+                <div class="user-info">
+                    <p class="role">Teacher</p>
+                    <p class="name">{{ current_user.name }}</p>
+                </div>
+            </div>
+        </header>
+
+        {% set ns = namespace(total=0, pending=0, selected=0, reviewed=0) %}
+        {% if status_counts %}
+            {% for status, count in status_counts %}
+                {% set ns.total = ns.total + count %}
+                {% if status|lower == 'pending' %}{% set ns.pending = ns.pending + count %}{% endif %}
+                {% if status|lower in ('selected', 'accepted') %}{% set ns.selected = ns.selected + count %}{% endif %}
+                {% if status|lower == 'reviewed' %}{% set ns.reviewed = ns.reviewed + count %}{% endif %}
+            {% endfor %}
+        {% endif %}
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon blue"><span class="material-symbols-outlined">description</span></div>
+                <div class="stat-value">{{ ns.total }}</div>
+                <div class="stat-label">Total Applications</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon amber"><span class="material-symbols-outlined">hourglass</span></div>
+                <div class="stat-value">{{ ns.pending }}</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green"><span class="material-symbols-outlined">check_circle</span></div>
+                <div class="stat-value">{{ ns.selected }}</div>
+                <div class="stat-label">Selected</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon purple"><span class="material-symbols-outlined">star</span></div>
+                <div class="stat-value">{{ ns.reviewed }}</div>
+                <div class="stat-label">Reviews</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon red"><span class="material-symbols-outlined">trending_up</span></div>
+                <div class="stat-value">--</div>
+                <div class="stat-label">Avg Rating</div>
+            </div>
+        </div>
+
+        {% if status_counts or monthly_apps %}
+        <div class="charts-grid">
+            {% if status_counts %}
+            <div class="chart-card">
+                <h4><span class="material-symbols-outlined" style="font-size:1.2rem;color:#1e40af;vertical-align:middle;margin-right:0.3rem;">pie_chart</span> Application Status</h4>
+                <canvas id="statusChart"></canvas>
+            </div>
+            {% endif %}
+            {% if monthly_apps %}
+            <div class="chart-card">
+                <h4><span class="material-symbols-outlined" style="font-size:1.2rem;color:#1e40af;vertical-align:middle;margin-right:0.3rem;">bar_chart</span> Monthly Applications</h4>
+                <canvas id="monthlyChart"></canvas>
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <span class="material-symbols-outlined">insights</span>
+            <h4>No Data Yet</h4>
+            <p>Analytics will appear here once you start applying to tuition posts.</p>
+        </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+{% if status_counts %}
+const statusCtx = document.getElementById('statusChart').getContext('2d');
+new Chart(statusCtx, {
+    type: 'doughnut',
+    data: {
+        labels: [{% for status, count in status_counts %}'{{ status|capitalize }}',{% endfor %}],
+        datasets: [{
+            data: [{% for status, count in status_counts %}{{ count }},{% endfor %}],
+            backgroundColor: ['#3b82f6', '#f59e0b', '#22c55e', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6'],
+            borderWidth: 2,
+            borderColor: '#ffffff'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: { padding: 16, usePointStyle: true, font: { family: 'Inter', size: 11, weight: '600' } }
+            }
+        },
+        cutout: '65%'
+    }
+});
+{% endif %}
+
+{% if monthly_apps %}
+{% set month_names = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] %}
+const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+new Chart(monthlyCtx, {
+    type: 'bar',
+    data: {
+        labels: [{% for y, m, c in monthly_apps[-6:] %}'{{ month_names[m] }} {{ y }}',{% endfor %}],
+        datasets: [{
+            label: 'Applications',
+            data: [{% for y, m, c in monthly_apps[-6:] %}{{ c }},{% endfor %}],
+            backgroundColor: '#3b82f6',
+            borderRadius: 6,
+            borderSkipped: false
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: { display: false }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: { precision: 0, font: { family: 'Inter', size: 11 } },
+                grid: { color: '#f1f5f9' }
+            },
+            x: {
+                ticks: { font: { family: 'Inter', size: 11, weight: '600' } },
+                grid: { display: false }
+            }
+        }
+    }
+});
+{% endif %}
+</script>
+{% endblock %}
+
+{% block footer %}{% endblock %}

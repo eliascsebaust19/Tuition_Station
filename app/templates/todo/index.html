@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}My ToDo - Tuition Station{% endblock %}
+
+{% block extra_css %}
+<style>
+.dashboard-main { display: flex; min-height: 100vh; }
+.dashboard-grid { display: flex; flex: 1; }
+.sidebar { width: 280px; background: var(--surface-container-low); position: fixed; left: 0; top: 0; height: 100vh; display: flex; flex-direction: column; z-index: 100; padding: 1.5rem 0; }
+.sidebar-menu { list-style: none; padding: 0 1rem; margin: 0; }
+.sidebar-menu li { margin-bottom: 0.25rem; }
+.sidebar-menu a { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 0.5rem; color: var(--on-surface-variant); font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: all 0.2s; }
+.sidebar-menu a:hover { background: var(--surface-container-high); }
+.sidebar-menu a.active { background: var(--secondary); color: var(--on-secondary); }
+.dashboard-content { flex: 1; margin-left: 280px; padding: 2rem; background: var(--surface-container-lowest); min-height: 100vh; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-main">
+    <div class="dashboard-grid">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                {% if current_user.role == 'student' %}
+                <li><a href="{{ url_for('student.dashboard') }}" class="{% if request.endpoint == 'student.dashboard' %}active{% endif %}">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    Dashboard
+                </a></li>
+                <li><a href="{{ url_for('student.search') }}" class="{% if request.endpoint == 'student.search' %}active{% endif %}">
+                    <span class="material-symbols-outlined">search</span>
+                    Browse Tutors
+                </a></li>
+                <li><a href="{{ url_for('student.messages') }}" class="{% if request.endpoint == 'student.messages' %}active{% endif %}">
+                    <span class="material-symbols-outlined">mail</span>
+                    Messages
+                </a></li>
+                <li><a href="{{ url_for('student.edit_profile') }}" class="{% if request.endpoint == 'student.edit_profile' %}active{% endif %}">
+                    <span class="material-symbols-outlined">person</span>
+                    My Profile
+                </a></li>
+                {% elif current_user.role == 'teacher' %}
+                <li><a href="{{ url_for('teacher.dashboard') }}" class="{% if request.endpoint == 'teacher.dashboard' %}active{% endif %}">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    Dashboard
+                </a></li>
+                <li><a href="{{ url_for('teacher.profile') }}" class="{% if request.endpoint == 'teacher.profile' %}active{% endif %}">
+                    <span class="material-symbols-outlined">person</span>
+                    My Profile
+                </a></li>
+                <li><a href="{{ url_for('teacher.messages') }}" class="{% if request.endpoint == 'teacher.messages' %}active{% endif %}">
+                    <span class="material-symbols-outlined">mail</span>
+                    Messages
+                </a></li>
+                <li><a href="{{ url_for('todo.index') }}" class="{% if request.endpoint == 'todo.index' %}active{% endif %}">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    My ToDo
+                </a></li>
+                {% endif %}
+            </ul>
+        </aside>
+        
+        <div class="dashboard-content">
+            <h1 style="margin-bottom: 2rem;">My ToDo List</h1>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages" style="margin-bottom: 2rem;">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem;">
+                <div class="card">
+                    <h3>Add New Task</h3>
+                    <form method="POST" action="{{ url_for('todo.add') }}" style="margin-top: 1.5rem;">
+                        <div class="form-group">
+                            <label for="title">Task Title</label>
+                            <input type="text" id="title" name="title" placeholder="What do you need to do?" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description (optional)</label>
+                            <textarea id="description" name="description" rows="2" placeholder="Add more details..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            <span class="material-symbols-outlined">add</span>
+                            Add Task
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h3>Tasks ({{ todos|length }})</h3>
+                        <span style="color: var(--secondary); font-weight: 600;">
+                            {{ todos|selectattr('is_completed', 'equalto', true)|list|length }} / {{ todos|length }} completed
+                        </span>
+                    </div>
+                    
+                    {% if todos %}
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        {% for todo in todos %}
+                        <div style="padding: 1rem; background: var(--surface-container-low); border-radius: 0.75rem; display: flex; justify-content: space-between; align-items: flex-start; {% if todo.is_completed %}opacity: 0.6;{% endif %}">
+                            <div style="flex: 1;">
+                                <h4 style="font-size: 1rem; margin-bottom: 0.25rem; {% if todo.is_completed %}text-decoration: line-through; color: var(--on-surface-variant);{% endif %}">
+                                    {{ todo.title }}
+                                </h4>
+                                {% if todo.description %}
+                                <p style="color: var(--on-surface-variant); font-size: 0.875rem;">{{ todo.description }}</p>
+                                {% endif %}
+                            </div>
+                            <div style="display: flex; gap: 0.5rem; margin-left: 1rem;">
+                                <a href="{{ url_for('todo.toggle', todo_id=todo.id) }}" class="btn btn-secondary btn-sm" title="{% if todo.is_completed %}Mark Incomplete{% else %}Mark Complete{% endif %}">
+                                    {% if todo.is_completed %}
+                                    <span class="material-symbols-outlined" style="font-size: 1rem;">undo</span>
+                                    {% else %}
+                                    <span class="material-symbols-outlined" style="font-size: 1rem;">check</span>
+                                    {% endif %}
+                                </a>
+                                <a href="{{ url_for('todo.delete', todo_id=todo.id) }}" class="btn btn-secondary btn-sm" onclick="return confirm('Delete this task?')" title="Delete">
+                                    <span class="material-symbols-outlined" style="font-size: 1rem;">delete</span>
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div style="text-align: center; padding: 2rem; color: var(--on-surface-variant);">
+                        <span class="material-symbols-outlined" style="font-size: 3rem; color: var(--outline-variant);">check_circle</span>
+                        <p style="margin-top: 1rem;">No tasks yet. Add your first task!</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

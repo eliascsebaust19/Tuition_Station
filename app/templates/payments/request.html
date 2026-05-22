@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Request - Tuition Station{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-primary text-white p-4 rounded-top-4">
+                    <h3 class="mb-0 fw-bold">Complete Your Payment</h3>
+                    <p class="mb-0 opacity-75">Plan: {{ plan.name }} - ৳{{ plan.price }}</p>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-info mb-4 border-0 shadow-sm">
+                        <h5 class="fw-bold mb-2">Instructions:</h5>
+                        <p class="mb-1">1. Send <strong>৳{{ plan.price }}</strong> to <strong>01XXXXXXXXX</strong> (bKash/Nagad Personal).</p>
+                        <p class="mb-0">2. Copy the Transaction ID and fill the form below.</p>
+                    </div>
+
+                    <form method="POST">
+
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Payment Method</label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check border p-3 rounded-3 flex-fill">
+                                    <input class="form-check-input ms-0 me-2" type="radio" name="method" id="bkash" value="bKash" checked>
+                                    <label class="form-check-label fw-bold" for="bkash">bKash</label>
+                                </div>
+                                <div class="form-check border p-3 rounded-3 flex-fill">
+                                    <input class="form-check-input ms-0 me-2" type="radio" name="method" id="nagad" value="Nagad">
+                                    <label class="form-check-label fw-bold" for="nagad">Nagad</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="transaction_id" class="form-label fw-bold">Transaction ID</label>
+                            <input type="text" class="form-control form-control-lg rounded-3" id="transaction_id" name="transaction_id" placeholder="e.g. TRXXXXXXXX" required autocomplete="off">
+                            <div class="form-text">Ensure you enter the correct ID for verification.</div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold rounded-3 py-3 shadow-sm">
+                            Submit Payment Request
+                        </button>
+                        
+                        <a href="{{ url_for('subscriptions.plans') }}" class="btn btn-link w-100 mt-3 text-muted text-decoration-none">
+                            <i class="material-symbols-outlined align-middle me-1" style="font-size: 1.2rem;">arrow_back</i>
+                            Change Plan
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subscription Management - Tuition Station</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #10B981;
+      --primary-dark: #059669;
+      --secondary: #6366F1;
+      --accent: #F59E0B;
+      --bg: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --sidebar-bg: #FFFFFF;
+      --text: #1E293B;
+      --text-muted: #94A3B8;
+      --border: #E2E8F0;
+      --hover-bg: #F1F5F9;
+    }
+    * { font-family: 'Inter', sans-serif; }
+    body { background: var(--bg); margin: 0; }
+    .dashboard-layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 280px; background: var(--sidebar-bg); border-right: 1px solid var(--border); position: fixed; left: 0; top: 0; height: 100vh; display: flex; flex-direction: column; z-index: 1000; padding: 1.5rem 0; }
+    .sidebar-brand { padding: 0 1.5rem; margin-bottom: 1.5rem; text-align: center; }
+    .sidebar-brand .logo-text { font-size: 1.25rem; font-weight: 800; color: var(--text); }
+    .sidebar-brand .logo-text strong { color: var(--primary); }
+    .sidebar-brand p { font-size: 0.6rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--primary); margin-top: 0.15rem; }
+    .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 0.15rem; padding: 0 0.75rem; }
+    .sidebar-nav a { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 1rem; border-radius: 0.5rem; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-decoration: none; transition: all 0.15s; }
+    .sidebar-nav a:hover { background: var(--hover-bg); color: var(--text); }
+    .sidebar-nav a.active { background: rgba(16, 185, 129, 0.1); color: var(--primary); }
+    .sidebar-nav a i { width: 1.25rem; text-align: center; font-size: 1rem; }
+    .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--border); margin-top: auto; }
+    .user-card { display: flex; align-items: center; gap: 0.75rem; }
+    .user-card img { width: 2.25rem; height: 2.25rem; border-radius: 50%; object-fit: cover; background: var(--hover-bg); }
+    .user-card .name { font-size: 0.85rem; font-weight: 700; color: var(--text); }
+    .user-card .role { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+    .sidebar-logout a { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 1rem; margin: 0 0.75rem; border-radius: 0.5rem; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-decoration: none; transition: all 0.15s; }
+    .sidebar-logout a:hover { background: #FEF2F2; color: #DC2626; }
+    .main-content { flex: 1; margin-left: 280px; padding: 2rem 2.5rem; min-height: 100vh; }
+    .page-header { margin-bottom: 2rem; }
+    .page-header h2 { font-size: 1.75rem; font-weight: 800; color: var(--text); margin: 0; }
+    .page-header .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem; }
+    .card { border: none; border-radius: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    .card-header { background: transparent; border-bottom: 1px solid var(--border); padding: 1.25rem 1.5rem; font-weight: 700; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .table { margin: 0; font-size: 0.875rem; }
+    .table thead th { background: var(--hover-bg); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); border-bottom: 1px solid var(--border); padding: 0.9rem 1.25rem; }
+    .table tbody td { padding: 0.9rem 1.25rem; vertical-align: middle; border-bottom: 1px solid var(--border); color: var(--text); }
+    .table tbody tr:hover { background: var(--hover-bg); }
+    .table tbody tr:last-child td { border-bottom: none; }
+    .badge { font-size: 0.7rem; font-weight: 600; padding: 0.3rem 0.6rem; border-radius: 0.35rem; }
+    .badge-active { background: #D1FAE5; color: #065F46; }
+    .badge-expired { background: #FEE2E2; color: #991B1B; }
+    .badge-expiring { background: #FEF3C7; color: #92400E; }
+    .days-remaining { font-weight: 700; font-size: 0.85rem; }
+    .days-low { color: #DC2626; }
+    .days-mid { color: #D97706; }
+    .days-high { color: var(--primary); }
+    .dashboard-footer { margin-left: 280px; background: var(--card-bg); padding: 2rem 2.5rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .dashboard-footer p { margin: 0; font-size: 0.8rem; color: var(--text-muted); }
+    .dashboard-footer a { color: var(--text-muted); text-decoration: none; font-size: 0.8rem; margin-left: 1.5rem; }
+    .dashboard-footer a:hover { color: var(--primary); }
+    .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-muted); }
+    .empty-state i { font-size: 3rem; color: var(--border); margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+<div class="dashboard-layout">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <a href="{{ url_for('auth.index') }}" style="text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;">
+        <i class="fas fa-graduation-cap" style="color:#6366f1;font-size:1.3rem;"></i>
+        <span style="font-weight:800;font-size:1.2rem;color:#0f172a;">Tuition<strong style="font-weight:900;">Station</strong></span>
+      </a>
+      <p>Student Teacher Connector</p>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="{{ url_for('admin.dashboard') }}"><i class="fas fa-th-large"></i>Dashboard</a>
+      <a href="{{ url_for('admin.users') }}"><i class="fas fa-users"></i>Users</a>
+      <a href="{{ url_for('admin.payments') }}"><i class="fas fa-credit-card"></i>Payments</a>
+      <a href="{{ url_for('admin.posts') }}"><i class="fas fa-bullhorn"></i>Posts</a>
+      <a href="{{ url_for('admin.subscriptions') }}" class="active"><i class="fas fa-crown"></i>Subscriptions</a>
+      <a href="{{ url_for('admin.messages') }}"><i class="fas fa-envelope"></i>Messages</a>
+      <a href="{{ url_for('admin.reports') }}"><i class="fas fa-chart-bar"></i>Reports</a>
+      <a href="{{ url_for('admin.documentation') }}"><i class="fas fa-book"></i>Documentation</a>
+    </nav>
+    <div class="sidebar-logout">
+      <a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt"></i>Logout</a>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="Admin">
+        <div>
+          <p class="name">{{ current_user.name }}</p>
+          <p class="role">Admin</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h2>Subscription Management</h2>
+      <p class="subtitle">Track user subscriptions and plans</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+      {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    {% set active_count = subscriptions|selectattr('is_active')|list|length %}
+    {% set expiring_count = subscriptions|selectattr('is_expiring_soon')|list|length %}
+    {% set expired_count = subscriptions|selectattr('is_expired')|list|length %}
+
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm" style="border-radius:1rem;">
+          <div class="card-body d-flex align-items-center gap-3 p-3">
+            <div style="width:3rem;height:3rem;border-radius:0.75rem;background:#D1FAE5;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="fas fa-check-circle" style="color:#065F46;font-size:1.25rem;"></i>
+            </div>
+            <div>
+              <p class="fw-bold fs-4 mb-0" style="color:#065F46;">{{ active_count }}</p>
+              <p class="text-muted mb-0" style="font-size:0.8rem;font-weight:600;">Active</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm" style="border-radius:1rem;">
+          <div class="card-body d-flex align-items-center gap-3 p-3">
+            <div style="width:3rem;height:3rem;border-radius:0.75rem;background:#FEF3C7;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="fas fa-exclamation-triangle" style="color:#92400E;font-size:1.25rem;"></i>
+            </div>
+            <div>
+              <p class="fw-bold fs-4 mb-0" style="color:#92400E;">{{ expiring_count }}</p>
+              <p class="text-muted mb-0" style="font-size:0.8rem;font-weight:600;">Expiring Soon</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm" style="border-radius:1rem;">
+          <div class="card-body d-flex align-items-center gap-3 p-3">
+            <div style="width:3rem;height:3rem;border-radius:0.75rem;background:#FEE2E2;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="fas fa-times-circle" style="color:#991B1B;font-size:1.25rem;"></i>
+            </div>
+            <div>
+              <p class="fw-bold fs-4 mb-0" style="color:#991B1B;">{{ expired_count }}</p>
+              <p class="text-muted mb-0" style="font-size:0.8rem;font-weight:600;">Expired</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-crown" style="color:var(--primary);"></i> All Subscriptions
+        <span class="badge bg-secondary ms-auto">{{ subscriptions|length }} total</span>
+      </div>
+      <div class="table-responsive">
+        {% if subscriptions %}
+        <table class="table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Plan</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Days Remaining</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for sub in subscriptions %}
+            <tr>
+              <td><strong>{{ sub.user.name }}</strong></td>
+              <td><span class="badge bg-light text-dark">{{ sub.plan.name }}</span></td>
+              <td style="white-space:nowrap;color:var(--text-muted);">{{ sub.start_date.strftime('%b %d, %Y') }}</td>
+              <td style="white-space:nowrap;color:var(--text-muted);">{{ sub.end_date.strftime('%b %d, %Y') }}</td>
+              <td>
+                {% set days = sub.days_remaining %}
+                {% if days is not none %}
+                <span class="days-remaining {% if days <= 3 %}days-low{% elif days <= 14 %}days-mid{% else %}days-high{% endif %}">
+                  {% if days <= 0 %}0{% else %}{{ days }}{% endif %} days
+                </span>
+                {% else %}
+                <span class="text-muted">-</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if sub.is_active %}
+                <span class="badge badge-active"><i class="fas fa-check-circle me-1"></i>Active</span>
+                {% elif sub.is_expired %}
+                <span class="badge badge-expired"><i class="fas fa-times-circle me-1"></i>Expired</span>
+                {% elif sub.is_expiring_soon %}
+                <span class="badge badge-expiring"><i class="fas fa-clock me-1"></i>Expiring Soon</span>
+                {% else %}
+                <span class="badge bg-secondary">Inactive</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+          <i class="fas fa-crown"></i>
+          <p class="fw-semibold">No subscriptions yet</p>
+          <p style="font-size:0.85rem;">User subscriptions will appear here once they subscribe to a plan.</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </main>
+</div>
+
+<footer class="dashboard-footer">
+  <p>&copy; 2026 Tuition Station. Developed by <strong>Elias, Sayadul, Mehejabin</strong></p>
+  <div>
+    <a href="{{ url_for('auth.developer') }}">Developer Info</a>
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms</a>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

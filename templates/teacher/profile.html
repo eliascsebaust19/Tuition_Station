@@ -1,0 +1,440 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - Tuition Station{% endblock %}
+
+{% block extra_css %}
+<style>
+body { margin: 0; background: var(--surface); }
+.dashboard-layout { display: flex; min-height: 100vh; }
+.main-content { flex: 1; margin-left: 280px; padding: 2.5rem 3rem; }
+.page-header { margin-bottom: 2rem; }
+.page-header h2 { font-size: 2rem; font-weight: 900; letter-spacing: -0.02em; }
+.page-header p { color: var(--on-surface-variant); font-size: 0.9rem; margin-top: 0.25rem; }
+.content-grid { display: grid; grid-template-columns: 320px 1fr; gap: 2rem; align-items: start; }
+
+.profile-card {
+    background: var(--surface-container-lowest);
+    border-radius: 2rem;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+    position: sticky;
+    top: 2rem;
+}
+.profile-img-wrap {
+    width: 140px; height: 140px;
+    margin: 0 auto 1.25rem;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--surface-container);
+    border: 4px solid var(--primary-fixed);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+.profile-img-wrap:hover { transform: scale(1.03); box-shadow: 0 8px 30px rgba(0,74,198,0.15); }
+.profile-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.profile-img-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.35);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.2s;
+    border-radius: 50%;
+}
+.profile-img-wrap:hover .profile-img-overlay { opacity: 1; }
+.profile-img-overlay .material-symbols-outlined { color: #fff; font-size: 2rem; }
+.profile-card h3 { font-size: 1.25rem; font-weight: 800; margin-bottom: 0.25rem; }
+.profile-card .role { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--on-surface-variant); opacity: 0.7; margin-bottom: 1rem; }
+.status-pill {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 9999px;
+    font-size: 0.75rem; font-weight: 700;
+    background: rgba(108,248,187,0.2);
+    color: var(--on-secondary-container);
+    margin-bottom: 1.5rem;
+}
+.status-pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--secondary); }
+.btn-change-photo {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    border-radius: 9999px;
+    background: var(--surface-container-high);
+    color: var(--on-surface);
+    font-size: 0.75rem; font-weight: 700;
+    border: none; cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-change-photo:hover { background: var(--primary); color: var(--on-primary); }
+.quick-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1.5rem; }
+.quick-stat { background: var(--surface-container); border-radius: 1rem; padding: 1rem; }
+.quick-stat .value { font-size: 1.25rem; font-weight: 800; color: var(--primary); }
+.quick-stat .label { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--on-surface-variant); margin-top: 0.25rem; }
+
+.modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(12px);
+    z-index: 1000; align-items: center; justify-content: center;
+}
+.modal-overlay.active { display: flex; }
+.modal-card {
+    background: var(--surface-container-lowest);
+    border-radius: 2rem;
+    padding: 2.5rem;
+    width: 100%; max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    text-align: center;
+}
+
+.form-card {
+    background: var(--surface-container-lowest);
+    border-radius: 2rem;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+}
+.form-card h3 {
+    font-size: 1rem; font-weight: 800; margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 0.5rem;
+    color: var(--primary);
+}
+.form-card h3 .material-symbols-outlined { font-size: 1.25rem; }
+.form-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem 1.5rem; }
+.form-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem 1.5rem; }
+.form-group { margin-bottom: 0; }
+.form-group.full { grid-column: 1 / -1; }
+.form-group label { display: block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--primary); margin-bottom: 0.5rem; }
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 0.75rem 1rem;
+    background: var(--surface-container-low);
+    border: none; border-radius: 0.75rem;
+    font-size: 0.875rem; font-weight: 500;
+    color: var(--on-surface);
+    font-family: inherit;
+}
+.form-group textarea { min-height: 80px; resize: vertical; }
+.form-group .help-text { font-size: 0.65rem; color: var(--on-surface-variant); margin-top: 0.25rem; }
+
+.toggle-group {
+    display: flex; gap: 2rem; flex-wrap: wrap;
+}
+.toggle-item {
+    display: flex; align-items: center; gap: 0.5rem;
+}
+.toggle-item input[type="checkbox"] {
+    width: 1.1rem; height: 1.1rem;
+    accent-color: var(--primary);
+}
+
+.btn-save {
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    width: 100%; padding: 1rem;
+    background: var(--primary); color: var(--on-primary);
+    border: none; border-radius: 9999px;
+    font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+    cursor: pointer; margin-top: 1.5rem;
+    transition: opacity 0.2s;
+}
+.btn-save:hover { opacity: 0.9; }
+
+@media (max-width: 1100px) {
+    .content-grid { grid-template-columns: 1fr; }
+    .profile-card { position: static; display: flex; align-items: center; gap: 1.5rem; text-align: left; padding: 1.5rem; }
+    .profile-img-wrap { margin: 0; width: 100px; height: 100px; }
+    .profile-card .profile-info { flex: 1; }
+    .quick-stats { margin-top: 0; }
+    .form-grid-3 { grid-template-columns: 1fr 1fr; }
+}
+</style>
+{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include "teacher/inc_sidebar.html" %}
+
+    <main class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div style="margin-bottom: 2rem;">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <div class="page-header">
+            <h2>My Portfolio</h2>
+            <p>Build your professional teacher profile. A complete profile helps you get discovered by students.</p>
+        </div>
+
+        <div class="content-grid">
+            <div class="profile-card">
+                <div class="profile-img-wrap" onclick="document.getElementById('picInput').click()">
+                    <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="Profile" />
+                    <div class="profile-img-overlay">
+                        <span class="material-symbols-outlined">photo_camera</span>
+                    </div>
+                </div>
+                <form method="POST" action="{{ url_for('teacher.upload_picture') }}" enctype="multipart/form-data" style="display:none;">
+                    <input type="file" id="picInput" name="profile_picture" accept=".jpg,.jpeg,.png" onchange="this.form.submit()" />
+                </form>
+                <div class="profile-info">
+                    <h3>{{ current_user.name }}</h3>
+                    <p class="role">{{ profile.subject or 'Teacher' }}</p>
+                    <div class="status-pill">
+                        <span class="dot"></span>
+                        {{ profile.availability }}
+                    </div>
+                </div>
+                <div class="quick-stats">
+                    <div class="quick-stat">
+                        <p class="value">{{ profile.experience or 0 }}+</p>
+                        <p class="label">Years Exp</p>
+                    </div>
+                    <div class="quick-stat">
+                        <p class="value">৳{{ profile.fee or 0 }}</p>
+                        <p class="label">Monthly</p>
+                    </div>
+                    <div class="quick-stat">
+                        <p class="value">{{ profile.total_students_taught or 0 }}</p>
+                        <p class="label">Students</p>
+                    </div>
+                    <div class="quick-stat">
+                        <p class="value">{{ profile.success_percentage or 0 }}%</p>
+                        <p class="label">Success</p>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <form method="POST" action="{{ url_for('teacher.profile') }}">
+                    <div class="form-card">
+                        <h3><span class="material-symbols-outlined">badge</span> Basic Info</h3>
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input value="{{ current_user.name }}" disabled />
+                            </div>
+                            <div class="form-group">
+                                <label for="subject">Subject *</label>
+                                <input id="subject" name="subject" value="{{ profile.subject or '' }}" placeholder="e.g. Mathematics" required />
+                            </div>
+                            <div class="form-group full">
+                                <label for="qualification">Qualification</label>
+                                <input id="qualification" name="qualification" value="{{ profile.qualification or '' }}" placeholder="e.g. MSc in Mathematics, University of Dhaka" />
+                            </div>
+                            <div class="form-group full">
+                                <label for="subjects_expert_in">Subjects Expert In</label>
+                                <input id="subjects_expert_in" name="subjects_expert_in" value="{{ profile.subjects_expert_in or '' }}" placeholder="e.g. Algebra, Calculus, Geometry (comma separated)" />
+                                <p class="help-text">Separate multiple subjects with commas</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <h3><span class="material-symbols-outlined">account_balance</span> Academic Background</h3>
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label for="university">University *</label>
+                                <input id="university" name="university" value="{{ profile.university or '' }}" placeholder="e.g. University of Dhaka" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="department">Department *</label>
+                                <input id="department" name="department" value="{{ profile.department or '' }}" placeholder="e.g. Mathematics" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="degree">Degree</label>
+                                <select id="degree" name="degree">
+                                    <option value="">Select</option>
+                                    <option value="BSc" {% if profile.degree == 'BSc' %}selected{% endif %}>BSc</option>
+                                    <option value="BA" {% if profile.degree == 'BA' %}selected{% endif %}>BA</option>
+                                    <option value="BCom" {% if profile.degree == 'BCom' %}selected{% endif %}>BCom</option>
+                                    <option value="BEd" {% if profile.degree == 'BEd' %}selected{% endif %}>BEd</option>
+                                    <option value="MSc" {% if profile.degree == 'MSc' %}selected{% endif %}>MSc</option>
+                                    <option value="MA" {% if profile.degree == 'MA' %}selected{% endif %}>MA</option>
+                                    <option value="PhD" {% if profile.degree == 'PhD' %}selected{% endif %}>PhD</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="graduation_year">Graduation Year *</label>
+                                <input id="graduation_year" name="graduation_year" value="{{ profile.graduation_year or '' }}" type="number" min="1990" max="2030" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="masters_university">Master's University</label>
+                                <input id="masters_university" name="masters_university" value="{{ profile.masters_university or '' }}" placeholder="e.g. University of Dhaka" />
+                            </div>
+                            <div class="form-group">
+                                <label for="masters_department">Master's Department</label>
+                                <input id="masters_department" name="masters_department" value="{{ profile.masters_department or '' }}" />
+                            </div>
+                            <div class="form-group">
+                                <label for="masters_year">Master's Year</label>
+                                <input id="masters_year" name="masters_year" value="{{ profile.masters_year or '' }}" type="number" min="1990" max="2030" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <h3><span class="material-symbols-outlined">school</span> Teaching Details</h3>
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label for="class_level">Class Level</label>
+                                <select id="class_level" name="class_level">
+                                    <option value="">All Levels</option>
+                                    <option value="Class 1-5" {% if profile.class_level == 'Class 1-5' %}selected{% endif %}>Class 1-5</option>
+                                    <option value="Class 6-8" {% if profile.class_level == 'Class 6-8' %}selected{% endif %}>Class 6-8</option>
+                                    <option value="SSC" {% if profile.class_level == 'SSC' %}selected{% endif %}>SSC</option>
+                                    <option value="HSC" {% if profile.class_level == 'HSC' %}selected{% endif %}>HSC</option>
+                                    <option value="University" {% if profile.class_level == 'University' %}selected{% endif %}>University</option>
+                                    <option value="Admission Test" {% if profile.class_level == 'Admission Test' %}selected{% endif %}>Admission Test</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="location">Main Location *</label>
+                                <input id="location" name="location" value="{{ profile.location or '' }}" placeholder="e.g. Dhanmondi, Dhaka" required />
+                                <p class="help-text">Your primary teaching location</p>
+                            </div>
+                            <div class="form-group">
+                                <label for="teaching_areas">Teaching Areas</label>
+                                <input id="teaching_areas" name="teaching_areas" value="{{ profile.teaching_areas or '' }}" placeholder="e.g. Dhanmondi, Gulshan, Motijheel" />
+                                <p class="help-text">Areas you can teach in (comma separated)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <h3><span class="material-symbols-outlined">payments</span> Fees & Availability</h3>
+                        <div class="form-grid-3">
+                            <div class="form-group">
+                                <label for="fee">Monthly Fee (Tk) *</label>
+                                <input id="fee" name="fee" value="{{ profile.fee or 0 }}" type="number" min="0" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="hourly_fee">Hourly Fee (Tk)</label>
+                                <input id="hourly_fee" name="hourly_fee" value="{{ profile.hourly_fee or '' }}" type="number" min="0" />
+                            </div>
+                            <div class="form-group">
+                                <label for="availability">Availability</label>
+                                <select id="availability" name="availability">
+                                    <option value="Available" {% if profile.availability == 'Available' %}selected{% endif %}>Available</option>
+                                    <option value="Busy" {% if profile.availability == 'Busy' %}selected{% endif %}>Busy</option>
+                                    <option value="Unavailable" {% if profile.availability == 'Unavailable' %}selected{% endif %}>Unavailable</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="teaching_mode">Teaching Mode</label>
+                                <select id="teaching_mode" name="teaching_mode">
+                                    <option value="online" {% if profile.teaching_mode == 'online' %}selected{% endif %}>Online</option>
+                                    <option value="offline" {% if profile.teaching_mode == 'offline' %}selected{% endif %}>Offline</option>
+                                    <option value="both" {% if profile.teaching_mode == 'both' or not profile.teaching_mode %}selected{% endif %}>Both Online & Offline</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="display:flex;align-items:flex-end;">
+                                <label class="toggle-item">
+                                    <input type="checkbox" name="demo_class_available" {% if profile.demo_class_available %}checked{% endif %} />
+                                    Demo Class Available
+                                </label>
+                            </div>
+                            <div class="form-group full">
+                                <label for="availability_schedule">Availability Schedule</label>
+                                <textarea id="availability_schedule" name="availability_schedule" rows="2" placeholder="e.g. Weekdays 4PM-8PM, Weekends 10AM-6PM">{{ profile.availability_schedule or '' }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <h3><span class="material-symbols-outlined">description</span> About You</h3>
+                        <div class="form-grid-2">
+                            <div class="form-group full">
+                                <label for="bio">Bio / About You</label>
+                                <textarea id="bio" name="bio" rows="3" placeholder="Tell students about yourself...">{{ profile.bio or '' }}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="experience">Experience (Years) *</label>
+                                <input id="experience" name="experience" value="{{ profile.experience or 0 }}" type="number" min="0" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="total_students_taught">Total Students Taught</label>
+                                <input id="total_students_taught" name="total_students_taught" value="{{ profile.total_students_taught or 0 }}" type="number" min="0" />
+                            </div>
+                            <div class="form-group">
+                                <label for="success_percentage">Success Rate (%)</label>
+                                <input id="success_percentage" name="success_percentage" value="{{ profile.success_percentage or '' }}" type="number" min="0" max="100" />
+                            </div>
+                            <div class="form-group full">
+                                <label for="teaching_style">Teaching Style</label>
+                                <textarea id="teaching_style" name="teaching_style" rows="2" placeholder="Describe your teaching methodology...">{{ profile.teaching_style or '' }}</textarea>
+                            </div>
+                            <div class="form-group full">
+                                <label for="preface">Preface / Personal Statement</label>
+                                <textarea id="preface" name="preface" rows="2" placeholder="A short statement that appears at the top of your profile...">{{ profile.preface or '' }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <h3><span class="material-symbols-outlined">star</span> Key Strengths & Experience</h3>
+                        <div class="form-grid-2">
+                            <div class="form-group full">
+                                <label for="key_strengths">Key Strengths</label>
+                                <input id="key_strengths" name="key_strengths" value="{{ profile.key_strengths or '' }}" placeholder="e.g. Concept Clarity, Exam Strategy, Patience (comma separated)" />
+                            </div>
+                            <div class="form-group full">
+                                <label for="why_students_notice">Why Students Notice You</label>
+                                <textarea id="why_students_notice" name="why_students_notice" rows="2" placeholder="What makes you stand out?">{{ profile.why_students_notice or '' }}</textarea>
+                            </div>
+                            <div class="form-group full">
+                                <label for="tuition_experience">Tuition Job Experience</label>
+                                <textarea id="tuition_experience" name="tuition_experience" rows="2" placeholder="Describe your previous tutoring experience...">{{ profile.tuition_experience or '' }}</textarea>
+                            </div>
+                            <div class="form-group full">
+                                <label for="reasons_to_hire">Reasons to Hire You</label>
+                                <textarea id="reasons_to_hire" name="reasons_to_hire" rows="2" placeholder="Why should students choose you?">{{ profile.reasons_to_hire or '' }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <h3><span class="material-symbols-outlined">language</span> Languages & Social</h3>
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label for="languages">Languages Spoken</label>
+                                <input id="languages" name="languages" value="{{ profile.languages or '' }}" placeholder="e.g. Bangla, English, Arabic" />
+                            </div>
+                            <div class="form-group">
+                                <label for="intro_video_url">Intro Video URL</label>
+                                <input id="intro_video_url" name="intro_video_url" value="{{ profile.intro_video_url or '' }}" placeholder="YouTube or Google Drive link" />
+                            </div>
+                            <div class="form-group full">
+                                <label for="social_links">Social Links</label>
+                                <textarea id="social_links" name="social_links" rows="2" placeholder="Facebook: https://facebook.com/yourprofile&#10;LinkedIn: https://linkedin.com/in/yourprofile">{{ profile.social_links or '' }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <h3><span class="material-symbols-outlined">folder</span> Resources & Schedule</h3>
+                        <div class="form-grid-2">
+                            <div class="form-group full">
+                                <label for="notes_resources">Notes / Resources</label>
+                                <textarea id="notes_resources" name="notes_resources" rows="3" placeholder="Links to your study materials, notes, or resources you share with students...">{{ profile.notes_resources or '' }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-save">
+                        <span class="material-symbols-outlined">save</span>
+                        Save All Changes
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

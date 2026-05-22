@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Tuition Station{% endblock %}
+
+{% block extra_css %}
+<style>
+.header-text .kicker { color: var(--secondary); }
+</style>
+{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include "teacher/inc_sidebar.html" %}
+
+    <main class="main-content">
+        <header class="header-section">
+            <div class="header-text">
+                <p class="kicker">Instructor Portal</p>
+                <h2>Welcome back, {{ current_user.name }}</h2>
+                <p>{{ plan.name }} Plan · {% if days_left > 0 %}{{ days_left }} days remaining{% else %}Expired{% endif %}</p>
+            </div>
+            <div class="user-profile" onclick="openProfilePopup()">
+                <div class="user-avatar">
+                    <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="Profile" />
+                </div>
+                <div class="user-info">
+                    <p class="role">Teacher</p>
+                    <p class="name">{{ current_user.name }}</p>
+                </div>
+            </div>
+        </header>
+
+        {% if plan.has_verified_badge %}
+        <div class="alert alert-success d-flex align-items-center" role="alert" style="border-radius: 12px; background: #ecfdf5; border: 1px solid #a7f3d0;">
+            <span class="material-symbols-outlined me-2" style="color: #059669;">verified</span>
+            <div><strong>{{ plan.name }} Plan Active!</strong> 
+            {% if plan.is_featured %}You're featured on the homepage. {% endif %}
+            Enjoy priority benefits.</div>
+        </div>
+        {% endif %}
+
+        {% if days_left <= 7 and days_left > 0 %}
+        <div class="alert alert-warning d-flex align-items-center" role="alert" style="border-radius: 12px;">
+            <span class="material-symbols-outlined me-2">warning</span>
+            <div><strong>Subscription expiring soon!</strong> Only {{ days_left }} days left. <a href="{{ url_for('subscriptions.plans') }}" style="color: #92400e; font-weight: 600;">Renew now</a></div>
+        </div>
+        {% endif %}
+
+        <!-- Stats Cards -->
+        <section class="stats-section" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+            <div class="stat-card" style="background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; padding: 1.5rem; border-radius: 16px;">
+                <span class="material-symbols-outlined" style="font-size: 2rem; opacity: 0.8;">description</span>
+                <h3 style="font-size: 2rem; margin: 0.5rem 0 0;">{{ pending_apps }}</h3>
+                <p style="opacity: 0.9; margin: 0;">Pending Applications</p>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #059669, #34d399); color: white; padding: 1.5rem; border-radius: 16px;">
+                <span class="material-symbols-outlined" style="font-size: 2rem; opacity: 0.8;">check_circle</span>
+                <h3 style="font-size: 2rem; margin: 0.5rem 0 0;">{{ selected_apps }}</h3>
+                <p style="opacity: 0.9; margin: 0;">Selected</p>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #7c3aed, #a78bfa); color: white; padding: 1.5rem; border-radius: 16px;">
+                <span class="material-symbols-outlined" style="font-size: 2rem; opacity: 0.8;">star</span>
+                <h3 style="font-size: 2rem; margin: 0.5rem 0 0;">{{ avg_rating }}</h3>
+                <p style="opacity: 0.9; margin: 0;">Avg Rating ({{ review_count }})</p>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #d97706, #fbbf24); color: white; padding: 1.5rem; border-radius: 16px;">
+                <span class="material-symbols-outlined" style="font-size: 2rem; opacity: 0.8;">mail</span>
+                <h3 style="font-size: 2rem; margin: 0.5rem 0 0;">{{ unread_messages }}</h3>
+                <p style="opacity: 0.9; margin: 0;">Unread Messages</p>
+            </div>
+        </section>
+
+        <!-- Browse Posts CTA -->
+        <section class="tutors-section">
+            <div class="tutors-header">
+                <h3>Available Tuition Posts</h3>
+                <a href="{{ url_for('teacher.browse_posts') }}">Browse All ({{ open_posts }} open)</a>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                <a href="{{ url_for('teacher.browse_posts') }}" class="mentor-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; text-decoration: none; color: inherit; min-height: 160px;">
+                    <span class="material-symbols-outlined" style="font-size: 3rem; color: var(--primary); margin-bottom: 0.5rem;">work_history</span>
+                    <h4 style="margin: 0;">Find Tuition Jobs</h4>
+                    <p style="color: var(--on-surface-variant); font-size: 0.9rem;">{{ open_posts }} open positions available</p>
+                </a>
+                <a href="{{ url_for('teacher.profile') }}" class="mentor-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; text-decoration: none; color: inherit; min-height: 160px;">
+                    <span class="material-symbols-outlined" style="font-size: 3rem; color: var(--primary); margin-bottom: 0.5rem;">person_edit</span>
+                    <h4 style="margin: 0;">Update Profile</h4>
+                    <p style="color: var(--on-surface-variant); font-size: 0.9rem;">Keep your profile up to date</p>
+                </a>
+                <a href="{{ url_for('subscriptions.plans') }}" class="mentor-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; text-decoration: none; color: inherit; min-height: 160px;">
+                    <span class="material-symbols-outlined" style="font-size: 3rem; color: var(--primary); margin-bottom: 0.5rem;">workspace_premium</span>
+                    <h4 style="margin: 0;">Subscription</h4>
+                    <p style="color: var(--on-surface-variant); font-size: 0.9rem;">{{ plan.name }} · {% if days_left > 0 %}{{ days_left }} days left{% else %}Expired{% endif %}</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- Recent Applications -->
+        <section class="tutors-section">
+            <div class="tutors-header">
+                <h3>Recent Applications</h3>
+                <a href="{{ url_for('teacher.browse_posts') }}">View All</a>
+            </div>
+            {% if applications %}
+            <div class="requests-grid">
+                {% for app in applications[:6] %}
+                <div class="request-card request-{{ app.status.lower() }}">
+                    <div class="request-header">
+                        <div class="request-tutor">
+                            <div>
+                                <p class="tutor-name">{{ app.post.title if app.post else 'Tuition Post' }}</p>
+                                <p class="tutor-subject">{{ app.post.subject if app.post else '' }} · {{ app.post.location if app.post else '' }}</p>
+                            </div>
+                        </div>
+                        <span class="status-badge status-{{ app.status.lower() }}">{{ app.status }}</span>
+                    </div>
+                    {% if app.message %}<p class="request-message">"{{ app.message }}"</p>{% endif %}
+                    <p class="request-date">Applied {{ app.created_at.strftime('%b %d, %Y') }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-requests">
+                <span class="material-symbols-outlined">work</span>
+                <p>No applications yet. Start applying to tuition posts!</p>
+                <a href="{{ url_for('teacher.browse_posts') }}" class="btn-find-tutor" style="text-decoration: none;">Browse Posts</a>
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- Recent Reviews -->
+        <section class="tutors-section">
+            <div class="tutors-header">
+                <h3>Recent Reviews ({{ review_count }})</h3>
+            </div>
+            {% if reviews %}
+            <div class="requests-grid">
+                {% for review in reviews[:4] %}
+                <div class="request-card" style="border-left-color: var(--secondary);">
+                    <div class="request-header">
+                        <p class="tutor-name">{{ review.reviewer.name if review.reviewer else 'Student' }}</p>
+                        <span class="stars">{% for i in range(review.rating) %}<span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;font-size:1rem;color:#f59e0b;">star</span>{% endfor %}</span>
+                    </div>
+                    {% if review.comment %}<p class="request-message">{{ review.comment }}</p>{% endif %}
+                    <p class="request-date">{{ review.created_at.strftime('%b %d, %Y') }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-requests">
+                <span class="material-symbols-outlined">rate_review</span>
+                <p>No reviews yet.</p>
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- ToDo Section -->
+        <section class="tutors-section">
+            <div class="tutors-header">
+                <h3>My Tasks</h3>
+                <a href="{{ url_for('todo.index') }}">Manage</a>
+            </div>
+            {% if todos %}
+            <div class="requests-grid">
+                {% for todo in todos[:4] %}
+                <div class="request-card" style="border-left-color: var(--tertiary);">
+                    <div class="request-header">
+                        <p class="tutor-name" style="{% if todo.is_completed %}text-decoration: line-through; opacity: 0.6;{% endif %}">{{ todo.title }}</p>
+                    </div>
+                    {% if todo.description %}<p class="request-message">{{ todo.description }}</p>{% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-requests">
+                <span class="material-symbols-outlined">checklist</span>
+                <p>No tasks. <a href="{{ url_for('todo.index') }}">Add one</a></p>
+            </div>
+            {% endif %}
+        </section>
+    </main>
+</div>
+
+<footer class="dashboard-footer" id="dashboardFooter">
+    <p>&copy; 2026 Tuition Station. Developed by <strong>Elias, Sayadul, Mehejabin</strong></p>
+    <div>
+        <a href="{{ url_for('auth.developer') }}">Developer Info</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms</a>
+    </div>
+</footer>
+
+<!-- Profile Popup -->
+<div class="profile-popup-overlay" id="profilePopup" onclick="closeProfilePopup(event)">
+    <div class="profile-popup" onclick="event.stopPropagation()">
+        <div class="popup-cover">
+            <button class="popup-close" onclick="closeProfilePopup()">
+                <span class="material-symbols-outlined" style="font-size: 1.2rem;">close</span>
+            </button>
+        </div>
+        <div class="popup-avatar" onclick="openLightbox(this.querySelector('img').src)">
+            <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="{{ current_user.name }}" />
+        </div>
+        <div class="popup-body">
+            <h3 class="popup-name">{{ current_user.name }}</h3>
+            <p class="popup-role">Teacher · {{ plan.name }} Plan</p>
+            <div class="popup-email">
+                <span class="material-symbols-outlined" style="font-size: 1.1rem;">mail</span>
+                {{ current_user.email }}
+            </div>
+            <div class="popup-stats">
+                <div class="popup-stat">
+                    <div class="popup-stat-value">{{ applications|length }}</div>
+                    <div class="popup-stat-label">Applications</div>
+                </div>
+                <div class="popup-stat">
+                    <div class="popup-stat-value">{{ avg_rating }}</div>
+                    <div class="popup-stat-label">Rating</div>
+                </div>
+            </div>
+            <div class="popup-actions">
+                <a href="{{ url_for('teacher.profile') }}" class="popup-btn-edit">Edit Profile</a>
+                <a href="{{ url_for('auth.logout') }}" class="popup-btn-logout">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

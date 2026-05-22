@@ -1,0 +1,404 @@
+{% extends "base.html" %}
+
+{% block title %}My ToDo - Tuition Station{% endblock %}
+
+{% block extra_css %}
+<style>
+.todo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+}
+.todo-card {
+    background: var(--surface-container-lowest);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    box-shadow: var(--editorial-shadow);
+}
+.todo-card h3 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+}
+.todo-task {
+    padding: 1rem;
+    background: var(--surface-container-low);
+    border-radius: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    transition: all 0.2s;
+}
+.todo-task:hover {
+    background: var(--surface-container);
+}
+.todo-task.completed {
+    opacity: 0.6;
+}
+.todo-task h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+.todo-task h4.done {
+    text-decoration: line-through;
+    color: var(--on-surface-variant);
+}
+.todo-task p {
+    color: var(--on-surface-variant);
+    font-size: 0.85rem;
+}
+.todo-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: 1rem;
+    flex-shrink: 0;
+}
+.todo-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.5rem;
+    border: none;
+    background: var(--surface-container-high);
+    color: var(--on-surface-variant);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.todo-btn:hover {
+    background: var(--primary);
+    color: var(--on-primary);
+}
+.todo-btn.danger:hover {
+    background: var(--error);
+    color: var(--on-error);
+}
+.empty-tasks {
+    text-align: center;
+    padding: 2rem;
+    color: var(--on-surface-variant);
+}
+.empty-tasks .material-symbols-outlined {
+    font-size: 3rem;
+    color: var(--outline-variant);
+}
+.empty-tasks p {
+    margin-top: 1rem;
+}
+.progress-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+.progress-track {
+    flex: 1;
+    height: 6px;
+    background: var(--surface-container-high);
+    border-radius: 999px;
+    overflow: hidden;
+}
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--secondary), var(--primary));
+    border-radius: 999px;
+    transition: width 0.3s;
+}
+.progress-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--on-surface-variant);
+    white-space: nowrap;
+}
+
+.delete-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s ease;
+}
+.delete-popup-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+.delete-popup {
+    background: #fff;
+    border-radius: 1.25rem;
+    padding: 2.5rem 2rem 1.75rem;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.delete-popup-overlay.active .delete-popup {
+    transform: scale(1) translateY(0);
+}
+.delete-popup-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #fef2f2;
+    color: #dc2626;
+    margin-bottom: 1rem;
+}
+.delete-popup-icon .material-symbols-outlined {
+    font-size: 1.75rem;
+}
+.delete-popup-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem;
+    color: #1e293b;
+}
+.delete-popup-text {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin: 0 0 1.75rem;
+    line-height: 1.5;
+}
+.delete-popup-text strong {
+    color: #1e293b;
+}
+.delete-popup-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+.delete-popup-btn {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+.delete-popup-btn-cancel {
+    background: #f1f5f9;
+    color: #475569;
+}
+.delete-popup-btn-cancel:hover {
+    background: #e2e8f0;
+}
+.delete-popup-btn-confirm {
+    background: #dc2626;
+    color: #fff;
+}
+.delete-popup-btn-confirm:hover {
+    background: #b91c1c;
+}
+</style>
+{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% if current_user.role == 'student' %}
+        {% include "student/inc_sidebar.html" %}
+    {% elif current_user.role == 'teacher' %}
+        {% include "teacher/inc_sidebar.html" %}
+    {% endif %}
+
+    <main class="main-content">
+        <header class="header-section">
+            <div class="header-text">
+                <p class="kicker">Productivity</p>
+                <h2>My ToDo List</h2>
+                <p>Stay organized and track your tasks.</p>
+            </div>
+            <div class="user-profile" onclick="openProfilePopup()">
+                <div class="user-avatar">
+                    <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="Profile" />
+                </div>
+                <div class="user-info">
+                    <p class="role">{{ current_user.role }}</p>
+                    <p class="name">{{ current_user.name }}</p>
+                </div>
+            </div>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div style="margin-bottom: 2rem;">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <div class="todo-grid">
+            <div class="todo-card">
+                <h3>Add New Task</h3>
+                <form method="POST" action="{{ url_for('todo.add') }}">
+                    <div class="form-group">
+                        <label for="title">Task Title</label>
+                        <input type="text" id="title" name="title" placeholder="What do you need to do?" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description (optional)</label>
+                        <textarea id="description" name="description" rows="2" placeholder="Add more details..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <span class="material-symbols-outlined">add</span>
+                        Add Task
+                    </button>
+                </form>
+            </div>
+
+            <div class="todo-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <h3 style="margin: 0;">Tasks</h3>
+                </div>
+                {% set total = todos|length %}
+                {% set done = todos|selectattr('is_completed', 'equalto', true)|list|length %}
+                <div class="progress-bar">
+                    <div class="progress-track">
+                        <div class="progress-fill" style="width: {{ (done / total * 100)|round|int if total > 0 else 0 }}%;"></div>
+                    </div>
+                    <span class="progress-label">{{ done }}/{{ total }} done</span>
+                </div>
+
+                {% if todos %}
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    {% for todo in todos %}
+                    <div class="todo-task {% if todo.is_completed %}completed{% endif %}">
+                        <div style="flex: 1; min-width: 0;">
+                            <h4 class="{% if todo.is_completed %}done{% endif %}">{{ todo.title }}</h4>
+                            {% if todo.description %}
+                            <p>{{ todo.description }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="todo-actions">
+                            <a href="{{ url_for('todo.toggle', todo_id=todo.id) }}" class="todo-btn" title="{% if todo.is_completed %}Undo{% else %}Complete{% endif %}">
+                                <span class="material-symbols-outlined">{% if todo.is_completed %}undo{% else %}check{% endif %}</span>
+                            </a>
+                            <a href="{{ url_for('todo.delete', todo_id=todo.id) }}" class="todo-btn danger" onclick="event.preventDefault(); openDeletePopup({{ todo.id }}, '{{ todo.title|escape }}')" title="Delete">
+                                <span class="material-symbols-outlined">delete</span>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-tasks">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    <p>No tasks yet. Add your first task!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+
+<footer class="dashboard-footer" id="dashboardFooter">
+    <p>&copy; 2026 Tuition Station. Developed by <strong>Elias, Sayadul, Mehejabin</strong></p>
+    <div>
+        <a href="{{ url_for('auth.developer') }}">Developer Info</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms</a>
+    </div>
+</footer>
+
+<!-- Delete Confirmation Popup -->
+<div class="delete-popup-overlay" id="deletePopup" onclick="closeDeletePopup(event)">
+    <div class="delete-popup" onclick="event.stopPropagation()">
+        <div class="delete-popup-icon">
+            <span class="material-symbols-outlined">delete_forever</span>
+        </div>
+        <h3 class="delete-popup-title">Delete Task?</h3>
+        <p class="delete-popup-text">Are you sure you want to delete <strong id="deleteTaskTitle">this task</strong>? This action cannot be undone.</p>
+        <div class="delete-popup-actions">
+            <button class="delete-popup-btn delete-popup-btn-cancel" onclick="closeDeletePopup()">Cancel</button>
+            <a href="#" class="delete-popup-btn delete-popup-btn-confirm" id="deleteConfirmBtn">Delete</a>
+        </div>
+    </div>
+</div>
+
+<!-- Profile Popup -->
+<div class="profile-popup-overlay" id="profilePopup" onclick="closeProfilePopup(event)">
+    <div class="profile-popup" onclick="event.stopPropagation()">
+        <div class="popup-cover">
+            <button class="popup-close" onclick="closeProfilePopup()">
+                <span class="material-symbols-outlined" style="font-size: 1.2rem;">close</span>
+            </button>
+        </div>
+        <div class="popup-avatar" onclick="openLightbox(this.querySelector('img').src)">
+            <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="{{ current_user.name }}" />
+        </div>
+        <div class="popup-body">
+            <h3 class="popup-name">{{ current_user.name }}</h3>
+            <p class="popup-role">{{ current_user.role }}</p>
+            <div class="popup-email">
+                <span class="material-symbols-outlined" style="font-size: 1.1rem;">mail</span>
+                {{ current_user.email }}
+            </div>
+            <div class="popup-stats">
+                <div class="popup-stat">
+                    <div class="popup-stat-value">{{ todos|length }}</div>
+                    <div class="popup-stat-label">Tasks</div>
+                </div>
+                <div class="popup-stat">
+                    <div class="popup-stat-value">{{ done }}</div>
+                    <div class="popup-stat-label">Done</div>
+                </div>
+            </div>
+            <div class="popup-actions">
+                <a href="{% if current_user.role == 'student' %}{{ url_for('student.edit_profile') }}{% else %}{{ url_for('teacher.profile') }}{% endif %}" class="popup-btn-edit">Edit Profile</a>
+                <a href="{{ url_for('auth.logout') }}" class="popup-btn-logout">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openProfilePopup() {
+    document.getElementById('profilePopup').classList.add('active');
+}
+function closeProfilePopup(event) {
+    if (!event || event.target === document.getElementById('profilePopup')) {
+        document.getElementById('profilePopup').classList.remove('active');
+    }
+}
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        document.getElementById('profilePopup').classList.remove('active');
+        document.getElementById('deletePopup').classList.remove('active');
+    }
+});
+
+function openDeletePopup(todoId, todoTitle) {
+    document.getElementById('deleteTaskTitle').textContent = todoTitle;
+    document.getElementById('deleteConfirmBtn').href = '/todo/' + todoId + '/delete';
+    document.getElementById('deletePopup').classList.add('active');
+}
+function closeDeletePopup(event) {
+    if (!event || event.target === document.getElementById('deletePopup')) {
+        document.getElementById('deletePopup').classList.remove('active');
+    }
+}
+</script>
+{% endblock %}
+
+{% block footer %}{% endblock %}

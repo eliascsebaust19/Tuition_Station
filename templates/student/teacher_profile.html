@@ -1,0 +1,626 @@
+{% extends "base.html" %}
+
+{% block title %}{{ teacher.name }} | Distinguished Educator | Tuition Station{% endblock %}
+
+{% block extra_css %}
+<style>
+.dashboard-layout { display: flex; min-height: 100vh; }
+.main-content { flex: 1; margin-left: 280px; padding-bottom: 4rem; }
+
+.profile-hero {
+    height: 200px;
+    background: linear-gradient(135deg, var(--primary) 0%, #1a237e 100%);
+    position: relative;
+    margin-bottom: 0;
+    border-radius: 0 0 2rem 2rem;
+}
+.profile-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 0 0 2rem 2rem;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.5;
+}
+.hero-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    width: calc(100% - 4rem);
+    height: 130px;
+    z-index: 2;
+}
+.profile-avatar-container {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+.profile-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 1.25rem;
+    object-fit: cover;
+    border: 4px solid #ffffff;
+    box-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.2);
+}
+.verified-badge {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    background: #22c55e;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.hero-info {
+    flex: 1;
+    min-width: 0;
+    padding: 0.25rem 0;
+}
+.hero-name {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: #ffffff;
+    margin: 0 0 0.15rem;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    line-height: 1.2;
+}
+.hero-tagline {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0 0 0.35rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    line-height: 1.4;
+}
+.hero-badges {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+.hero-subject-badge {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.4rem;
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.hero-subject-badge .material-symbols-outlined { font-size: 0.85rem; }
+.hero-rating { display: inline-flex; align-items: center; gap: 0.25rem; color: #fbbf24; font-size: 0.7rem; font-weight: 600; }
+.hero-rating .material-symbols-outlined { font-size: 0.85rem; }
+.hero-rating .rating-count { color: rgba(255, 255, 255, 0.6); font-weight: 500; }
+.hero-demo-badge {
+    display: inline-flex; align-items: center; gap: 0.25rem;
+    background: rgba(251, 191, 36, 0.2);
+    padding: 0.2rem 0.6rem;
+    border-radius: 0.3rem;
+    font-size: 0.6rem; font-weight: 800; text-transform: uppercase;
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.2);
+}
+.hero-online-badge {
+    display: inline-flex; align-items: center; gap: 0.25rem;
+    background: rgba(34, 197, 94, 0.2);
+    padding: 0.2rem 0.6rem;
+    border-radius: 0.3rem;
+    font-size: 0.6rem; font-weight: 800; text-transform: uppercase;
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.profile-grid { display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; max-width: 1300px; margin: 0 auto; padding: 3rem 2rem 0; }
+.profile-section { background: #ffffff; border-radius: 1.25rem; padding: 1.5rem; margin-bottom: 1.25rem; border: 1px solid var(--outline-variant); box-shadow: 0 2px 8px -4px rgba(0, 0, 0, 0.04); }
+.section-title { font-size: 0.85rem; font-weight: 800; color: var(--primary); margin: 0 0 1rem; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.65rem; }
+.section-title .material-symbols-outlined { color: var(--secondary); font-size: 1.15rem; }
+
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; }
+.stat-box { text-align: center; background: var(--surface-container-low); padding: 0.85rem; border-radius: 0.75rem; }
+.stat-box .num { font-size: 1.3rem; font-weight: 900; color: var(--primary); display: block; }
+.stat-box .lbl { font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--on-surface-variant); margin-top: 0.15rem; }
+
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+.detail-item { display: flex; gap: 0.65rem; align-items: flex-start; background: var(--surface-container-low); padding: 0.75rem; border-radius: 0.65rem; }
+.detail-icon { width: 32px; height: 32px; background: #ffffff; border-radius: 0.4rem; display: flex; align-items: center; justify-content: center; color: var(--primary); flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.detail-icon .material-symbols-outlined { font-size: 1rem; }
+.detail-text h5 { margin: 0 0 0.1rem; font-size: 0.5rem; color: var(--on-surface-variant); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 800; }
+.detail-text p { margin: 0; font-size: 0.75rem; font-weight: 700; }
+
+.strength-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.strength-pill { background: #f0fdf4; color: #166534; padding: 0.35rem 0.75rem; border-radius: 0.4rem; font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; gap: 0.3rem; border: 1px solid #dcfce7; }
+.strength-pill .material-symbols-outlined { font-size: 0.75rem; }
+
+.highlight-box { background: linear-gradient(135deg, #fff9f0, #fff4e5); border-left: 3px solid var(--secondary); padding: 1rem; border-radius: 0 0.75rem 0.75rem 0; }
+.highlight-box p { font-size: 0.8rem; font-weight: 600; color: #92400e; margin: 0; line-height: 1.5; }
+
+.text-content { font-size: 0.85rem; color: #334155; line-height: 1.65; }
+
+.video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 0.75rem; }
+.video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+.social-links { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.social-link { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.75rem; background: var(--surface-container-low); border-radius: 0.5rem; font-size: 0.7rem; font-weight: 600; color: var(--on-surface); text-decoration: none; transition: all 0.2s; }
+.social-link:hover { background: var(--primary); color: #fff; }
+
+.resource-link { display: flex; align-items: center; gap: 0.5rem; padding: 0.65rem 0.85rem; background: var(--surface-container-low); border-radius: 0.5rem; margin-bottom: 0.4rem; font-size: 0.78rem; font-weight: 600; color: var(--primary); text-decoration: none; }
+.resource-link:hover { background: var(--primary-fixed); }
+
+.schedule-text { font-size: 0.8rem; color: #475569; line-height: 1.6; white-space: pre-line; }
+
+.booking-card { position: sticky; top: 2rem; background: #ffffff; border-radius: 1.25rem; padding: 1.5rem; border: 1px solid var(--outline-variant); box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.06); }
+.booking-status { display: flex; align-items: center; justify-content: center; gap: 0.35rem; padding: 0.5rem; border-radius: 0.5rem; font-weight: 800; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.7rem; }
+.status-available { background: #f0fdf4; color: #166534; }
+.status-booked { background: #fef2f2; color: #991b1b; }
+.fee-display { text-align: center; margin-bottom: 1rem; background: var(--surface-container-low); padding: 1rem; border-radius: 0.75rem; }
+.fee-amount { font-size: 1.5rem; font-weight: 900; color: var(--primary); display: block; }
+.fee-period { font-size: 0.6rem; color: var(--on-surface-variant); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+.btn-book { width: 100%; background: var(--primary); color: white; border: none; padding: 0.75rem; border-radius: 0.75rem; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 0.4rem; box-shadow: 0 6px 12px -6px rgba(0, 74, 198, 0.3); }
+.btn-book:hover { background: #0f172a; transform: translateY(-1px); box-shadow: 0 8px 16px -8px rgba(0, 0, 0, 0.15); }
+.side-info { margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #f1f5f9; }
+.side-info-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: #475569; font-weight: 600; padding: 0.3rem 0; }
+.side-info-row .material-symbols-outlined { font-size: 1rem; color: var(--primary); }
+.map-container { border-radius: 0.75rem; overflow: hidden; border: 1px solid var(--outline-variant); }
+.map-container iframe { width: 100%; height: 220px; display: block; }
+.map-premium-badge { display: inline-flex; align-items: center; gap: 0.3rem; background: linear-gradient(135deg,#f59e0b,#d97706); color:#fff; padding:0.15rem 0.5rem; border-radius:0.3rem; font-size:0.55rem; font-weight:800; text-transform:uppercase; letter-spacing:0.04em; margin-left:0.5rem; }
+
+.review-card { padding: 1rem; background: var(--surface-container-low); border-radius: 0.75rem; margin-bottom: 0.75rem; }
+.review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; }
+.review-header strong { font-size: 0.8rem; }
+.review-stars { color: #f59e0b; font-size: 0.85rem; }
+.review-comment { font-size: 0.78rem; color: #475569; line-height: 1.4; }
+.review-date { font-size: 0.6rem; color: #94a3b8; margin-top: 0.25rem; }
+
+@media (max-width: 1200px) {
+    .sidebar { display: none; }
+    .main-content { margin-left: 0; }
+    .profile-grid { grid-template-columns: 1fr; }
+    .hero-overlay { left: 1rem; width: calc(100% - 2rem); }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include "student/inc_sidebar.html" %}
+
+    <main class="main-content">
+        <div class="profile-hero">
+            <div class="hero-overlay">
+                <div class="profile-avatar-container" onclick="openLightbox(this.querySelector('img').src)">
+                    <img src="{% if teacher.profile_picture %}{{ teacher.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="{{ teacher.name }}" class="profile-avatar" />
+                    {% if has_badge %}
+                    <div class="verified-badge">
+                        <span class="material-symbols-outlined" style="font-size: 1.5rem;">verified</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="hero-info">
+                    <h2 class="hero-name">{{ teacher.name }}</h2>
+                    <p class="hero-tagline">
+                        <span class="material-symbols-outlined">school</span>
+                        {{ profile.qualification or profile.degree or 'Educator' }}
+                        {% if profile.university %} | {{ profile.university }}{% endif %}
+                    </p>
+                    <div class="hero-badges">
+                        <span class="hero-subject-badge">
+                            <span class="material-symbols-outlined">menu_book</span>
+                            {{ profile.subject or 'General' }}
+                        </span>
+                        {% if avg_rating and avg_rating > 0 %}
+                        <span class="hero-rating">
+                            <span class="material-symbols-outlined">star</span>
+                            {{ avg_rating }}
+                            <span class="rating-count">({{ review_count }})</span>
+                        </span>
+                        {% endif %}
+                        {% if profile.teaching_mode == 'online' or profile.teaching_mode == 'both' %}
+                        <span class="hero-online-badge">
+                            <span class="material-symbols-outlined">wifi</span>
+                            Online
+                        </span>
+                        {% endif %}
+                        {% if profile.teaching_mode == 'offline' or profile.teaching_mode == 'both' %}
+                        <a href="https://maps.google.com/maps?q={{ (profile.location or profile.teaching_areas or 'Dhaka')|urlencode }}" target="_blank" rel="noopener" style="text-decoration:none;">
+                            <span class="hero-online-badge" style="background:rgba(59,130,246,0.2);color:#60a5fa;border-color:rgba(59,130,246,0.2);cursor:pointer;">
+                                <span class="material-symbols-outlined">location_on</span>
+                                {{ profile.location or profile.teaching_areas or 'Offline' }}
+                            </span>
+                        </a>
+                        {% endif %}
+                        {% if profile.demo_class_available %}
+                        <span class="hero-demo-badge">
+                            <span class="material-symbols-outlined">play_circle</span>
+                            Demo Class
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-grid">
+            <div class="profile-left">
+                <!-- Stats Row -->
+                <section class="profile-section">
+                    <div class="stats-row">
+                        <div class="stat-box">
+                            <span class="num">{{ profile.experience or 0 }}+</span>
+                            <span class="lbl">Years Exp</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="num">{{ profile.total_students_taught or 0 }}+</span>
+                            <span class="lbl">Students</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="num">{{ profile.success_percentage or 0 }}%</span>
+                            <span class="lbl">Success Rate</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="num">{{ review_count }}</span>
+                            <span class="lbl">Reviews</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Preface -->
+                {% if profile.preface %}
+                <section class="profile-section">
+                    <h3 class="section-title"><span class="material-symbols-outlined">format_quote</span> About</h3>
+                    <div class="text-content">"{{ profile.preface }}"</div>
+                </section>
+                {% endif %}
+
+                <!-- Bio -->
+                {% if profile.bio %}
+                <section class="profile-section">
+                    <h3 class="section-title"><span class="material-symbols-outlined">description</span> Bio</h3>
+                    <div class="text-content">{{ profile.bio }}</div>
+                </section>
+                {% endif %}
+
+                <!-- Teaching Style -->
+                {% if profile.teaching_style %}
+                <section class="profile-section">
+                    <h3 class="section-title"><span class="material-symbols-outlined">psychology</span> Teaching Style</h3>
+                    <div class="text-content">{{ profile.teaching_style }}</div>
+                </section>
+                {% endif %}
+
+                <!-- Academic Qualifications -->
+                <section class="profile-section">
+                    <h3 class="section-title"><span class="material-symbols-outlined">workspace_premium</span> Qualifications</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-icon"><span class="material-symbols-outlined">account_balance</span></div>
+                            <div class="detail-text">
+                                <h5>University</h5>
+                                <p>{{ profile.university or 'Verified' }}</p>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-icon"><span class="material-symbols-outlined">history_edu</span></div>
+                            <div class="detail-text">
+                                <h5>Degree</h5>
+                                <p>{{ profile.degree or 'N/A' }}{% if profile.department %} - {{ profile.department }}{% endif %}</p>
+                            </div>
+                        </div>
+                        {% if profile.masters_university %}
+                        <div class="detail-item">
+                            <div class="detail-icon"><span class="material-symbols-outlined">school</span></div>
+                            <div class="detail-text">
+                                <h5>Master's</h5>
+                                <p>{{ profile.masters_university }}{% if profile.masters_department %} | {{ profile.masters_department }}{% endif %}</p>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-icon"><span class="material-symbols-outlined">calendar_today</span></div>
+                            <div class="detail-text">
+                                <h5>Master's Year</h5>
+                                <p>{{ profile.masters_year or 'N/A' }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </section>
+
+                <!-- Subjects Expert In -->
+                {% if profile.subjects_expert_in %}
+                <section class="profile-section">
+                    <h3 class="section-title"><span class="material-symbols-outlined">menu_book</span> Subjects Expert In</h3>
+                    <div class="strength-list">
+                        {% for s in profile.subjects_expert_in.split(',') %}
+                        <span class="strength-pill">
+                            <span class="material-symbols-outlined">check_circle</span>
+                            {{ s.strip() }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </section>
+                {% endif %}
+
+                <!-- Key Strengths -->
+                {% if profile.key_strengths %}
+                <section class="profile-section">
+                    <h3 class="section-title"><span class="material-symbols-outlined">stars</span> Key Strengths</h3>
+                    <div class="strength-list">
+                        {% for s in profile.key_strengths.split(',') %}
+                        <span class="strength-pill">
+                            <span class="material-symbols-outlined">check_circle</span>
+                            {{ s.strip() }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </section>
+                {% endif %}
+
+                {% if is_premium and profile.teaching_mode in ('offline', 'both') and (profile.location or profile.teaching_areas) %}
+                <section class="profile-section">
+                    <h3 class="section-title">
+                        <span class="material-symbols-outlined">map</span>
+                        Teaching Location
+                        <span class="map-premium-badge">
+                            <span class="material-symbols-outlined" style="font-size:0.5rem;">stars</span>
+                            Premium
+                        </span>
+                    </h3>
+                    <div class="map-container">
+                        <iframe
+                            src="https://maps.google.com/maps?q={{ (profile.teaching_areas or profile.location)|urlencode }}&output=embed&z=13"
+                            allowfullscreen
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+                </section>
+                {% endif %}
+
+                <!-- Why Students Notice -->
+                {% if profile.why_students_notice %}
+                <section class="profile-section">
+                    <h3 class="section-title"><span class="material-symbols-outlined">visibility</span> Why Students Notice</h3>
+                    <div class="highlight-box">
+                        <p>{{ profile.why_students_notice }}</p>
+                    </div>
+                </section>
+                {% endif %}
+
+                <!-- Tuition Experience -->
+                {% if profile.tuition_experience %}
+                <section class="profile-section">
+                    <h3 class="section-title"><span class="material-symbols-outlined">history</span> Tuition Experience</h3>
+                    <div class="text-content">{{ profile.tuition_experience }}</div>
+                </section>
+                {% endif %}
+
+                <!-- Reasons to Hire -->
+                {% if profile.reasons_to_hire %}
+                <section class="profile-section">
+                    <h3 class="section-title"><span class="material-symbols-outlined">recommend</span> Reasons to Hire</h3>
+                    <div class="text-content" style="white-space: pre-line;">{{ profile.reasons_to_hire }}</div>
+                </section>
+                {% endif %}
+
+                <!-- Languages -->
+                {% if profile.languages %}
+                <section class="profile-section">
+                    <h3 class="section-title"><span class="material-symbols-outlined">translate</span> Languages</h3>
+                    <div class="strength-list">
+                        {% for lang in profile.languages.split(',') %}
+                        <span class="strength-pill" style="background:#eef2ff;color:var(--primary);border-color:#c7d2fe;">
+                            <span class="material-symbols-outlined">check_circle</span>
+                            {{ lang.strip() }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </section>
+                {% endif %}
+
+                <!-- Intro Video -->
+                {% if profile.intro_video_url %}
+                <section class="profile-section">
+                    <h3 class="section-title"><span class="material-symbols-outlined">play_circle</span> Intro Video</h3>
+                    <div class="video-container">
+                        <iframe src="{{ profile.intro_video_url | replace('watch?v=', 'embed/') }}" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </section>
+                {% endif %}
+
+                <!-- Social Links -->
+                {% if profile.social_links %}
+                <section class="profile-section">
+                    <h3 class="section-title"><span class="material-symbols-outlined">link</span> Social Links</h3>
+                    <div class="social-links">
+                        {% for line in profile.social_links.split('\n') %}
+                            {% set parts = line.split(':https://', 2) %}
+                            {% if parts|length == 2 %}
+                            <a href="https://{{ parts[1] }}" target="_blank" class="social-link" rel="noopener">
+                                <span class="material-symbols-outlined" style="font-size:0.85rem;">open_in_new</span>
+                                {{ parts[0] }}
+                            </a>
+                            {% elif line.strip() %}
+                            <a href="{{ line.strip() }}" target="_blank" class="social-link" rel="noopener">
+                                <span class="material-symbols-outlined" style="font-size:0.85rem;">open_in_new</span>
+                                Link
+                            </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </section>
+                {% endif %}
+
+                <!-- Notes/Resources -->
+                {% if profile.notes_resources %}
+                <section class="profile-section">
+                    <h3 class="section-title"><span class="material-symbols-outlined">folder</span> Notes & Resources</h3>
+                    <div class="text-content" style="white-space: pre-line;">{{ profile.notes_resources }}</div>
+                </section>
+                {% endif %}
+
+                <!-- Reviews -->
+                <section class="profile-section">
+                    <h3 class="section-title"><span class="material-symbols-outlined">reviews</span> Reviews
+                        {% if avg_rating and avg_rating > 0 %}
+                        <span style="margin-left:auto;font-size:0.7rem;color:#f59e0b;display:flex;align-items:center;gap:0.2rem;">
+                            {% for i in range(5) %}
+                                <span class="material-symbols-outlined" style="font-size:0.85rem;">{{ 'star' if i < avg_rating|int else 'star_border' }}</span>
+                            {% endfor %}
+                            {{ avg_rating }}
+                        </span>
+                        {% endif %}
+                    </h3>
+                    {% if reviews %}
+                        {% for r in reviews %}
+                        <div class="review-card">
+                            <div class="review-header">
+                                <strong>{{ r.reviewer.name }}</strong>
+                                <span class="review-stars">
+                                    {% for i in range(5) %}
+                                        <span class="material-symbols-outlined" style="font-size:0.75rem;">{{ 'star' if i < r.rating else 'star_border' }}</span>
+                                    {% endfor %}
+                                </span>
+                            </div>
+                            {% if r.comment %}
+                            <div class="review-comment">{{ r.comment }}</div>
+                            {% endif %}
+                            <div class="review-date">{{ r.created_at.strftime('%b %d, %Y') }}</div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                    <div style="text-align:center;padding:1.5rem;color:#94a3b8;">
+                        <span class="material-symbols-outlined" style="font-size:2rem;">rate_review</span>
+                        <p style="font-size:0.8rem;margin-top:0.5rem;">No reviews yet. Be the first to review!</p>
+                    </div>
+                    {% endif %}
+                </section>
+            </div>
+
+            <div class="profile-right">
+                <div class="booking-card">
+                    <div class="booking-status {{ 'status-available' if profile.availability == 'Available' else 'status-booked' }}">
+                        <span class="material-symbols-outlined">{{ 'check_circle' if profile.availability == 'Available' else 'block' }}</span>
+                        {{ profile.availability }}
+                    </div>
+
+                    <div class="fee-display">
+                        <span class="fee-amount">Tk {{ profile.fee }}</span>
+                        <span class="fee-period">/ month</span>
+                        {% if profile.hourly_fee %}
+                        <div style="font-size:0.65rem;color:#94a3b8;font-weight:600;margin-top:0.2rem;">
+                            Also Tk {{ profile.hourly_fee }}/hour
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {% if avg_rating and avg_rating > 0 %}
+                    <div style="display:flex;align-items:center;justify-content:center;gap:0.2rem;margin-bottom:0.75rem;background:#fffbeb;padding:0.4rem;border-radius:0.5rem;">
+                        {% for i in range(5) %}
+                            <span class="material-symbols-outlined" style="color:{{ '#f59e0b' if i < avg_rating|int else '#d1d5db' }};font-size:1rem;">star</span>
+                        {% endfor %}
+                        <span style="font-weight:800;font-size:0.75rem;color:#92400e;margin-left:0.2rem;">{{ avg_rating }}</span>
+                        <span style="font-weight:500;font-size:0.6rem;color:#92400e;">({{ review_count }})</span>
+                    </div>
+                    {% endif %}
+
+                    {% if profile.availability == 'Available' %}
+                    <form action="{{ url_for('student.send_message', teacher_id=teacher.id) }}" method="POST">
+
+                        <div style="margin-bottom:0.75rem;">
+                            <textarea name="message" rows="2" style="width:100%;border:1px solid var(--outline-variant);border-radius:0.75rem;padding:0.65rem;font-family:inherit;resize:none;font-size:0.78rem;" placeholder="Hi, I'm interested in hiring you..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-book">
+                            <span class="material-symbols-outlined">send</span>
+                            Send Message
+                        </button>
+                    </form>
+                    {% else %}
+                    <div style="text-align:center;padding:0.75rem;background:#fff1f2;border-radius:0.75rem;color:#9f1239;font-weight:700;font-size:0.8rem;">
+                        <span class="material-symbols-outlined" style="display:block;font-size:1.25rem;">block</span>
+                        Currently Unavailable
+                    </div>
+                    {% endif %}
+
+                    <div class="side-info">
+                        <div class="side-info-row">
+                            <span class="material-symbols-outlined">location_on</span>
+                            {{ profile.teaching_areas or profile.location or 'Flexible / Online' }}
+                        </div>
+                        <div class="side-info-row">
+                            <span class="material-symbols-outlined">menu_book</span>
+                            {{ profile.subject or 'General' }}
+                            {% if profile.class_level %} | {{ profile.class_level }}{% endif %}
+                        </div>
+                        <div class="side-info-row">
+                            <span class="material-symbols-outlined">schedule</span>
+                            {{ profile.experience or 0 }} years experience
+                        </div>
+                        {% if profile.languages %}
+                        <div class="side-info-row">
+                            <span class="material-symbols-outlined">translate</span>
+                            {{ profile.languages }}
+                        </div>
+                        {% endif %}
+                        {% if profile.teaching_mode == 'online' or profile.teaching_mode == 'both' %}
+                        <div class="side-info-row">
+                            <span class="material-symbols-outlined">wifi</span>
+                            Online classes available
+                        </div>
+                        {% endif %}
+                        {% if profile.teaching_mode == 'offline' or profile.teaching_mode == 'both' %}
+                        <a href="https://maps.google.com/maps?q={{ (profile.location or profile.teaching_areas or 'Dhaka')|urlencode }}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+                            <div class="side-info-row" style="cursor:pointer;">
+                                <span class="material-symbols-outlined">location_on</span>
+                                {{ profile.location or profile.teaching_areas or 'Offline location' }}
+                            </div>
+                        </a>
+                        {% endif %}
+                        {% if profile.demo_class_available %}
+                        <div class="side-info-row">
+                            <span class="material-symbols-outlined">play_circle</span>
+                            Demo class available
+                        </div>
+                        {% endif %}
+                        {% if profile.availability_schedule %}
+                        <div class="side-info-row" style="align-items:flex-start;">
+                            <span class="material-symbols-outlined">calendar_month</span>
+                            <div style="white-space:pre-line;font-weight:500;">{{ profile.availability_schedule }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<footer class="dashboard-footer" id="dashboardFooter">
+    <p>&copy; 2026 Tuition Station. Developed by <strong>Elias, Sayadul, Mehejabin</strong></p>
+    <div>
+        <a href="{{ url_for('auth.developer') }}">Developer Info</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms</a>
+    </div>
+</footer>
+
+{% endblock %}
+
+{% block footer %}{% endblock %}

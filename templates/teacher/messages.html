@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Messages - Tuition Station{% endblock %}
+
+{% block extra_css %}
+<style>
+.header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+.header-text .kicker { color: var(--secondary); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.25rem; }
+.header-text h2 { font-size: 2rem; font-weight: 900; letter-spacing: -0.02em; }
+
+.messages-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+.message-card { background: var(--surface-container-lowest); border-radius: 1.25rem; padding: 1.5rem; border: 1px solid var(--outline-variant); }
+.message-card h3 { font-size: 0.95rem; font-weight: 800; margin-bottom: 1rem; }
+.message-item { padding: 0.75rem 1rem; background: var(--surface-container-low); border-radius: 0.75rem; margin-bottom: 0.5rem; }
+.message-item:last-child { margin-bottom: 0; }
+.message-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem; }
+.message-header strong { font-size: 0.85rem; }
+.message-header .time { font-size: 0.65rem; color: var(--on-surface-variant); }
+.message-content { font-size: 0.8rem; color: var(--on-surface-variant); }
+.empty-state { text-align: center; padding: 2rem; color: var(--on-surface-variant); }
+.empty-state .material-symbols-outlined { font-size: 2rem; color: var(--outline-variant); }
+.empty-state p { font-size: 0.8rem; margin-top: 0.5rem; }
+</style>
+{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include "teacher/inc_sidebar.html" %}
+
+    <main class="main-content">
+        <header class="header-section">
+            <div class="header-text">
+                <p class="kicker">Communication</p>
+                <h2>Messages</h2>
+            </div>
+        </header>
+
+        <div class="messages-grid">
+            <div class="message-card">
+                <h3>Sent Messages</h3>
+                {% if sent %}
+                    {% for msg in sent %}
+                    <div class="message-item">
+                        <div class="message-header">
+                            <strong>To: {{ msg.receiver.name }}</strong>
+                            <span class="time">{{ msg.created_at.strftime('%b %d, %H:%M') }}</span>
+                        </div>
+                        <p class="message-content">{{ msg.message }}</p>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="empty-state"><span class="material-symbols-outlined">send</span><p>No sent messages</p></div>
+                {% endif %}
+            </div>
+
+            <div class="message-card">
+                <h3>Received Messages</h3>
+                {% if received %}
+                    {% for msg in received %}
+                    <div class="message-item">
+                        <div class="message-header">
+                            <strong>From: {{ msg.sender.name }}</strong>
+                            <span class="time">{{ msg.created_at.strftime('%b %d, %H:%M') }}</span>
+                        </div>
+                        <p class="message-content">{{ msg.message }}</p>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="empty-state"><span class="material-symbols-outlined">inbox</span><p>No received messages</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

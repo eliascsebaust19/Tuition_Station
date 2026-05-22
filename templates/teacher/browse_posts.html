@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Posts - Tuition Station{% endblock %}
+
+{% block extra_css %}
+<style>
+.search-bar { display: flex; gap: 0.75rem; margin-bottom: 2rem; flex-wrap: wrap; }
+.search-bar input { flex: 1; min-width: 180px; padding: 0.75rem 1rem; border: 1px solid var(--outline-variant); border-radius: 0.75rem; font-size: 0.875rem; font-family: inherit; outline: none; transition: border-color 0.2s; background: var(--surface-container-lowest); }
+.search-bar input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,74,198,0.1); }
+.search-bar button { padding: 0.75rem 1.5rem; background: var(--primary); color: var(--on-primary); border: none; border-radius: 0.75rem; font-weight: 700; font-size: 0.875rem; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; font-family: inherit; }
+.search-bar button:hover { opacity: 0.9; }
+.plan-alert { display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.25rem; background: var(--primary-fixed); border: 1px solid var(--outline-variant); border-radius: 1rem; margin-bottom: 1.5rem; color: var(--primary); font-size: 0.9rem; font-weight: 600; }
+.posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.25rem; }
+.post-card { background: var(--surface-container-lowest); border-radius: 1.25rem; padding: 1.5rem; border: 1px solid var(--outline-variant); box-shadow: 0 1px 3px rgba(0,0,0,0.04); transition: all 0.2s; display: flex; flex-direction: column; }
+.post-card:hover { border-color: var(--outline); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+.post-card h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--on-surface); }
+.post-meta { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; margin-bottom: 0.75rem; font-size: 0.8rem; color: var(--on-surface-variant); }
+.post-meta span { display: inline-flex; align-items: center; gap: 0.35rem; }
+.post-meta .material-symbols-outlined { font-size: 0.9rem; color: var(--outline); }
+.post-desc { font-size: 0.85rem; color: var(--on-surface-variant); line-height: 1.6; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.post-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 0.75rem; border-top: 1px solid var(--outline-variant); }
+.post-date { font-size: 0.75rem; color: var(--outline); display: flex; align-items: center; gap: 0.3rem; }
+.post-date .material-symbols-outlined { font-size: 0.85rem; }
+.badge-applied { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.85rem; background: #f0fdf4; color: #166534; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; }
+.badge-applied .material-symbols-outlined { font-size: 0.9rem; }
+.btn-apply { padding: 0.5rem 1.25rem; background: var(--primary); color: var(--on-primary); border: none; border-radius: 9999px; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; font-family: inherit; }
+.btn-apply:hover { opacity: 0.9; }
+.btn-apply-cancel { padding: 0.5rem 1.25rem; background: transparent; color: var(--on-surface-variant); border: 1px solid var(--outline-variant); border-radius: 9999px; font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+.btn-apply-cancel:hover { background: var(--surface-container); }
+.apply-form { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--outline-variant); }
+.apply-form textarea { width: 100%; padding: 0.75rem; border: 1px solid var(--outline-variant); border-radius: 0.75rem; font-size: 0.85rem; font-family: inherit; resize: vertical; min-height: 70px; outline: none; background: var(--surface-container-low); }
+.apply-form textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,74,198,0.1); }
+.apply-form-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+.empty-state { text-align: center; padding: 4rem 2rem; background: var(--surface-container-lowest); border-radius: 1.25rem; border: 1px solid var(--outline-variant); grid-column: 1 / -1; }
+.empty-state .material-symbols-outlined { font-size: 3.5rem; color: var(--outline-variant); margin-bottom: 1rem; }
+.empty-state h4 { font-size: 1.25rem; font-weight: 800; margin-bottom: 0.5rem; }
+.empty-state p { color: var(--on-surface-variant); margin-bottom: 1.5rem; }
+.header-text .kicker { color: var(--secondary); }
+</style>
+{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include "teacher/inc_sidebar.html" %}
+
+    <main class="main-content">
+        <header class="header-section">
+            <div class="header-text">
+                <p class="kicker">Opportunities</p>
+                <h2>Browse Posts</h2>
+                <p>Find tuition posts that match your expertise and apply.</p>
+            </div>
+            <div class="user-profile" onclick="openProfilePopup()">
+                <div class="user-avatar">
+                    <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="Profile" />
+                </div>
+                <div class="user-info">
+                    <p class="role">Teacher</p>
+                    <p class="name">{{ current_user.name }}</p>
+                </div>
+            </div>
+        </header>
+
+        {% if plan and plan.max_applications %}
+        <div class="plan-alert">
+            <span class="material-symbols-outlined">info</span>
+            <span>Your plan allows <strong>{{ plan.max_applications }}</strong> applications per month.</span>
+        </div>
+        {% endif %}
+
+        <form method="GET" action="{{ url_for('teacher.browse_posts') }}" class="search-bar">
+            <input type="text" name="subject" value="{{ subject or '' }}" placeholder="Search by subject..." aria-label="Subject">
+            <input type="text" name="location" value="{{ location or '' }}" placeholder="Search by location..." aria-label="Location">
+            <button type="submit"><span class="material-symbols-outlined" style="font-size:1.1rem;">search</span> Search</button>
+        </form>
+
+        <div class="posts-grid">
+            {% if posts %}
+                {% for item in posts %}
+                {% set p = item.post %}
+                <div class="post-card">
+                    <h3>{{ p.title }}</h3>
+                    <div class="post-meta">
+                        <span><span class="material-symbols-outlined">person</span> {{ p.student.name }}</span>
+                        <span><span class="material-symbols-outlined">book</span> {{ p.subject }}</span>
+                        <span><span class="material-symbols-outlined">layers</span> {{ p.class_level }}</span>
+                        <span><span class="material-symbols-outlined">location_on</span> {{ p.location }}</span>
+                        <span><span class="material-symbols-outlined">payments</span> ৳{{ p.salary }}</span>
+                    </div>
+                    <p class="post-desc">{{ p.description }}</p>
+                    <div class="post-footer">
+                        <span class="post-date"><span class="material-symbols-outlined">calendar_today</span> {{ p.created_at.strftime('%b %d, %Y') if p.created_at else '' }}</span>
+                        {% if item.already_applied %}
+                        <span class="badge-applied"><span class="material-symbols-outlined">check_circle</span> Applied</span>
+                        {% else %}
+                        <button class="btn-apply" onclick="showApplyForm({{ p.id }})"><span class="material-symbols-outlined" style="font-size:0.9rem;">send</span> Apply</button>
+                        {% endif %}
+                    </div>
+                    {% if not item.already_applied %}
+                    <div class="apply-form" id="apply-form-{{ p.id }}" style="display:none;">
+                        <form method="POST" action="{{ url_for('teacher.apply_post', post_id=p.id) }}">
+                            <textarea name="message" rows="2" placeholder="Write a message to the student introducing yourself..." required></textarea>
+                            <div class="apply-form-actions">
+                                <button type="submit" class="btn-apply"><span class="material-symbols-outlined" style="font-size:0.9rem;">send</span> Send Application</button>
+                                <button type="button" class="btn-apply-cancel" onclick="hideApplyForm({{ p.id }})">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+            <div class="empty-state">
+                <span class="material-symbols-outlined">search</span>
+                <h4>No Posts Found</h4>
+                <p>{% if subject or location %}No tuition posts match your search criteria. Try different keywords.{% else %}There are no tuition posts available right now. Check back later.{% endif %}</p>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function showApplyForm(id) {
+    document.getElementById('apply-form-' + id).style.display = 'block';
+}
+function hideApplyForm(id) {
+    document.getElementById('apply-form-' + id).style.display = 'none';
+}
+</script>
+{% endblock %}
+
+{% block footer %}{% endblock %}

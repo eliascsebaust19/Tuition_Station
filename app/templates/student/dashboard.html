@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Tuition Station{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Only dashboard-specific overrides */
+.header-text .kicker { color: var(--secondary); }
+</style>
+{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include "student/inc_sidebar.html" %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="header-section">
+            <div class="header-text">
+                <p class="kicker">A Teacher Student Connector</p>
+                <h2>Find Your Mentor.</h2>
+                <p>Browse our atelier of vetted scholars. Filter by discipline and expertise level to find your perfect match.</p>
+            </div>
+
+            <div class="user-profile" onclick="openProfilePopup()">
+                <div class="user-avatar">
+                    <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="Profile" />
+                </div>
+                <div class="user-info">
+                    <p class="role">Student</p>
+                    <p class="name">{{ current_user.name }}</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Search Section -->
+        <section class="search-section">
+            <form method="GET" action="{{ url_for('student.search') }}">
+                <div class="search-grid">
+                    <div class="search-field">
+                        <label for="search-subject">Subject Discipline</label>
+                        <div class="position-relative">
+                            <span class="material-symbols-outlined">school</span>
+                            <select id="search-subject" name="subject">
+                                <option value="">All Subjects</option>
+                                <option value="Mathematics">Mathematics</option>
+                                <option value="Physics">Physics</option>
+                                <option value="Chemistry">Chemistry</option>
+                                <option value="Biology">Biology</option>
+                                <option value="English">English</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="search-field">
+                        <label for="search-level">Academic Level</label>
+                        <div class="position-relative">
+                            <span class="material-symbols-outlined">trending_up</span>
+                            <select id="search-level" name="level">
+                                <option value="">All Levels</option>
+                                <option value="SSC">SSC</option>
+                                <option value="HSC">HSC</option>
+                                <option value="University">University</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="search-field">
+                        <label for="search-budget">Budget Range</label>
+                        <div class="position-relative">
+                            <span class="material-symbols-outlined">payments</span>
+                            <select id="search-budget" name="budget">
+                                <option value="">Any Budget</option>
+                                <option value="2000">Tk 2,000 - 5,000</option>
+                                <option value="5000">Tk 5,000 - 10,000</option>
+                                <option value="10000">Tk 10,000+</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="search-field">
+                        <label>&nbsp;</label>
+                        <button type="submit" class="btn-find-tutor">
+                            <span class="material-symbols-outlined">search</span>
+                            Find Tutor
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filter-tags">
+                    <button type="button" class="filter-tag primary" onclick="clearFilters()">
+                        Clear All <span class="material-symbols-outlined" style="font-size: 0.75rem;">close</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Active Requests Section -->
+        <section class="requests-section">
+            <div class="requests-header">
+                <h3>Active Requests</h3>
+            </div>
+
+            {% if requests %}
+            <div class="requests-grid">
+                {% for req in requests %}
+                <div class="request-card request-{{ req.status }}">
+                    <div class="request-header">
+                        <div class="request-tutor">
+                            <div class="tutor-avatar">
+                                <img src="{% if req.teacher.profile_picture %}{{ req.teacher.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="{{ req.teacher.name }}" />
+                            </div>
+                            <div>
+                                <p class="tutor-name">{{ req.teacher.name }}</p>
+                                <p class="tutor-subject">{{ req.teacher.teacher_profile.subject if req.teacher.teacher_profile else 'Tutor' }}</p>
+                            </div>
+                        </div>
+                        <span class="status-badge status-{{ req.status }}">{{ req.status }}</span>
+                    </div>
+                    {% if req.message %}
+                    <p class="request-message">"{{ req.message }}"</p>
+                    {% endif %}
+                    <p class="request-date">{{ req.created_at.strftime('%b %d, %Y') }}</p>
+                    {% if req.status == 'accepted' %}
+                    <a href="{{ url_for('student.teacher_profile', teacher_id=req.teacher_id) }}" class="btn-session">
+                        Start Session
+                    </a>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-requests">
+                <span class="material-symbols-outlined">inbox</span>
+                <p>No requests sent yet.</p>
+                <a href="{{ url_for('student.search') }}" class="btn-find">Find a Tutor</a>
+            </div>
+            {% endif %}
+        </section>
+
+        <section class="tutors-section">
+            <div class="tutors-header">
+                <h3>Available Masters</h3>
+                <a href="{{ url_for('student.search') }}">View All Scholars</a>
+            </div>
+
+            {% if teachers %}
+            <div class="tutor-grid">
+                {% for profile in teachers[:8] %}
+                <a href="{{ url_for('student.teacher_profile', teacher_id=profile.user.id) }}" class="mentor-card">
+
+                    {% if profile.user.is_approved and profile.profile.experience and profile.profile.experience >= 5 %}
+                    <div class="premium-badge-compact">
+                        <span class="material-symbols-outlined" style="font-size: 0.5rem;">stars</span>
+                        Premium
+                    </div>
+                    {% endif %}
+
+                    <div class="mentor-card-top">
+                        <div class="mentor-image-container">
+                            <img src="{% if profile.user.profile_picture %}{{ profile.user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="{{ profile.user.name }}" />
+                        </div>
+                        <div class="mentor-card-info">
+                            <h4 class="mentor-name">{{ profile.user.name }}</h4>
+                            <span class="mentor-subject">{{ profile.profile.subject }}</span>
+                        </div>
+                        {% if profile.user.is_approved %}
+                        <div class="mentor-badge">
+                            <span class="material-symbols-outlined" style="font-size: 0.65rem;">verified</span>
+                            Verified
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mentor-stats">
+                        <div class="mentor-stat">
+                            <span class="material-symbols-outlined">school</span>
+                            <span>{{ profile.profile.university or 'Verified Academic' | truncate(18) }}</span>
+                        </div>
+                        <div class="mentor-stat">
+                            <span class="material-symbols-outlined">schedule</span>
+                            <span><strong>{{ profile.profile.experience or 0 }}</strong> yrs</span>
+                        </div>
+                        <div class="mentor-stat">
+                            <span class="material-symbols-outlined">location_on</span>
+                            <span>{{ profile.profile.location or 'Flexible' }}</span>
+                        </div>
+                    </div>
+
+                    <div class="mentor-card-footer">
+                        <div class="mentor-price-compact">
+                            <span class="amount">Tk {{ profile.profile.fee }}</span>
+                            <span class="period">/mo</span>
+                        </div>
+                        <span class="btn-view-profile-compact">
+                            Profile
+                            <span class="material-symbols-outlined" style="font-size: 0.85rem;">arrow_forward</span>
+                        </span>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <span class="material-symbols-outlined">school</span>
+                <h3>No Tutors Available</h3>
+                <p>Check back later for available tutors</p>
+            </div>
+            {% endif %}
+        </section>
+    </main>
+</div>
+
+<footer class="dashboard-footer" id="dashboardFooter">
+    <p>&copy; 2026 Tuition Station. Developed by <strong>Elias, Sayadul, Mehejabin</strong></p>
+    <div>
+        <a href="{{ url_for('auth.developer') }}">Developer Info</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms</a>
+    </div>
+</footer>
+
+<!-- Profile Popup -->
+<div class="profile-popup-overlay" id="profilePopup" onclick="closeProfilePopup(event)">
+    <div class="profile-popup" onclick="event.stopPropagation()">
+        <div class="popup-cover">
+            <button class="popup-close" onclick="closeProfilePopup()">
+                <span class="material-symbols-outlined" style="font-size: 1.2rem;">close</span>
+            </button>
+        </div>
+        <div class="popup-avatar" onclick="openLightbox(this.querySelector('img').src)">
+            <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="{{ current_user.name }}" />
+        </div>
+        <div class="popup-body">
+            <h3 class="popup-name">{{ current_user.name }}</h3>
+            <p class="popup-role">Student</p>
+            <div class="popup-email">
+                <span class="material-symbols-outlined" style="font-size: 1.1rem;">mail</span>
+                {{ current_user.email }}
+            </div>
+            <div class="popup-stats">
+                <div class="popup-stat">
+                    <div class="popup-stat-value" id="popupRequestCount">{{ requests|length }}</div>
+                    <div class="popup-stat-label">Requests</div>
+                </div>
+                <div class="popup-stat">
+                    <div class="popup-stat-value" id="popupTutorCount">{{ teachers|length }}</div>
+                    <div class="popup-stat-label">Tutors</div>
+                </div>
+            </div>
+            <div class="popup-actions">
+                <a href="{{ url_for('student.edit_profile') }}" class="popup-btn-edit">Edit Profile</a>
+                <a href="{{ url_for('auth.logout') }}" class="popup-btn-logout">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
