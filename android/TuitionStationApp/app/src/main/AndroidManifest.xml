@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:name=".TuitionStationApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="TuitionStation"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.TuitionStation"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31">
+
+        <activity
+            android:name=".auth.SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.TuitionStation">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".auth.LoginActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".auth.RegisterActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".student.SearchTutorsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".student.TeacherDetailActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".teacher.EditProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".chat.ChatActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".admin.AdminDashboardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".chat.MessageActivity"
+            android:exported="false" />
+    </application>
+
+</manifest>

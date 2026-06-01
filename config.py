@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -31,3 +32,9 @@ class Config:
     FROM_EMAIL = os.environ.get('FROM_EMAIL', '')
     FROM_NAME = os.environ.get('FROM_NAME', 'TuitionStation')
     BCC_EMAIL = os.environ.get('BCC_EMAIL', '')
+
+    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY') or 'jwt-secret-key-tuition-2024'
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(days=30)
+    JWT_TOKEN_LOCATION = ['headers']
+    JWT_HEADER_NAME = 'Authorization'
+    JWT_HEADER_TYPE = 'Bearer'

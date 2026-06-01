@@ -1,5 +1,7 @@
 from flask import Flask
 from flask_login import LoginManager
+from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 from config import Config
 from models import db, User
 from firebase_config import initialize_firebase
@@ -7,6 +9,7 @@ from firebase_config import initialize_firebase
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 login_manager.login_message_category = 'info'
+jwt = JWTManager()
 
 
 def seed_database():
@@ -104,6 +107,8 @@ def create_app():
 
     db.init_app(app)
     login_manager.init_app(app)
+    jwt.init_app(app)
+    CORS(app)
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -123,6 +128,7 @@ def create_app():
     from routes.payments import payments_bp
     from routes.chat import chat_bp
     from routes.bkash import bkash_bp
+    from routes.api import api_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(student_bp, url_prefix='/student')
@@ -133,6 +139,7 @@ def create_app():
     app.register_blueprint(payments_bp, url_prefix='/payments')
     app.register_blueprint(chat_bp, url_prefix='/chat')
     app.register_blueprint(bkash_bp)
+    app.register_blueprint(api_bp)
 
     with app.app_context():
         seed_database()
