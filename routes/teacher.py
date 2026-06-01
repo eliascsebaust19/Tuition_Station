@@ -2,21 +2,10 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_login import login_required, current_user
 from models import db, User, TeacherProfile, SubscriptionPlan, UserSubscription, Payment, TuitionPost, Application, Message, Notification, Review, ToDo
 from datetime import datetime, timedelta
-import os
-from werkzeug.utils import secure_filename
+from routes.utils import role_required, save_uploaded_file
 
 teacher_bp = Blueprint('teacher', __name__)
-
-
-def teacher_required(f):
-    from functools import wraps
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        if not current_user.is_authenticated or current_user.role != 'teacher':
-            flash('Access denied.', 'error')
-            return redirect(url_for('auth.index'))
-        return f(*args, **kwargs)
-    return decorated
+teacher_required = role_required('teacher')
 
 
 @teacher_bp.route('/dashboard')
@@ -98,28 +87,16 @@ def profile():
 @login_required
 @teacher_required
 def upload_picture():
-    if 'profile_picture' not in request.files:
+    if 'profile_picture' not in request.files or request.files['profile_picture'].filename == '':
         flash('No file selected.', 'error')
         return redirect(url_for('teacher.profile'))
-    file = request.files['profile_picture']
-    if file.filename == '':
-        flash('No file selected.', 'error')
-        return redirect(url_for('teacher.profile'))
-    allowed = {'jpg', 'jpeg', 'png'}
-    ext = file.filename.rsplit('.', 1)[-1].lower() if '.' in file.filename else ''
-    if ext not in allowed:
+    url = save_uploaded_file(request.files['profile_picture'], 'profile_pictures', f'teacher_{current_user.id}')
+    if not url:
         flash('Please upload JPG, JPEG, or PNG.', 'error')
         return redirect(url_for('teacher.profile'))
-    try:
-        filename = secure_filename(f"teacher_{current_user.id}_{int(datetime.utcnow().timestamp())}.{ext}")
-        folder = os.path.join(current_app.root_path, 'static', 'uploads', 'profile_pictures')
-        os.makedirs(folder, exist_ok=True)
-        file.save(os.path.join(folder, filename))
-        current_user.profile_picture = f"/static/uploads/profile_pictures/{filename}"
-        db.session.commit()
-        flash('Profile picture updated!', 'success')
-    except Exception as e:
-        flash('Error uploading image.', 'error')
+    current_user.profile_picture = url
+    db.session.commit()
+    flash('Profile picture updated!', 'success')
     return redirect(url_for('teacher.profile'))
 
 
@@ -127,30 +104,18 @@ def upload_picture():
 @login_required
 @teacher_required
 def upload_cv():
-    if 'cv' not in request.files:
+    if 'cv' not in request.files or request.files['cv'].filename == '':
         flash('No file selected.', 'error')
         return redirect(url_for('teacher.profile'))
-    file = request.files['cv']
-    if file.filename == '':
-        flash('No file selected.', 'error')
-        return redirect(url_for('teacher.profile'))
-    allowed = {'pdf', 'doc', 'docx'}
-    ext = file.filename.rsplit('.', 1)[-1].lower() if '.' in file.filename else ''
-    if ext not in allowed:
+    url = save_uploaded_file(request.files['cv'], 'cvs', f'cv_{current_user.id}', {'pdf', 'doc', 'docx'})
+    if not url:
         flash('Please upload PDF, DOC, or DOCX.', 'error')
         return redirect(url_for('teacher.profile'))
-    try:
-        filename = secure_filename(f"cv_{current_user.id}.{ext}")
-        folder = os.path.join(current_app.root_path, 'static', 'uploads', 'cvs')
-        os.makedirs(folder, exist_ok=True)
-        file.save(os.path.join(folder, filename))
-        profile = TeacherProfile.query.filter_by(user_id=current_user.id).first()
-        if profile:
-            profile.cv = f"/static/uploads/cvs/{filename}"
-            db.session.commit()
-        flash('CV uploaded!', 'success')
-    except Exception as e:
-        flash('Error uploading CV.', 'error')
+    profile = TeacherProfile.query.filter_by(user_id=current_user.id).first()
+    if profile:
+        profile.cv = url
+        db.session.commit()
+    flash('CV uploaded!', 'success')
     return redirect(url_for('teacher.profile'))
 
 

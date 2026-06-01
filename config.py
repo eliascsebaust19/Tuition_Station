@@ -15,7 +15,6 @@ class Config:
     # Windows Auth: mssql+pyodbc://host/database?trusted_connection=yes&driver=ODBC+Driver+17+for+SQL+Server
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'mssql+pyodbc://localhost/tuition_system?trusted_connection=yes&driver=ODBC+Driver+17+for+SQL+Server'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     BKASH_APP_KEY = os.environ.get('BKASH_APP_KEY', '')
     BKASH_APP_SECRET = os.environ.get('BKASH_APP_SECRET', '')

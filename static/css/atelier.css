@@ -315,6 +315,110 @@ h3 { font-size: 1.5rem; }
     color: var(--primary);
 }
 
+/* Nav Dropdown */
+.nav-user-dropdown {
+    position: relative;
+}
+
+.nav-user {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.35rem 0.75rem 0.35rem 0.35rem;
+    border-radius: 9999px;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.nav-user:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.nav-dropdown-arrow {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.6);
+    transition: transform 0.2s;
+}
+
+.nav-user-dropdown.active .nav-dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.nav-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    min-width: 220px;
+    background: var(--surface-container-lowest);
+    border-radius: 1rem;
+    padding: 0.5rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1001;
+    border: 1px solid var(--outline-variant);
+}
+
+.nav-user-dropdown.active .nav-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.nav-dropdown-menu a {
+    display: flex !important;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--on-surface) !important;
+    text-decoration: none;
+    transition: all 0.15s;
+}
+
+.nav-dropdown-menu a:hover {
+    background: var(--surface-container-low);
+    color: var(--primary) !important;
+}
+
+.nav-dropdown-menu a .material-symbols-outlined {
+    font-size: 1.25rem;
+    color: var(--on-surface-variant);
+}
+
+.nav-dropdown-menu a:hover .material-symbols-outlined {
+    color: var(--primary);
+}
+
+.nav-dropdown-divider {
+    height: 1px;
+    background: var(--surface-container-high);
+    margin: 0.35rem 0;
+}
+
+.nav-dropdown-logout {
+    color: var(--error) !important;
+}
+
+.nav-dropdown-logout .material-symbols-outlined {
+    color: var(--error) !important;
+}
+
+.nav-dropdown-logout:hover {
+    background: var(--error-container) !important;
+    color: var(--on-error-container) !important;
+}
+
+.nav-dropdown-logout:hover .material-symbols-outlined {
+    color: var(--on-error-container) !important;
+}
+
 /* Buttons */
 .btn {
     display: inline-flex;
@@ -1300,6 +1404,12 @@ h3 { font-size: 1.5rem; }
     transform: translateY(-2px);
 }
 
+/* Auth Body - hides glass-nav */
+.auth-body {
+    background: var(--surface);
+    min-height: 100vh;
+}
+
 /* Auth Pages */
 .auth-page {
     min-height: 100vh;
@@ -1357,6 +1467,10 @@ h3 { font-size: 1.5rem; }
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
+.auth-form-animated {
+    animation: fadeUp 0.4s ease;
+}
+
 .tab-switcher {
     display: flex;
     gap: 0.5rem;
@@ -1383,6 +1497,7 @@ h3 { font-size: 1.5rem; }
     transition: all 0.25s;
     color: var(--on-surface-variant);
     font-family: var(--font-family);
+    text-decoration: none;
 }
 .tab-switch-btn .material-symbols-outlined { font-size: 1.2rem; }
 
@@ -1654,6 +1769,58 @@ h3 { font-size: 1.5rem; }
 
 .auth-link a:hover {
     text-decoration: underline;
+}
+
+/* Auth Form Extras */
+.auth-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 1rem 0 1.5rem;
+    font-size: 0.85rem;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.remember-me input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+.forgot-password {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+}
+
+.forgot-password:hover {
+    color: #0037a3;
+    text-decoration: underline;
+}
+
+/* Auth inline icon fix */
+.password-wrapper .input-icon-fixed {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    color: var(--outline);
+    font-size: 1.25rem;
+    pointer-events: none;
+}
+
+.password-wrapper input {
+    padding-left: 3rem !important;
 }
 
 /* Cards & Surfaces (No Line Design) */

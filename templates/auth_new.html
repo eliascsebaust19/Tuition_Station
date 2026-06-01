@@ -45,29 +45,19 @@
             </a>
         </div>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <div style="margin-bottom: 1.5rem;">
-            {% for category, message in messages %}
-            <div class="alert alert-{{ category }}">{{ message }}</div>
-            {% endfor %}
-        </div>
-        {% endif %}
-        {% endwith %}
-
         <div class="tab-switcher">
-            <button type="button" class="tab-switch-btn {% if is_login %}active{% endif %}" onclick="window.location.href='{{ url_for('auth.login') }}'">
+            <a href="{{ url_for('auth.login') }}" class="tab-switch-btn {% if is_login %}active{% endif %}">
                 <span class="material-symbols-outlined">login</span>
                 <span>Login</span>
-            </button>
-            <button type="button" class="tab-switch-btn {% if not is_login %}active{% endif %}" onclick="window.location.href='{{ url_for('auth.register') }}'">
+            </a>
+            <a href="{{ url_for('auth.register') }}" class="tab-switch-btn {% if not is_login %}active{% endif %}">
                 <span class="material-symbols-outlined">how_to_reg</span>
                 <span>Sign Up</span>
-            </button>
+            </a>
         </div>
 
         {% if is_login %}
-        <form method="POST" action="{{ url_for('auth.login') }}" style="animation: fadeUp 0.4s ease;">
+        <form method="POST" action="{{ url_for('auth.login') }}" class="auth-form-animated">
             <div class="form-group">
                 <label for="login-email">Email Address</label>
                 <div class="input-icon-wrap">
@@ -79,12 +69,20 @@
             <div class="form-group">
                 <label for="login-password">Password</label>
                 <div class="password-wrapper">
-                    <span class="material-symbols-outlined input-icon" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);z-index:1;color:var(--outline);font-size:1.25rem;">lock</span>
+                    <span class="material-symbols-outlined input-icon-fixed">lock</span>
                     <input type="password" name="password" id="login-password" placeholder="Enter your password" autocomplete="current-password" required />
                     <button type="button" class="password-toggle" onclick="togglePassword('login-password', this)">
                         <span class="material-symbols-outlined">visibility_off</span>
                     </button>
                 </div>
+            </div>
+
+            <div class="auth-options">
+                <label class="remember-me">
+                    <input type="checkbox" name="remember" value="1" />
+                    <span>Remember me</span>
+                </label>
+                <a href="#" class="forgot-password">Forgot Password?</a>
             </div>
 
             <button type="submit" class="btn-submit">
@@ -93,7 +91,7 @@
             </button>
         </form>
         {% else %}
-        <form method="POST" action="{{ url_for('auth.register') }}" style="animation: fadeUp 0.4s ease;">
+        <form method="POST" action="{{ url_for('auth.register') }}" class="auth-form-animated">
             <div class="role-selector">
                 <label class="role-card-sm">
                     <input type="radio" name="role" value="student" id="role_student" {% if default_role != 'teacher' %}checked{% endif %} onchange="toggleTeacherFields()" />
@@ -131,7 +129,7 @@
                 <div class="form-group">
                     <label for="reg-password">Password</label>
                     <div class="password-wrapper">
-                        <span class="material-symbols-outlined input-icon" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);z-index:1;color:var(--outline);font-size:1.25rem;">lock</span>
+                        <span class="material-symbols-outlined input-icon-fixed">lock</span>
                         <input type="password" name="password" id="reg-password" placeholder="Create password" autocomplete="new-password" required />
                         <button type="button" class="password-toggle" onclick="togglePassword('reg-password', this)">
                             <span class="material-symbols-outlined">visibility_off</span>
@@ -141,7 +139,7 @@
                 <div class="form-group">
                     <label for="reg-confirm">Confirm Password</label>
                     <div class="password-wrapper">
-                        <span class="material-symbols-outlined input-icon" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);z-index:1;color:var(--outline);font-size:1.25rem;">lock</span>
+                        <span class="material-symbols-outlined input-icon-fixed">lock</span>
                         <input type="password" name="confirm_password" id="reg-confirm" placeholder="Confirm password" autocomplete="new-password" required />
                         <button type="button" class="password-toggle" onclick="togglePassword('reg-confirm', this)">
                             <span class="material-symbols-outlined">visibility_off</span>
@@ -281,6 +279,7 @@
     transition: all 0.25s;
     color: var(--on-surface-variant);
     font-family: var(--font-family);
+    text-decoration: none;
 }
 .tab-switch-btn .material-symbols-outlined { font-size: 1.2rem; }
 .tab-switch-btn.active {

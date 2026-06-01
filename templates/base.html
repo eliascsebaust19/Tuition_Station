@@ -33,8 +33,8 @@
                     <li><a href="{{ url_for('admin.users') }}">Users</a></li>
                     <li><a href="{{ url_for('admin.requests') }}">Requests</a></li>
                     {% endif %}
-                    <li>
-                        <div class="nav-user">
+                    <li class="nav-user-dropdown">
+                        <div class="nav-user" onclick="toggleUserDropdown()">
                             <div class="nav-user-avatar">
                                 <img src="{% if current_user.profile_picture %}{{ current_user.profile_picture }}{% else %}{{ url_for('static', filename='Assets/Image/default_avatar.svg') }}{% endif %}" alt="{{ current_user.name }}" />
                             </div>
@@ -42,9 +42,23 @@
                                 <div class="nav-user-name">{{ current_user.name }}</div>
                                 <div class="nav-user-role">{{ current_user.role }}</div>
                             </div>
+                            <span class="material-symbols-outlined nav-dropdown-arrow">arrow_drop_down</span>
+                        </div>
+                        <div class="nav-dropdown-menu" id="userDropdown">
+                            {% if current_user.role == 'student' %}
+                            <a href="{{ url_for('student.dashboard') }}"><span class="material-symbols-outlined">dashboard</span> Dashboard</a>
+                            <a href="{{ url_for('student.edit_profile') }}"><span class="material-symbols-outlined">edit</span> Edit Profile</a>
+                            {% elif current_user.role == 'teacher' %}
+                            <a href="{{ url_for('teacher.dashboard') }}"><span class="material-symbols-outlined">dashboard</span> Dashboard</a>
+                            <a href="{{ url_for('teacher.profile') }}"><span class="material-symbols-outlined">badge</span> My Profile</a>
+                            {% elif current_user.role == 'admin' %}
+                            <a href="{{ url_for('admin.dashboard') }}"><span class="material-symbols-outlined">dashboard</span> Dashboard</a>
+                            <a href="{{ url_for('admin.users') }}"><span class="material-symbols-outlined">people</span> Users</a>
+                            {% endif %}
+                            <div class="nav-dropdown-divider"></div>
+                            <a href="{{ url_for('auth.logout') }}" class="nav-dropdown-logout"><span class="material-symbols-outlined">logout</span> Logout</a>
                         </div>
                     </li>
-                    <li><a href="{{ url_for('auth.logout') }}" style="color: var(--error); font-weight: 600;">Logout</a></li>
                 {% else %}
                     <li><a href="{{ url_for('auth.login') }}" class="nav-signin"><i class="fas fa-sign-in-alt"></i> Sign In</a></li>
                     <li><button class="nav-becometutor" onclick="window.location.href='{{ url_for('auth.register', role='teacher') }}'"><i class="fas fa-chalkboard-teacher"></i> Become a Tutor</button></li>
@@ -158,5 +172,18 @@
     </script>
     {% endif %}
     {% endwith %}
+
+    <script>
+    function toggleUserDropdown() {
+        document.querySelector('.nav-user-dropdown').classList.toggle('active');
+    }
+
+    document.addEventListener('click', function(e) {
+        var dropdown = document.querySelector('.nav-user-dropdown');
+        if (dropdown && !dropdown.contains(e.target)) {
+            dropdown.classList.remove('active');
+        }
+    });
+    </script>
 </body>
 </html>

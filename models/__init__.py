@@ -19,6 +19,7 @@ class User(db.Model, UserMixin):
     is_online = db.Column(db.Boolean, default=False)
     profile_picture = db.Column(db.String(500), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     teacher_profile = db.relationship('TeacherProfile', backref='user', uselist=False, lazy=True)
     subscription = db.relationship('UserSubscription', backref='user', uselist=False, lazy=True)
@@ -61,6 +62,7 @@ class TeacherProfile(db.Model):
     is_complete = db.Column(db.Boolean, default=False)
     cv = db.Column(db.String(500))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     qualification = db.Column(db.Text)
     subjects_expert_in = db.Column(db.Text)

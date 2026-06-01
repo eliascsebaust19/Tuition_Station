@@ -2,19 +2,10 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_login import login_required, current_user
 from models import db, User, TeacherProfile, SubscriptionPlan, UserSubscription, Payment, TuitionPost, Application, Message, Notification, Review, ToDo, AdminLog
 from datetime import datetime
+from routes.utils import role_required
 
 admin_bp = Blueprint('admin', __name__)
-
-
-def admin_required(f):
-    from functools import wraps
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        if not current_user.is_authenticated or current_user.role != 'admin':
-            flash('Access denied.', 'error')
-            return redirect(url_for('auth.index'))
-        return f(*args, **kwargs)
-    return decorated
+admin_required = role_required('admin')
 
 
 def log(action, entity_type=None, entity_id=None, details=None):
@@ -143,7 +134,7 @@ def verify_payment(payment_id):
             UserSubscription.query.filter_by(user_id=payment.user_id, is_active=True).update({'is_active': False})
             sub = UserSubscription(
                 user_id=payment.user_id, plan_id=plan.id,
-                start_date=datetime.utcnow(), end_date=datetime.utcnow().replace(),
+                start_date=datetime.utcnow(), end_date=datetime.utcnow(),
                 is_active=True
             )
             from datetime import timedelta
@@ -248,21 +239,17 @@ def reject_request(request_id):
 @login_required
 @admin_required
 def upload_picture():
-    import os
-    from werkzeug.utils import secure_filename
-    from flask import current_app
-    file = request.files.get('profile_picture')
-    if file and file.filename:
-        ext = file.filename.rsplit('.', 1)[1].lower() if '.' in file.filename else ''
-        if ext in {'png', 'jpg', 'jpeg', 'gif'}:
-            filename = 'admin_' + str(current_user.id) + '.' + ext
-            path = os.path.join(current_app.root_path, 'static', 'uploads', filename)
-            file.save(path)
-            current_user.profile_picture = url_for('static', filename='uploads/' + filename)
-            db.session.commit()
-            flash('Profile picture updated!', 'success')
-        else:
-            flash('Invalid image format.', 'error')
+    from routes.utils import save_uploaded_file
+    if 'profile_picture' not in request.files or request.files['profile_picture'].filename == '':
+        flash('No file selected.', 'error')
+        return redirect(url_for('admin.dashboard'))
+    url = save_uploaded_file(request.files['profile_picture'], 'profile_pictures', f'admin_{current_user.id}')
+    if not url:
+        flash('Invalid image format.', 'error')
+        return redirect(url_for('admin.dashboard'))
+    current_user.profile_picture = url
+    db.session.commit()
+    flash('Profile picture updated!', 'success')
     return redirect(url_for('admin.dashboard'))
 
 

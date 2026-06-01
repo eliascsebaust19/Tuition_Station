@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Server Error - TuitionStation{% endblock %}
+{% block content %}
+<div class="error-page">
+  <div class="error-container">
+    <h1>500</h1>
+    <h2>Server Error</h2>
+    <p>Something went wrong. Please try again later.</p>
+    <a href="{{ url_for('auth.index') }}" class="btn btn-primary">Go Home</a>
+  </div>
+</div>
+</div>
+{% endblock %}

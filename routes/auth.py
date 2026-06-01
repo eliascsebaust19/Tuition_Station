@@ -23,29 +23,31 @@ def index():
         return redirect_dashboard()
     from models import SubscriptionPlan, UserSubscription, Review
     plans = SubscriptionPlan.query.order_by(SubscriptionPlan.price).all()
-    teachers = User.query.join(TeacherProfile).filter(
+    teachers = db.session.query(User, TeacherProfile, UserSubscription).join(
+        TeacherProfile, TeacherProfile.user_id == User.id
+    ).outerjoin(
+        UserSubscription, db.and_(
+            UserSubscription.user_id == User.id,
+            UserSubscription.is_active == True
+        )
+    ).filter(
         User.role == 'teacher',
         User.is_approved == True,
         User.is_active == True,
         TeacherProfile.is_complete == True
-    ).outerjoin(UserSubscription, db.and_(
-        UserSubscription.user_id == User.id,
-        UserSubscription.is_active == True
-    )).order_by(
+    ).order_by(
         db.case((UserSubscription.plan_id.is_(None), 1), else_=0),
         UserSubscription.plan_id.desc()
     ).limit(12).all()
 
     teacher_data = []
-    for t in teachers:
-        profile = TeacherProfile.query.filter_by(user_id=t.id).first()
-        sub = UserSubscription.query.filter_by(user_id=t.id, is_active=True).first()
-        avg_rating = db.session.query(db.func.avg(Review.rating)).filter_by(teacher_id=t.id).scalar() or 0
-        review_count = Review.query.filter_by(teacher_id=t.id).count()
-        badge = sub.plan.has_verified_badge if sub and sub.plan else False
-        featured = sub.plan.is_featured if sub and sub.plan else False
+    for u, p, s in teachers:
+        avg_rating = db.session.query(db.func.avg(Review.rating)).filter_by(teacher_id=u.id).scalar() or 0
+        review_count = Review.query.filter_by(teacher_id=u.id).count()
+        badge = s.plan.has_verified_badge if s and s.plan else False
+        featured = s.plan.is_featured if s and s.plan else False
         teacher_data.append({
-            'user': t, 'profile': profile, 'avg_rating': round(avg_rating, 1),
+            'user': u, 'profile': p, 'avg_rating': round(avg_rating, 1),
             'review_count': review_count, 'verified': badge, 'featured': featured
         })
     return render_template('index.html', teachers=teacher_data, plans=plans)
@@ -138,16 +140,8 @@ def register():
 @login_required
 def logout():
     logout_user()
-    flash('Logged out successfully.', 'success')
-    return redirect(url_for('auth.login'))
-
-
-def redirect_dashboard_url():
-    if current_user.role == 'admin':
-        return url_for('admin.dashboard')
-    elif current_user.role == 'teacher':
-        return url_for('teacher.dashboard')
-    return url_for('student.dashboard')
+    flash('You have been logged out successfully. See you again!', 'success')
+    return redirect(url_for('auth.index'))
 
 
 @auth_bp.route('/google-login', methods=['POST'])
@@ -197,7 +191,7 @@ def google_login():
             db.session.commit()
 
         login_user(user)
-        return jsonify({'success': True, 'redirect': redirect_dashboard_url()})
+        return jsonify({'success': True, 'redirect': redirect_dashboard()})
     except Exception as e:
         db.session.rollback()
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -248,7 +242,7 @@ def facebook_login():
             db.session.commit()
 
         login_user(user)
-        return jsonify({'success': True, 'redirect': redirect_dashboard_url()})
+        return jsonify({'success': True, 'redirect': redirect_dashboard()})
     except Exception as e:
         db.session.rollback()
         return jsonify({'success': False, 'error': str(e)}), 500

@@ -2,21 +2,10 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_login import login_required, current_user
 from models import db, User, TeacherProfile, SubscriptionPlan, UserSubscription, TuitionPost, Application, Message, Notification, Review, SavedTutor, ToDo
 from datetime import datetime
-import os
-from werkzeug.utils import secure_filename
+from routes.utils import role_required, save_uploaded_file
 
 student_bp = Blueprint('student', __name__)
-
-
-def student_required(f):
-    from functools import wraps
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        if not current_user.is_authenticated or current_user.role != 'student':
-            flash('Access denied.', 'error')
-            return redirect(url_for('auth.index'))
-        return f(*args, **kwargs)
-    return decorated
+student_required = role_required('student')
 
 
 @student_bp.route('/dashboard')
@@ -257,14 +246,21 @@ def handle_application(app_id, action):
 @login_required
 @student_required
 def saved_tutors():
-    saved = SavedTutor.query.filter_by(student_id=current_user.id).all()
+    saved_ids = [s.teacher_id for s in SavedTutor.query.filter_by(student_id=current_user.id).all()]
     tutors = []
-    for s in saved:
-        u = User.query.get(s.teacher_id)
-        p = TeacherProfile.query.filter_by(user_id=s.teacher_id).first()
-        if u and p:
-            avg_rating = db.session.query(db.func.avg(Review.rating)).filter_by(teacher_id=u.id).scalar() or 0
-            tutors.append({'user': u, 'profile': p, 'avg_rating': round(avg_rating, 1)})
+    if saved_ids:
+        users_map = {u.id: u for u in User.query.filter(User.id.in_(saved_ids)).all()}
+        profiles_map = {p.user_id: p for p in TeacherProfile.query.filter(TeacherProfile.user_id.in_(saved_ids)).all()}
+        ratings = db.session.query(
+            Review.teacher_id, db.func.avg(Review.rating).label('avg'), db.func.count(Review.id).label('cnt')
+        ).filter(Review.teacher_id.in_(saved_ids)).group_by(Review.teacher_id).all()
+        rating_map = {r.teacher_id: {'avg': round(r.avg, 1), 'cnt': r.cnt} for r in ratings}
+        for tid in saved_ids:
+            u = users_map.get(tid)
+            p = profiles_map.get(tid)
+            if u and p:
+                r = rating_map.get(tid, {'avg': 0, 'cnt': 0})
+                tutors.append({'user': u, 'profile': p, 'avg_rating': r['avg']})
     return render_template('student/saved_tutors.html', tutors=tutors)
 
 
@@ -309,28 +305,16 @@ def notifications():
 @login_required
 @student_required
 def upload_picture():
-    if 'profile_picture' not in request.files:
+    if 'profile_picture' not in request.files or request.files['profile_picture'].filename == '':
         flash('No file selected.', 'error')
         return redirect(url_for('student.edit_profile'))
-    file = request.files['profile_picture']
-    if file.filename == '':
-        flash('No file selected.', 'error')
-        return redirect(url_for('student.edit_profile'))
-    allowed = {'jpg', 'jpeg', 'png'}
-    ext = file.filename.rsplit('.', 1)[-1].lower() if '.' in file.filename else ''
-    if ext not in allowed:
+    url = save_uploaded_file(request.files['profile_picture'], 'profile_pictures', f'student_{current_user.id}')
+    if not url:
         flash('Please upload JPG, JPEG, or PNG.', 'error')
         return redirect(url_for('student.edit_profile'))
-    try:
-        filename = secure_filename(f"student_{current_user.id}_{int(datetime.utcnow().timestamp())}.{ext}")
-        folder = os.path.join(current_app.root_path, 'static', 'uploads', 'profile_pictures')
-        os.makedirs(folder, exist_ok=True)
-        file.save(os.path.join(folder, filename))
-        current_user.profile_picture = f"/static/uploads/profile_pictures/{filename}"
-        db.session.commit()
-        flash('Profile picture updated!', 'success')
-    except Exception as e:
-        flash('Error uploading image.', 'error')
+    current_user.profile_picture = url
+    db.session.commit()
+    flash('Profile picture updated!', 'success')
     return redirect(url_for('student.edit_profile'))
 
 
